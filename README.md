@@ -1,5 +1,8 @@
 # GrupoMaster
-Order => Iñigo & Josu
+Order => Iñigo & Josu 
+
 Delivery => Javi
+
 Client => Eñaut
+
 Payment => Jon
