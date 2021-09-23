@@ -5,8 +5,6 @@ from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, Unsup
 import traceback
 from . import Session
 
-service = Service()
-
 # Payment Routes #######################################################################################################
 @app.route('/payment', methods=['GET'])
 @app.route('/payments', methods=['GET'])
