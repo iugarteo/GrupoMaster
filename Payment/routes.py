@@ -5,6 +5,7 @@ from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, Unsup
 import traceback
 from . import Session
 
+service = Service()
 
 # Payment Routes #######################################################################################################
 @app.route('/payment', methods=['GET'])
@@ -33,10 +34,6 @@ def view_payment(payment_id):
     response = jsonify(payment.as_dict())
     session.close()
     return response
-
-#@app.rout('/can_make_payment', methods=['GET'])
-#def can_make_payment:
-    #session = Session()
 
 
 @app.route('/payment', methods=['POST'])
