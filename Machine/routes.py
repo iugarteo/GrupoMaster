@@ -18,7 +18,7 @@ def create_order():
     content = request.json
     try:
         new_PieceGroup = PieceGroup(
-            orderId=content['orderId'],
+            order_id=content['orderId'],
             number_of_pieces=content['number_of_pieces'],
             status="Created"
         )

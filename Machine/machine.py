@@ -5,6 +5,7 @@ from .models import Piece, PieceGroup
 from threading import Thread, Lock, Event
 import sqlalchemy
 from . import Session
+import api
 
 
 class Machine(Thread):
@@ -82,11 +83,12 @@ class Machine(Thread):
         self.working_piece.status = Piece.STATUS_MANUFACTURED
 
         order_finished = True
-        for piece in self.working_piece.order.pieces:
+        for piece in self.working_piece.group.pieces:
             if piece.status != Piece.STATUS_MANUFACTURED:
                 order_finished = False
         if order_finished:
-            self.working_piece.order.status = PieceGroup.STATUS_FINISHED
+            self.working_piece.group.status = PieceGroup.STATUS_FINISHED
+            api.notifyPiecesAreDone(PieceGroup)
 
         self.thread_session.commit()
         self.thread_session.flush()
