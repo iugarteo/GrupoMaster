@@ -12,7 +12,7 @@ def view_payment_by_id(session, payment_id):
 
 def view_all_payments_by_client(session, client_id):
     print("GET All Payments of Client {}".format(client_id))
-    payments = session.query(Payment).filter_by(id=client_id).all()
+    payments = session.query(Payment).filter_by(client_id=client_id).all()
     return payments
 
 

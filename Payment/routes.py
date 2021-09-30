@@ -5,7 +5,6 @@ from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, Unsup
 import traceback
 from . import Session
 
-
 # Payment Routes #######################################################################################################
 from .payment_service import view_all_payments, view_payment_by_id, view_all_payments_by_client, view_account, \
     view_all_accounts, create_account, increment_balance, create_payment
@@ -22,16 +21,25 @@ def view_payment(payment_id):
     return response
 
 
+@app.route('/payment', methods=['PATCH'])
+@app.route('/payments', methods=['PATCH'])
+def view_clients_payments():
+    session = Session()
+    if request.headers['Content-Type'] != 'application/json':
+        abort(UnsupportedMediaType.code)
+    content = request.json
+    client_id = content['client_id']
+    payments = view_all_payments_by_client(session, client_id)
+    response = jsonify(Payment.list_as_dict(payments))
+    session.close()
+    return response
+
+
 @app.route('/payment', methods=['GET'])
 @app.route('/payments', methods=['GET'])
 def view_payments():
     session = Session()
-    client_id = request.args.get('client_id')
-    if client_id:
-        # Fix this
-        payments = view_all_payments_by_client(session, client_id)
-    else:
-        payments = view_all_payments(session)
+    payments = view_all_payments(session)
     response = jsonify(Payment.list_as_dict(payments))
     session.close()
     return response
