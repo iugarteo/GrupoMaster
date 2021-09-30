@@ -5,61 +5,58 @@ from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, Unsup
 import traceback
 from . import Session
 
+
 # Payment Routes #######################################################################################################
+from .payment_service import view_all_payments, view_payment_by_id, view_all_payments_by_client, view_account, \
+    view_all_accounts, create_account, increment_balance, create_payment
+
+
+@app.route('/payment/<int:payment_id>', methods=['GET'])
+def view_payment(payment_id):
+    session = Session()
+    payment = view_payment_by_id(session, payment_id)
+    if not payment:
+        abort(NotFound.code)
+    response = jsonify(payment.as_dict())
+    session.close()
+    return response
+
+
 @app.route('/payment', methods=['GET'])
 @app.route('/payments', methods=['GET'])
 def view_payments():
     session = Session()
     client_id = request.args.get('client_id')
     if client_id:
-        print("GET All Payments of Account {}".format(client_id))
-        payments = session.query(Payment).filter_by(id=client_id).all()
+        # Fix this
+        payments = view_all_payments_by_client(session, client_id)
     else:
-        print("GET All Payments")
-        payments = session.query(Payment).all()
+        payments = view_all_payments(session)
     response = jsonify(Payment.list_as_dict(payments))
     session.close()
     return response
 
 
-@app.route('/payment/<int:payment_id>', methods=['GET'])
-def view_payment(payment_id):
-    session = Session()
-    payment = session.query(Payment).get(payment_id)
-    if not payment:
-        abort(NotFound.code)
-    print("GET Order {}: {}".format(payment_id, payment))
-    response = jsonify(payment.as_dict())
-    session.close()
-    return response
-
-
 @app.route('/payment', methods=['POST'])
-def create_payment():
-    session = Session()
-    new_payment = None
+def make_payment():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
     client_id = content['client']
     amount = content['amount']
-    account = session.query(Account).get(client_id)
+    order_id = content['order']
+    session = Session()
+    account = view_account(session, client_id)
+
     if not account:
         abort(NotFound.code)
-    try:
-        new_payment = Payment(
-            client_id=client_id,
-            amount=amount
-        )
-        session.add(new_payment)
-        session.commit()
-        account.balance -= amount
-        session.commit()
-    except KeyError:
-        session.rollback()
-        session.close()
-        abort(BadRequest.code)
-    response = jsonify(new_payment.as_dict())
+    if account.balance < amount:
+        response = jsonify(result=False, order_id=order_id)
+    else:
+        payment = create_payment(session, account, client_id, amount)
+        if not payment:
+            abort(BadRequest.code)
+        response = jsonify(result=True, order_id=order_id)
     session.close()
     return response
 
@@ -69,8 +66,7 @@ def create_payment():
 @app.route('/accounts', methods=['GET'])
 def view_accounts():
     session = Session()
-    print("GET All Accounts.")
-    accounts = session.query(Account).all()
+    accounts = view_all_accounts(session)
     response = jsonify(Account.list_as_dict(accounts))
     session.close()
     return response
@@ -79,41 +75,30 @@ def view_accounts():
 @app.route('/account/<int:client_id>', methods=['GET'])
 def view_balance(client_id):
     session = Session()
-    account = session.query(Account).filter_by(client_id=client_id).first()
+    account = view_account(session, client_id)
     if not account:
         abort(NotFound.code)
-    print("GET Client {}: {}".format(client_id, account))
     response = jsonify(account.as_dict())
     session.close()
     return response
 
 
 @app.route('/account', methods=['POST'])
-def add_money_to_account():
-    session = Session()
+def add_money():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
+    session = Session()
     content = request.json
-    try:
-        client_id = content['client']
-        balance = content['amount']
-        account = session.query(Account).filter_by(client_id=client_id).first()
-        if not account:
-            new_account = Account(
-                client_id=client_id,
-                balance=balance
-            )
-            session.add(new_account)
-            session.commit()
-            response = jsonify(new_account.as_dict())
-        else:
-            account.balance += balance
-            session.commit()
-            response = jsonify((account.as_dict()))
-    except KeyError:
-        session.rollback()
-        session.close()
+    client_id = content['client']
+    amount = content['amount']
+    account = view_account(session, client_id)
+    if not account:
+        account = create_account(session, client_id, amount)
+    else:
+        account = increment_balance(session, account.id, amount)
+    if not account:
         abort(BadRequest.code)
+    response = jsonify(account.as_dict())
     session.close()
     return response
 

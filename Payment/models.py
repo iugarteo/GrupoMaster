@@ -27,11 +27,13 @@ class BaseModel(Base):
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+
 class Account(BaseModel):
     __tablename__ = "account"
     id = Column(Integer, primary_key=True)
     client_id = Column(Integer, nullable=False)
     balance = Column(Float, nullable=False)
+
 
 class Payment(BaseModel):
     __tablename__ = "payment"
