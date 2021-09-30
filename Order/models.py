@@ -36,7 +36,6 @@ class Order(BaseModel):
     description = Column(TEXT, nullable=False, default="No description")
     status = Column(String(256), nullable=False, default="Created")
     pieces = relationship("Piece", lazy="joined")
-    cartera = Column(String(256), nullable=False)
 
     def as_dict(self):
         d = super().as_dict()
