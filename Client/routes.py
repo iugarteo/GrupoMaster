@@ -4,62 +4,40 @@ from .models import Client
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
 from . import Session
-
-
+from .client import view_client_by_id, view_all_clients, create_client
 
 # Client Routes #########################################################################################################
 @app.route('/client', methods=['POST'])
 def create_client():
-    session = Session()
-    new_client = None
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
-    content = request.json
-    try:
-        new_client = Client(
-            name=content['name'],
-            surname=content['surname']
-        )
-        session.add(new_client)
-
-        session.commit()
-        session.commit()
-    except KeyError:
-        session.rollback()
-        session.close()
-        abort(BadRequest.code)
-    response = jsonify(new_client.as_dict())
-    session.close()
+        content = request.json
+        new_client= create_client(content['name'],content['surname'])
+        response = jsonify(new_client.as_dict())
+    else:
+        response = none
     return response
 
 
 @app.route('/client', methods=['GET'])
 @app.route('/clients', methods=['GET'])
 def view_clients():
-    session = Session()
-    print("GET All Clients.")
-    clients = session.query(Client).all()
+    clients = view_all_clients()
     response = jsonify(Client.list_as_dict(clients))
-    session.close()
     return response
 
 
 @app.route('/client/<int:client_id>', methods=['GET'])
 def view_client(client_id):
-    session = Session()
-    client = session.query(Client).get(client_id)
-    if not client:
-        abort(NotFound.code)
-    print("GET Order {}: {}".format(client_id, client))
+    client = view_client_by_id(client_id)
     response = jsonify(client.as_dict())
-    session.close()
     return response
 
 
 @app.route('/client/<int:client_id>', methods=['DELETE'])
 def delete_client(client_id):
     session = Session()
-    client = session.query(Client).get(client_id)
+    client = view_client_by_id(client_id)
     if not client:
         session.close()
         abort(NotFound.code)
