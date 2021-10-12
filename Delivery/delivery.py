@@ -13,10 +13,11 @@ def view_all_deliveres(session):
     print("GET All Deliveries")
     deliveries = session.query(Delivery).all()
     return deliveries
+    return deliveries
 
 def update_status_delivery(sesssion, delivery_id, status):
     session = Session()
-    delivery = session.query(Delivery).get(id)
+    delivery = session.query(Delivery).get(delivery_id)
     delivery.status = Delivery.status
     print("Updated Delivery {} status: {}".format(delivery_id,delivery.status))
     session.commit()
