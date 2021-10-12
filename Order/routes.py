@@ -5,48 +5,27 @@ from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, Unsup
 import traceback
 from .machine import Machine
 from . import Session
-
-my_order = Order()
+from .order import view_order_by_id, view_all_orders, update_status_order, create_order_d
 
 # Order Routes #########################################################################################################
 @app.route('/order', methods=['POST'])
 def create_order():
-    session = Session()
-    new_order = None
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
-    content = request.json
-    try:
-        new_order = Order(
-            description=content['description'],
-            number_of_pieces=content['number_of_pieces'],
-            status=Order.STATUS_CREATED
-        )
-        session.add(new_order)
-        for i in range(new_order.number_of_pieces):
-            piece = Piece()
-            piece.order = new_order
-            session.add(piece)
-        session.commit()
-        my_machine.add_pieces_to_queue(new_order.pieces)
-        session.commit()
-    except KeyError:
-        session.rollback()
+        content = request.json
+        new_order = create_order_d(content['pieces_id'],content['description'],content['num_pieces'])
+        response = jsonify(new_order.as_dict())
         session.close()
-        abort(BadRequest.code)
-    response = jsonify(new_order.as_dict())
-    session.close()
+    else:
+        response = none
     return response
 
 
 @app.route('/order', methods=['GET'])
 @app.route('/orders', methods=['GET'])
 def view_orders():
-    session = Session()
-    print("GET All Orders.")
-    orders = session.query(Order).all()
+    orders = view_all_orders()
     response = jsonify(Order.list_as_dict(orders))
-    session.close()
     return response
 
 
@@ -76,7 +55,7 @@ def pedir_pago_ruta(order_id):
 @app.route('/order/<int:order_id>', methods=['DELETE'])
 def delete_order(order_id):
     session = Session()
-    order = session.query(Order).get(order_id)
+    order = view_order_by_id(order_id)
     if not order:
         session.close()
         abort(NotFound.code)
@@ -89,69 +68,10 @@ def delete_order(order_id):
     return response
 
 #Cambiar estados
-@app.route('/order/finish/<int:id>', methods=['PATCH'])
-def update_status_finish(id):
-    session = Session()
-    if request.headers['Content-Type'] != 'application/json':
-        abort(UnsupportedMediaType.code)
-    content = request.json
-    try:
-        order= session.query(Order).get(id)
-        order.status = Order.STATUS_FINISHED
-        session.commit()
-    except KeyError:
-        session.rollback()
-        session.close()
-        abort(BadRequest.code)
+@app.route('/order/<string:status>/<int:id>', methods=['PATCH'])
+def update_status(status, id):
+    order = update_status_order(id, status)
     response = jsonify(order.as_dict())
-    my_order.llamar_delivery()
-    session.close()
-    return response
-
-@app.route('/order/declined/<int:id>', methods=['PATCH'])
-def update_status_decline(id):
-    session = Session()
-    if request.headers['Content-Type'] != 'application/json':
-        abort(UnsupportedMediaType.code)
-    content = request.json
-    try:
-        order= session.query(Order).get(id)
-        order.status = Order.STATUS_DECLINED
-        session.commit()
-    except KeyError:
-        session.rollback()
-        session.close()
-        abort(BadRequest.code)
-    response = jsonify(order.as_dict())
-    return response
-
-
-# Piece Routes #########################################################################################################
-
-@app.route('/piece', methods=['GET'])
-@app.route('/pieces', methods=['GET'])
-def view_pieces():
-    session = Session()
-    order_id = request.args.get('order_id')
-    if order_id:
-        pieces = session.query(Piece).filter_by(order_id=order_id).all()
-    else:
-        pieces = session.query(Piece).all()
-    response = jsonify(Piece.list_as_dict(pieces))
-    session.close()
-    return response
-
-
-@app.route('/piece/<int:piece_ref>', methods=['GET'])
-def view_piece(piece_ref):
-    session = Session()
-    piece = session.query(Piece).get(piece_ref)
-    if not piece:
-        session.close()
-        abort(NotFound.code)
-    print(piece)
-    response = jsonify(piece.as_dict())
-    session.close()
     return response
 
 # Error Handling #######################################################################################################
