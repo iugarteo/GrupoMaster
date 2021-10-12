@@ -4,7 +4,7 @@ from .models import Delivery
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
 from . import Session
-
+from .delivery import  view_delivery_by_id, view_all_deliveres, create_delivery_d, update_status_delivery
 
 # Order Routes #########################################################################################################
 @app.route('/delivery', methods=['POST'])
@@ -13,79 +13,36 @@ def create_delivery():
     new_delivery = None
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
-    content = request.json
-    try:
-        new_delivery = Delivery(
-            order_id=content['order_id'],
-            status=Delivery.STATUS_WORKING
-        )
-        session.add(new_delivery)
-        session.commit()
-    except KeyError:
-        session.rollback()
+        content = request.json
+        new_delivery = create_delivery_d(content['order_id'])
+        response = jsonify(new_delivery.as_dict())
         session.close()
-        abort(BadRequest.code)
-    response = jsonify(new_delivery.as_dict())
-    session.close()
+    else:
+        responde = none
     return response
 
 
 @app.route('/deliveries', methods=['GET'])
 def view_deliveries():
-    session = Session()
-    print("GET All Orders.")
-    orders = session.query(Delivery).all()
-    response = jsonify(Delivery.list_as_dict(orders))
-    session.close()
+    deliveries = view_deliveries()
+    response = jsonify(Delivery.list_as_dict(deliveries))
     return response
 
 
 # view one delivery
 @app.route('/delivery/<int:id>', methods=['GET'])
 def view_delivery(id):
-    session = Session()
-    delivery = session.query(Delivery).get(id)
-    if not delivery:
-        abort(NotFound.code)
-    print("GET Order {}: {}".format(id, delivery))
-    response = jsonify(delivery.as_dict())
-    session.close()
-    return response
-
-
-@app.route('/delivery/send/<int:id>', methods=['PATCH'])
-def update_status_sent(id):
-    session = Session()
-    if request.headers['Content-Type'] != 'application/json':
-        abort(UnsupportedMediaType.code)
-    content = request.json
-    try:
-        delivery = session.query(Delivery).get(id)
-        delivery.status = Delivery.STATUS_SENT
-        session.commit()
-    except KeyError:
-        session.rollback()
-        session.close()
-        abort(BadRequest.code)
+    delivery = view_delivery_by_id(id)
     response = jsonify(delivery.as_dict())
     return response
 
-@app.route('/delivery/received/<int:id>', methods=['PATCH'])
-def update_status_received(id):
-    session = Session()
-    if request.headers['Content-Type'] != 'application/json':
-        abort(UnsupportedMediaType.code)
-    content = request.json
-    try:
-        delivery = session.query(Delivery).get(id)
-        delivery.status = Delivery.STATUS_RECEIVED
-        session.commit()
-    except KeyError:
-        session.rollback()
-        session.close()
-        abort(BadRequest.code)
+
+@app.route('/delivery/<string:status>/<int:id>', methods=['PATCH'])
+def update_status_sent(status, id):
+    delivery = update_status_delivery(id, status)
     response = jsonify(delivery.as_dict())
     return response
+
 
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)
