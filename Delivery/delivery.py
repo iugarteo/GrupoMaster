@@ -37,4 +37,4 @@ def create_delivery_d(session, order_id):
     except KeyError:
         session.rollback()
         session.close()
-    return new_client
+    return new_delivery
