@@ -39,7 +39,7 @@ def view_delivery(id):
 
 @app.route('/delivery/<string:status>/<int:id>', methods=['PATCH'])
 def update_status_sent(status, id):
-    delivery = update_status_delivery(id, status)
+    update_status_delivery(id, status)
     response = jsonify(delivery.as_dict())
     return response
 
