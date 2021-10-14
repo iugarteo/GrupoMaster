@@ -13,7 +13,6 @@ def view_all_deliveres(session):
     print("GET All Deliveries")
     deliveries = session.query(Delivery).all()
     return deliveries
-    return deliveries
 
 def update_status_delivery(sesssion, delivery_id, status):
     session = Session()
