@@ -14,19 +14,12 @@ class Order(Thread):
         self.instance = self
 
     def pedir_pago(self, id_p):
-        #Discutir si la comparación iria mejor en payment porque es la que tiene la cartera, de esta manera Order solo manda una message con el coste
-        #Y en caso de valido llame a realizar_pedio o al microservicio de maquina
-        coste = session.query(Piece).get(coste)
-        if(coste > 2):
-            print("Nope, no hay dinero")
+        coste = session.query(Piece).filter_by(ref=id_p).get(coste)
+        pago_posible = llamadaPayment(coste)
+        if(pago_posible):
+            realizar_pedido()
+        else:
             cambiar_estado("Declined")
-        if(coste2 <= 2):
-            print("Pedido mandado a produccion")
-            realizar_pedido(1)
-        #if(posible):
-        #    reaizar_pedido()
-        #else:
-        #    cambiar_estado("Declined")
 
     def realizar_pedido(self, id_o):#Mejor en payment? Igual este metodo se va a la puta
         #maquina.create_piece(id_o)
@@ -41,9 +34,10 @@ class Order(Thread):
         print("Entrega comenzada")
 
     def cambiar_estado(self, order_id, status):
-        if(status == "Finished" or status == "Declined"):
+        if(status == "Finished" or status == "Declined"): #Comprobar que se esta introduciendo un estado existente, a created no deberia poder cambiarse de vuelta
             session = Session()
             order = session.query(Order).get(order_id)
+            #LLamar a delivery para crear uno.
             order.status = Order.status
             print("Updated Order {} status: {}".format(order_is, order.status))
             session.commit()
@@ -52,4 +46,3 @@ class Order(Thread):
             return order
         else:
             return "No existe ese estado"
-##Parece un select --> manufacturing_piece = self.thread_session.query(Piece).filter_by(status=Piece.STATUS_MANUFACTURING).first()
