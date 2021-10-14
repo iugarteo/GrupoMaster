@@ -3,7 +3,7 @@ from flask import current_app as app
 from .models import Order, Piece
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from .order import Order
+from .order import pedir_pago, realizar_pedido, llamar_delivery, cambiar_estado
 from . import Session
 
 my_order = Order()
@@ -23,12 +23,7 @@ def create_order():
             status=Order.STATUS_CREATED
         )
         session.add(new_order)
-    #   for i in range(new_order.number_of_pieces):
-    #      piece = Piece()
-    #        piece.order = new_order
-    #        session.add(piece)
         session.commit()
-    #    my_machine.add_pieces_to_queue(new_order.pieces)
         session.commit()
     except KeyError:
         session.rollback()
@@ -36,6 +31,7 @@ def create_order():
         abort(BadRequest.code)
     response = jsonify(new_order.as_dict())
     session.close()
+    #LLamar a create Delivery
     return response
 
 
