@@ -5,7 +5,8 @@ from .models import Piece, PieceGroup
 from threading import Thread, Lock, Event
 import sqlalchemy
 from . import Session
-import api
+from . import api
+
 
 
 class Machine(Thread):

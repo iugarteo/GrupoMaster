@@ -1,5 +1,4 @@
 from sqlalchemy import Column, DateTime, Integer, String, TEXT, ForeignKey
-from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -33,7 +32,9 @@ class Client(BaseModel):
     __tablename__ = "clients"
     id = Column(Integer, primary_key=True)
     name = Column(TEXT, nullable=False, default="No name")
-    surname = Column(TEXT, nullable=False, default="No name")
+    surname = Column(TEXT, nullable=False, default="No surname")
+    password = Column(TEXT, nullable=False, default="No password")
+    nickname = Column(TEXT, nullable=False, default="No nickname", unique=True)
 
 
 

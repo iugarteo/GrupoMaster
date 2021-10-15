@@ -1,73 +1,48 @@
 from flask import request, jsonify, abort
 from flask import current_app as app
-from .models import Client
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from . import Session
+from . import logic
 
 
 
 # Client Routes #########################################################################################################
-@app.route('/client', methods=['POST'])
+@app.route('/regist', methods=['POST'])
 def create_client():
-    session = Session()
-    new_client = None
+
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    try:
-        new_client = Client(
-            name=content['name'],
-            surname=content['surname']
-        )
-        session.add(new_client)
 
-        session.commit()
-        session.commit()
-    except KeyError:
-        session.rollback()
-        session.close()
-        abort(BadRequest.code)
-    response = jsonify(new_client.as_dict())
-    session.close()
+    response = logic.registClient(content)
+
     return response
 
+@app.route('/auth', methods=['GET'])
+def auth_client():
+    if request.headers['Content-Type'] != 'application/json':
+        abort(UnsupportedMediaType.code)
+    content = request.json
+    response = logic.authentication(content['nickname'], content['password'])
 
-@app.route('/client', methods=['GET'])
+
+    return response
+
 @app.route('/clients', methods=['GET'])
 def view_clients():
-    session = Session()
-    print("GET All Clients.")
-    clients = session.query(Client).all()
-    response = jsonify(Client.list_as_dict(clients))
-    session.close()
+    response = logic.getAllClients()
     return response
 
 
 @app.route('/client/<int:client_id>', methods=['GET'])
 def view_client(client_id):
-    session = Session()
-    client = session.query(Client).get(client_id)
-    if not client:
-        abort(NotFound.code)
-    print("GET Order {}: {}".format(client_id, client))
-    response = jsonify(client.as_dict())
-    session.close()
+    response = logic.getClient(client_id)
     return response
 
 
 @app.route('/client/<int:client_id>', methods=['DELETE'])
 def delete_client(client_id):
-    session = Session()
-    client = session.query(Client).get(client_id)
-    if not client:
-        session.close()
-        abort(NotFound.code)
-    print("DELETE Client {}.".format(client_id))
-    session.delete(client)
-    session.commit()
-    response = jsonify(client.as_dict())
-    session.close()
+    response = logic.deleteClient(client_id)
     return response
 
 
