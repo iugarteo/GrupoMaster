@@ -3,7 +3,7 @@ from flask import current_app as app
 from .models import Order, Piece
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from .machine import Machine
+from .order import pedir_pago, realizar_pedido, llamar_delivery, cambiar_estado
 from . import Session
 
 my_order = Order()
@@ -23,12 +23,7 @@ def create_order():
             status=Order.STATUS_CREATED
         )
         session.add(new_order)
-        for i in range(new_order.number_of_pieces):
-            piece = Piece()
-            piece.order = new_order
-            session.add(piece)
         session.commit()
-        my_machine.add_pieces_to_queue(new_order.pieces)
         session.commit()
     except KeyError:
         session.rollback()
@@ -36,10 +31,11 @@ def create_order():
         abort(BadRequest.code)
     response = jsonify(new_order.as_dict())
     session.close()
+    #LLamar a create Delivery
     return response
 
 
-@app.route('/order', methods=['GET'])
+#@app.route('/order', methods=['GET'])
 @app.route('/orders', methods=['GET'])
 def view_orders():
     session = Session()
@@ -81,7 +77,6 @@ def delete_order(order_id):
         session.close()
         abort(NotFound.code)
     print("DELETE Order {}.".format(order_id))
-    my_machine.remove_pieces_from_queue(order.pieces)
     session.delete(order)
     session.commit()
     response = jsonify(order.as_dict())
@@ -89,42 +84,26 @@ def delete_order(order_id):
     return response
 
 #Cambiar estados
-@app.route('/order/finish/<int:id>', methods=['PATCH'])
-def update_status_finish(id):
+@app.route('/order/status/<int:order_id>/<str:estado>', methods=['PATCH'])
+def update_status(order_id, status):
     session = Session()
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
     try:
-        order= session.query(Order).get(id)
-        order.status = Order.STATUS_FINISHED
-        session.commit()
+        order = my_order.cambiar_estado(order_id, status)
+        if(order != "No existe ese estado"):
+            session.commit()
+        else:
+            print(order)
+            abort(BadRequest.code)
     except KeyError:
         session.rollback()
         session.close()
         abort(BadRequest.code)
     response = jsonify(order.as_dict())
-    my_order.llamar_delivery()
     session.close()
     return response
-
-@app.route('/order/declined/<int:id>', methods=['PATCH'])
-def update_status_decline(id):
-    session = Session()
-    if request.headers['Content-Type'] != 'application/json':
-        abort(UnsupportedMediaType.code)
-    content = request.json
-    try:
-        order= session.query(Order).get(id)
-        order.status = Order.STATUS_DECLINED
-        session.commit()
-    except KeyError:
-        session.rollback()
-        session.close()
-        abort(BadRequest.code)
-    response = jsonify(order.as_dict())
-    return response
-
 
 # Piece Routes #########################################################################################################
 
