@@ -3,6 +3,7 @@ from flask import current_app as app
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
 from . import logic
+from . import security
 
 
 
@@ -25,6 +26,13 @@ def auth_client():
     content = request.json
     response = logic.authentication(content['nickname'], content['password'])
 
+
+    return response
+
+@app.route('/pubKey', methods=['GET'])
+def pub_key():
+
+    response = security.getPublicKey()
 
     return response
 

@@ -2,6 +2,7 @@ from flask import Flask
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 from .config import Config
+from . import security
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 Session = scoped_session(
@@ -20,4 +21,5 @@ def create_app():
         from . import routes
         from . import models
         models.Base.metadata.create_all(engine)
+        security.genKeys()
         return app
