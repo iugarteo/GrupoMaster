@@ -17,11 +17,18 @@ def checkPass(password, client):
 
 def getToken(nickname):
     private_key = getPrivateKey()
-    encoded = jwt.encode({"some": "payload"}, private_key, algorithm="RS256")
+    encoded = jwt.encode({"Hire ama": "pelele"}, private_key, algorithm="RS256")
     return encoded
 
 def readToken(encoded, public_key):
-    decoded = jwt.decode(encoded, public_key, algorithms=["RS256"])
+
+    try:
+        decoded = jwt.decode(encoded, public_key, algorithms=["RS256"])
+    except jwt.ExpiredSignatureError:
+        print("ERROR: Signature expired")
+    except jwt.InvalidSignatureError:
+        print("ERROR: Invalid Signature")
+    # Signature has expired
     return decoded
 
 def genKeys():
@@ -51,8 +58,7 @@ def genKeys():
     public_key_file.write(pem_public_key.decode())
     public_key_file.close()
 
-    token = getToken("nickname")
-    print(readToken(token, getPublicKey()))
+
     return pem_public_key, private_key
 
 def getPublicKey():
