@@ -57,14 +57,16 @@ def genKeys():
     public_key_file = open("public_key.pem", "w")
     public_key_file.write(pem_public_key.decode())
     public_key_file.close()
-
+    token=getToken("Mendilu")
+    print(readToken(token,getPublicKey()))
 
     return pem_public_key, private_key
 
 def getPublicKey():
     public_key_file = open("public_key.pem", "rb")
-    public_key = serialization.load_pem_public_key(public_key_file.read())
+    public_key = public_key_file.read().decode("utf-8")
     public_key_file.close()
+    print(public_key)
     return public_key
 
 def getPrivateKey():
