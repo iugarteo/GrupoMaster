@@ -1,9 +1,11 @@
+from .api_client import ApiClient
 from .models import Payment, Account
 
 
 def view_payment_by_id(session, payment_id):
     payment = session.query(Payment).get(payment_id)
     if not payment:
+        ApiClient.log("warning", "view_payment_by_id", "Payment {} not found".format(payment_id))
         session.close()
         return None
     print("GET Payment {}: {}".format(payment_id, payment))
@@ -12,12 +14,14 @@ def view_payment_by_id(session, payment_id):
 
 def view_all_payments_by_client(session, client_id):
     print("GET All Payments of Client {}".format(client_id))
+    ApiClient.log("warning", "view_all_payments_by_client", "View {} client's all payments".format(client_id))
     payments = session.query(Payment).filter_by(client_id=client_id).all()
     return payments
 
 
 def view_all_payments(session):
     print("GET All Payments")
+    ApiClient.log("information", "view_all_payments", "Get all payments")
     payments = session.query(Payment).all()
     return payments
 
