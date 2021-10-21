@@ -1,4 +1,5 @@
 from sqlalchemy import Column, DateTime, Integer, String, TEXT, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -35,6 +36,12 @@ class Client(BaseModel):
     surname = Column(TEXT, nullable=False, default="No surname")
     password = Column(TEXT, nullable=False, default="No password")
     nickname = Column(TEXT, nullable=False, default="No nickname", unique=True)
+    role_id = Column(Integer, ForeignKey('role.id'))
 
-
+class Role(BaseModel):
+    __tablename__ = "roles"
+    id = Column(Integer, primary_key=True)
+    name = Column(TEXT, nullable=False, default="No name")
+    permisions = Column(TEXT, nullable=False, default="No permisions")
+    client = relationship("Client")
 

@@ -53,6 +53,39 @@ def delete_client(client_id):
     response = logic.deleteClient(client_id)
     return response
 
+#Role routes
+@app.route('/role', methods=['POST'])
+def create_Role():
+    if request.headers['Content-Type'] != 'application/json':
+        abort(UnsupportedMediaType.code)
+    content = request.json
+    response = logic.createRole(content)
+    return response
+
+@app.route('/roles', methods=['GET'])
+def view_roles():
+    response = logic.getAllRoles()
+    return response
+
+
+@app.route('/role/<int:role_id>', methods=['GET'])
+def view_role(role_id):
+    response = logic.getRole(role_id)
+    return response
+
+
+@app.route('/role/<int:role_id>', methods=['DELETE'])
+def delete_role(role_id):
+    response = logic.deleteRole(role_id)
+    return response
+
+@app.route('/roleUpdate/<int:role_id>', methods=['UPDATE'])
+def create_Role(role_id):
+    if request.headers['Content-Type'] != 'application/json':
+        abort(UnsupportedMediaType.code)
+    content = request.json
+    response = logic.updateRole(role_id,content)
+    return response
 
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)
