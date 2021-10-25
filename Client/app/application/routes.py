@@ -7,7 +7,7 @@ from . import security
 
 
 # Client Routes #########################################################################################################
-@app.route('/regist', methods=['POST'])
+@app.route('/client/regist', methods=['POST'])
 def create_client():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
@@ -18,7 +18,7 @@ def create_client():
     return response
 
 
-@app.route('/auth', methods=['GET'])
+@app.route('/client/auth', methods=['GET'])
 def auth_client():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
@@ -27,7 +27,7 @@ def auth_client():
     response = jsonify(jwt, refresh_token)
     return response
 
-@app.route('/newJWT', methods=['GET'])
+@app.route('/client/newJWT', methods=['GET'])
 def new_jwt():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
@@ -35,33 +35,33 @@ def new_jwt():
     response = logic.newJWT(content['refresh_token'], content['nickname'])
     return response
 
-@app.route('/clients', methods=['GET'])
+@app.route('/client/clients', methods=['GET'])
 def view_clients():
     response = logic.getAllClients()
     return response
 
 
-@app.route('/client/<int:client_id>', methods=['GET'])
+@app.route('/client/getclient/<int:client_id>', methods=['GET'])
 def view_client(client_id):
     response = logic.getClient(client_id)
     return response
 
 
-@app.route('/client/<int:client_id>', methods=['DELETE'])
+@app.route('/client/deleteclient/<int:client_id>', methods=['DELETE'])
 def delete_client(client_id):
     response = logic.deleteClient(client_id)
     return response
 
 
 # Key routes
-@app.route('/pubKey', methods=['GET'])
+@app.route('/client/pubKey', methods=['GET'])
 def pub_key():
     response = security.getPublicKey()
 
     return response
 
 
-@app.route('/refreshKeys', methods=['GET'])
+@app.route('/client/refreshKeys', methods=['GET'])
 def refresh_key():
     token = request.headers["token"]
     admin = logic.checkPermissions("client.refresh", token)
@@ -74,7 +74,7 @@ def refresh_key():
 
 
 # Role routes
-@app.route('/role', methods=['POST'])
+@app.route('/client/role', methods=['POST'])
 def create_Role():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
@@ -83,25 +83,25 @@ def create_Role():
     return response
 
 
-@app.route('/roles', methods=['GET'])
+@app.route('/client/roles', methods=['GET'])
 def view_roles():
     response = logic.getAllRoles()
     return response
 
 
-@app.route('/role/<int:role_id>', methods=['GET'])
+@app.route('/client/getrole/<int:role_id>', methods=['GET'])
 def view_role(role_id):
     response = logic.getRole(role_id)
     return response
 
 
-@app.route('/role/<int:role_id>', methods=['DELETE'])
+@app.route('/client/deleterole/<int:role_id>', methods=['DELETE'])
 def delete_role(role_id):
     response = logic.deleteRole(role_id)
     return response
 
 
-@app.route('/roleUpdate/<int:role_id>', methods=['PATCH'])
+@app.route('/client/roleUpdate/<int:role_id>', methods=['PATCH'])
 def update_Role(role_id):
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
