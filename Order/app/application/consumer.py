@@ -1,7 +1,5 @@
 import pika
-
-public_key = None
-
+from .checkJWT import setKey
 
 def init_rabbitmq():
     connection = pika.BlockingConnection(
@@ -28,8 +26,5 @@ def init_rabbitmq():
 
 def callback(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
-    public_key = body
+    setKey(body)
 
-
-def get_public_key():
-    return public_key
