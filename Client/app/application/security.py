@@ -1,6 +1,6 @@
 import datetime
 import secrets
-from time import timezone
+from datetime import timezone
 
 import bcrypt
 import jwt
@@ -88,13 +88,13 @@ def genKeys():
     return pem_public_key, private_key
 
 def getPublicKey():
-    public_key_file = open(r"C:\Users\mendi\PycharmProjects\GrupoMaster\Client\app\public_key.pem", "rb")
+    public_key_file = open(r"public_key.pem", "rb")
     public_key = public_key_file.read().decode("utf-8")
     public_key_file.close()
     return public_key
 
 def getPrivateKey():
-    private_key_file = open(r"C:\Users\mendi\PycharmProjects\GrupoMaster\Client\app\private_key.pem", "rb")
+    private_key_file = open(r"private_key.pem", "rb")
     private_key = serialization.load_pem_private_key(private_key_file.read(), b"m8#Gc9RH!gRrE&h4")
     private_key_file.close()
     return private_key
