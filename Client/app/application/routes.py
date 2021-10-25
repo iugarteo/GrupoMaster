@@ -12,13 +12,13 @@ def create_client():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    token = request.headers["token"]
-    permisions = logic.checkPermissions("client.regist", token)
-    if permisions == True:
-        session = Session()
-        response = logic.registClient(content, session)
-    else:
-        abort(BadRequest.code)
+    #token = request.headers["token"]
+    #permisions = logic.checkPermissions("client.regist", token)
+    #if permisions == True:
+    session = Session()
+    response = logic.registClient(content, session)
+    #else:
+    #    abort(BadRequest.code)
 
 
     return response
@@ -100,8 +100,7 @@ def refresh_key():
     token = request.headers["token"]
     permisions = logic.checkPermissions("client.refresh", token)
     if permisions == True:
-        session = Session()
-        response=logic.refreshKeys(session)
+        response=logic.refreshKeys()
 
     else:
         abort(BadRequest.code)
@@ -114,13 +113,13 @@ def create_Role():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    token = request.headers["token"]
-    permisions = logic.checkPermissions("client.role", token)
-    if permisions == True:
-        session = Session()
-        response = logic.createRole(content, session)
-    else:
-        abort(BadRequest.code)
+    #token = request.headers["token"]
+    #permisions = logic.checkPermissions("client.role", token)
+    #if permisions == True:
+    session = Session()
+    response = logic.createRole(content, session)
+    #else:
+    #    abort(BadRequest.code)
 
     return response
 

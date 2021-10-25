@@ -177,4 +177,4 @@ def newJWT(refresh_token, nickname, session):
 def refreshKeys():
     security.genKeys()
     publisher.publishKey()
-    return None
+    return "Keys refreshed"

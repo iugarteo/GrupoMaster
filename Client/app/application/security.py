@@ -45,7 +45,7 @@ def checkRefreshToken(refresh_token, refresh_token_db):
     return result
 
 def readToken(encoded, public_key):
-
+    print(public_key)
     try:
         decoded = jwt.decode(encoded, public_key, algorithms=["RS256"])
     except jwt.ExpiredSignatureError:
