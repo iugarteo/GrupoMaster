@@ -39,3 +39,26 @@ def cambiar_estado(session, order_id, status):
         return order
     else:
         return "No existe ese estado"
+
+def crear_order(session, content):
+    new_order = None
+    new_order = Order(
+        description=content['description'],
+        number_of_pieces=content['number_of_pieces'],
+        status=Order.STATUS_CREATED
+    )
+    session.add(new_order)
+    session.commit()
+    return new_order
+
+def ver_order_id(session, id):
+    new_order =  session.query(Order).get(id)
+    return new_order
+
+def ver_orders(session):
+    orders = session.query(Order).all()
+    return orders
+
+def delete_order(session):
+    session.delete(order)
+    session.commit()
