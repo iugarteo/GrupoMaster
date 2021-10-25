@@ -1,7 +1,5 @@
 
 from flask import request, jsonify, abort
-from sqlalchemy.orm import Session
-
 from .models import Client, Role
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType, Forbidden
 from . import security
@@ -9,9 +7,7 @@ from . import publisher
 
 
 
-def registClient(content):
-
-    session = Session()
+def registClient(content, session):
     new_client = None
     pasEnc = security.hashPassword(content['password'])
     try:
@@ -74,7 +70,6 @@ def createRole(content):
             permissions=content['permissions']
         )
         session.add(new_role)
-        session.commit()
         session.commit()
     except KeyError:
         session.rollback()

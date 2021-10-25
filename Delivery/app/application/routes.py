@@ -1,7 +1,7 @@
 from flask import request, jsonify, abort
 from flask import current_app as app
 from .models import Delivery
-from . import delivery
+from . import delivery, checkJWT
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
 from . import Session
@@ -13,30 +13,56 @@ def create_delivery():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    response = delivery.registDelivery(content)
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("delivery.create", token)
+    if permisions == True:
+        response = delivery.registDelivery(content)
+
+    else:
+        abort(BadRequest.code)
     return response
 
 
 @app.route('/delivery/deliveries', methods=['GET'])
 def view_deliveries():
-    response = delivery.getAllDeliveries()
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("delivery.deliveries", token)
+    if permisions == True:
+        response = delivery.getAllDeliveries()
+    else:
+        abort(BadRequest.code)
     return response
 
 
 # view one delivery
-@app.route('/delivery/<int:id>', methods=['GET'])
+@app.route('/delivery/getDelivery<int:id>', methods=['GET'])
 def view_delivery(id):
-    response = delivery.getDelivery(id)
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("delivery.getDelivery", token)
+    if permisions == True:
+        response = delivery.getDelivery(id)
+    else:
+        abort(BadRequest.code)
     return response
 
 @app.route('/delivery/send/<int:id>', methods=['PATCH'])
 def update_status_sent(id):
-    response = delivery.deliverySent(id)
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("delivery.send", token)
+    if permisions == True:
+        response = delivery.deliverySent(id)
+    else:
+        abort(BadRequest.code)
     return response
 
 @app.route('/delivery/received/<int:id>', methods=['PATCH'])
 def update_status_received(id):
-    response = delivery.deliveryReceived(id)
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("delivery.received", token)
+    if permisions == True:
+        response = delivery.deliveryReceived(id)
+    else:
+        abort(BadRequest.code)
     return response
 
 # Error Handling #######################################################################################################

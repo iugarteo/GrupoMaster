@@ -3,49 +3,63 @@ from flask import current_app as app
 from .models import Account, Payment
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from . import Session
+from . import Session, checkJWT
 
 # Payment Routes #######################################################################################################
 from .payment_service import view_all_payments, view_payment_by_id, view_all_payments_by_client, view_account, \
     view_all_accounts, create_account, increment_balance, create_payment
 
 
-@app.route('/payment/<int:payment_id>', methods=['GET'])
+@app.route('/payment/getPayment/<int:payment_id>', methods=['GET'])
 def view_payment(payment_id):
     session = Session()
-    payment = view_payment_by_id(session, payment_id)
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("payment.getPayment", token)
+    if permisions == True:
+        payment = view_payment_by_id(session, payment_id)
+        response = jsonify(payment.as_dict())
+    else:
+        abort(BadRequest.code)
     if not payment:
         abort(NotFound.code)
-    response = jsonify(payment.as_dict())
     session.close()
     return response
 
 
-@app.route('/payment', methods=['PATCH'])
-@app.route('/payments', methods=['PATCH'])
+@app.route('/payment/getPaymentsbyClient', methods=['PATCH'])
 def view_clients_payments():
     session = Session()
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
     client_id = content['client_id']
-    payments = view_all_payments_by_client(session, client_id)
-    response = jsonify(Payment.list_as_dict(payments))
+
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("payment.getPaymentsbyClient", token)
+    if permisions == True:
+        payments = view_all_payments_by_client(session, client_id)
+        response = jsonify(Payment.list_as_dict(payments))
+    else:
+        abort(BadRequest.code)
     session.close()
     return response
 
 
-@app.route('/payment', methods=['GET'])
-@app.route('/payments', methods=['GET'])
+@app.route('/payment/getPayments', methods=['GET'])
 def view_payments():
     session = Session()
-    payments = view_all_payments(session)
-    response = jsonify(Payment.list_as_dict(payments))
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("payment.getPayments", token)
+    if permisions == True:
+        payments = view_all_payments(session)
+        response = jsonify(Payment.list_as_dict(payments))
+    else:
+        abort(BadRequest.code)
     session.close()
     return response
 
 
-@app.route('/payment', methods=['POST'])
+@app.route('/payment/createPayment', methods=['POST'])
 def make_payment():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
@@ -61,37 +75,51 @@ def make_payment():
     if account.balance < amount:
         response = jsonify(result=False, order_id=order_id)
     else:
-        payment = create_payment(session, account, client_id, amount)
+        token = request.headers["token"]
+        permisions = checkJWT.checkPermissions("payment.createPayment", token)
+        if permisions == True:
+            payment = create_payment(session, account, client_id, amount)
+            response = jsonify(result=True, order_id=order_id)
+        else:
+            abort(BadRequest.code)
         if not payment:
             abort(BadRequest.code)
-        response = jsonify(result=True, order_id=order_id)
     session.close()
     return response
 
 
 # Account Routes #######################################################################################################
-@app.route('/account', methods=['GET'])
-@app.route('/accounts', methods=['GET'])
+@app.route('/payment/getAccounts', methods=['GET'])
 def view_accounts():
     session = Session()
-    accounts = view_all_accounts(session)
-    response = jsonify(Account.list_as_dict(accounts))
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("payment.getAccounts", token)
+    if permisions == True:
+        accounts = view_all_accounts(session)
+        response = jsonify(Account.list_as_dict(accounts))
+    else:
+        abort(BadRequest.code)
     session.close()
     return response
 
 
-@app.route('/account/<int:client_id>', methods=['GET'])
+@app.route('/payment/getAccount/<int:client_id>', methods=['GET'])
 def view_balance(client_id):
     session = Session()
-    account = view_account(session, client_id)
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("payment.getAccount", token)
+    if permisions == True:
+        account = view_account(session, client_id)
+        response = jsonify(account.as_dict())
+    else:
+        abort(BadRequest.code)
     if not account:
         abort(NotFound.code)
-    response = jsonify(account.as_dict())
     session.close()
     return response
 
 
-@app.route('/account', methods=['POST'])
+@app.route('/payment/createAccount', methods=['POST'])
 def add_money():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
@@ -100,13 +128,19 @@ def add_money():
     client_id = content['client']
     amount = content['amount']
     account = view_account(session, client_id)
-    if not account:
-        account = create_account(session, client_id, amount)
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("payment.createAccount", token)
+    if permisions == True:
+        if not account:
+            account = create_account(session, client_id, amount)
+        else:
+            account = increment_balance(session, account.id, amount)
+        response = jsonify(account.as_dict())
     else:
-        account = increment_balance(session, account.id, amount)
+        abort(BadRequest.code)
+
     if not account:
         abort(BadRequest.code)
-    response = jsonify(account.as_dict())
     session.close()
     return response
 

@@ -2,18 +2,25 @@ from flask import request, jsonify, abort
 from flask import current_app as app
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from . import logic
+from . import logic, Session
 from . import security
 
 
 # Client Routes #########################################################################################################
 @app.route('/client/regist', methods=['POST'])
 def create_client():
+
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
+    token = request.headers["token"]
+    permisions = logic.checkPermissions("client.regist", token)
+    if permisions == True:
+        session = Session()
+        response = logic.registClient(content, session)
+    else:
+        abort(BadRequest.code)
 
-    response = logic.registClient(content)
 
     return response
 
@@ -37,26 +44,50 @@ def new_jwt():
 
 @app.route('/client/clients', methods=['GET'])
 def view_clients():
-    response = logic.getAllClients()
+    token = request.headers["token"]
+    permisions = logic.checkPermissions("client.clients", token)
+    if permisions == True:
+
+        response = logic.getAllClients()
+    else:
+        abort(BadRequest.code)
+
     return response
 
 
-@app.route('/client/getclient/<int:client_id>', methods=['GET'])
+@app.route('/client/getClient/<int:client_id>', methods=['GET'])
 def view_client(client_id):
-    response = logic.getClient(client_id)
+    token = request.headers["token"]
+    permisions = logic.checkPermissions("client.getClient", token)
+    if permisions == True:
+        response = logic.getClient(client_id)
+
+    else:
+        abort(BadRequest.code)
     return response
 
 
-@app.route('/client/deleteclient/<int:client_id>', methods=['DELETE'])
+@app.route('/client/deleteClient/<int:client_id>', methods=['DELETE'])
 def delete_client(client_id):
-    response = logic.deleteClient(client_id)
+    token = request.headers["token"]
+    permisions = logic.checkPermissions("client.deleteClient", token)
+    if permisions == True:
+        response = logic.deleteClient(client_id)
+    else:
+        abort(BadRequest.code)
+
     return response
 
 
 # Key routes
 @app.route('/client/pubKey', methods=['GET'])
 def pub_key():
-    response = security.getPublicKey()
+    token = request.headers["token"]
+    permisions = logic.checkPermissions("client.pubKey", token)
+    if permisions == True:
+        response = security.getPublicKey()
+    else:
+        abort(BadRequest.code)
 
     return response
 
@@ -64,9 +95,9 @@ def pub_key():
 @app.route('/client/refreshKeys', methods=['GET'])
 def refresh_key():
     token = request.headers["token"]
-    admin = logic.checkPermissions("client.refresh", token)
-    if admin == True:
-        logic.refreshKeys()
+    permisions = logic.checkPermissions("client.refresh", token)
+    if permisions == True:
+        response=logic.refreshKeys()
 
     else:
         abort(BadRequest.code)
@@ -79,25 +110,50 @@ def create_Role():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    response = logic.createRole(content)
+    token = request.headers["token"]
+    permisions = logic.checkPermissions("client.role", token)
+    if permisions == True:
+        response = logic.createRole(content)
+    else:
+        abort(BadRequest.code)
+
     return response
 
 
 @app.route('/client/roles', methods=['GET'])
 def view_roles():
-    response = logic.getAllRoles()
+    token = request.headers["token"]
+    permisions = logic.checkPermissions("client.roles", token)
+    if permisions == True:
+        response = logic.getAllRoles()
+    else:
+        abort(BadRequest.code)
+
     return response
 
 
-@app.route('/client/getrole/<int:role_id>', methods=['GET'])
+@app.route('/client/getRole/<int:role_id>', methods=['GET'])
 def view_role(role_id):
-    response = logic.getRole(role_id)
+    token = request.headers["token"]
+    permisions = logic.checkPermissions("client.getRole", token)
+    if permisions == True:
+        response = logic.getRole(role_id)
+    else:
+        abort(BadRequest.code)
+
     return response
 
 
-@app.route('/client/deleterole/<int:role_id>', methods=['DELETE'])
+@app.route('/client/deleteRole/<int:role_id>', methods=['DELETE'])
 def delete_role(role_id):
-    response = logic.deleteRole(role_id)
+    token = request.headers["token"]
+    permisions = logic.checkPermissions("client.deleteRole", token)
+    if permisions == True:
+
+        response = logic.deleteRole(role_id)
+    else:
+        abort(BadRequest.code)
+
     return response
 
 
@@ -106,7 +162,12 @@ def update_Role(role_id):
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    response = logic.updateRole(role_id, content)
+    token = request.headers["token"]
+    permisions = logic.checkPermissions("client.roleUpdate", token)
+    if permisions == True:
+        response = logic.updateRole(role_id, content)
+    else:
+        abort(BadRequest.code)
     return response
 
 
