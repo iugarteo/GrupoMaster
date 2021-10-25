@@ -3,34 +3,22 @@ from flask import current_app as app
 from .models import Order
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from .order import pedir_pago, realizar_pedido, llamar_delivery, cambiar_estado
+from .order import pedir_pago, realizar_pedido, llamar_delivery, cambiar_estado, crear_order, ver_order_id, ver_orders, delete_order
 from . import Session
 
 # Order Routes #########################################################################################################
 @app.route('/order/crear_order', methods=['POST'])
 def create_order():
     session = Session()
-    new_order = None
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    token = content['token']
-    try:
-        new_order = Order(
-            description=content['description'],
-            number_of_pieces=content['number_of_pieces'],
-            status=Order.STATUS_CREATED
-        )
-        session.add(new_order)
-        session.commit()
-        session.commit()
-    except KeyError:
-        session.rollback()
-        session.close()
-        abort(BadRequest.code)
+    print(content)
+    #token = content['token']
+    new_order = crear_order(session,content)
     response = jsonify(new_order.as_dict())
-    session.close()
     #LLamar a create Delivery
+    session.close()
     return response
 
 
@@ -41,8 +29,8 @@ def getOrder(order_id):
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    token = content['token']
-    order = session.query(Order).get(order_id)
+    #token = content['token']
+    order = ver_order_id(session, order_id)
     if not order:
         session.close()
         abort(NotFound.code)
@@ -59,8 +47,8 @@ def view_orders():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    token = content['token']
-    orders = session.query(Order).all()
+    #token = content['token']
+    orders = ver_orders(session)
     response = jsonify(Order.list_as_dict(orders))
     session.close()
     return response
@@ -79,7 +67,6 @@ def realizar_pedido_ruta(order_id):
     response = jsonify(order.as_dict())
     print("GET realizar_pedido_ruta {}.".format(order_id))
     string_resultado = realizar_pedido(order_id)
-    print(string_resultado)
     session.close()
     return string_resultado
 
@@ -106,14 +93,12 @@ def delete_order(order_id):
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    token = content['token']
+    #token = content['token']
     order = session.query(Order).get(order_id)
     if not order:
         session.close()
         abort(NotFound.code)
-    print("DELETE Order {}.".format(order_id))
-    session.delete(order)
-    session.commit()
+    print("DELETED Order {}.".format(order_id))
     response = jsonify(order.as_dict())
     session.close()
     return response

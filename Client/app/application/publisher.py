@@ -1,7 +1,20 @@
+import json
+from datetime import datetime
+
+import pika
+
 from . import security
 
+
 def publishKey():
-    security.genKeys()
     key = security.getPublicKey()
-    #Publicar en la cola del rabbit el public key
-    return None
+
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+
+    channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
+    channel.basic_publish(
+        exchange='global', routing_key="client.key", body=key,
+        properties=pika.BasicProperties(delivery_mode=2))
+    connection.close()
