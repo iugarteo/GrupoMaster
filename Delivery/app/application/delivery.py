@@ -1,39 +1,82 @@
+from . import Session
+from flask import request, jsonify, abort
 from .models import Delivery
+from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 
-
-def view_delivery_by_id(session, delivery_id):
-    delivery = session.query(Delivery).get(delivery_id)
-    if not delivery:
-        session.close()
-        return None
-    print("GET Delivery {}: {}".format(delivery_id, delivery))
-    return delivery
-
-def view_all_deliveres(session):
-    print("GET All Deliveries")
-    deliveries = session.query(Delivery).all()
-    return deliveries
-
-def update_status_delivery(sesssion, delivery_id, status):
-    session = Session()
-    delivery = session.query(Delivery).get(delivery_id)
-    delivery.status = Delivery.status
-    print("Updated Delivery {} status: {}".format(delivery_id,delivery.status))
-    session.commit()
-    session.rollback()
-    session.close()
-
-def create_delivery_d(session, order_id):
+def registDelivery(content):
     session = Session()
     new_delivery = None
     try:
         new_delivery = Delivery(
-            order_id=order_id,
+            order_id=content['order_id'],
             status=Delivery.STATUS_WORKING
         )
         session.add(new_delivery)
         session.commit()
+        session.commit()
     except KeyError:
         session.rollback()
         session.close()
-    return new_delivery
+        abort(BadRequest.code)
+    response = jsonify(new_delivery.as_dict())
+    session.close()
+    return response
+
+def getAllDeliveries():
+    session = Session()
+    print("GET All Deliveries.")
+    deliveries = session.query(Delivery).all()
+    response = jsonify(Delivery.list_as_dict(deliveries))
+    session.close()
+    return response
+
+def getDelivery(delivery_id):
+    session = Session()
+    delivery = session.query(Delivery).get(delivery_id)
+    if not delivery:
+        abort(NotFound.code)
+    print("GET Delivery {}: {}".format(delivery_id, delivery))
+    response = jsonify(delivery.as_dict())
+    session.close()
+    return response
+
+def deleteDelivery(delivery_id):
+    session = Session()
+    delivery = session.query(Delivery).get(delivery_id)
+    if not delivery:
+        session.close()
+        abort(NotFound.code)
+    print("DELETE Delivery {}.".format(delivery_id))
+    session.delete(delivery)
+    session.commit()
+    response = jsonify(delivery.as_dict())
+    session.close()
+    return response
+
+def deliverySent(id):
+    session = Session()
+    try:
+        delivery = session.query(Delivery).get(id)
+        delivery.status = Delivery.STATUS_SENT
+        session.commit()
+    except KeyError:
+        session.rollback()
+        session.close()
+        abort(BadRequest.code)
+    response = jsonify(delivery.as_dict())
+    session.close()
+    return response
+
+def deliveryReceived(id):
+    session = Session()
+    try:
+        delivery = session.query(Delivery).get(id)
+        delivery.status = Delivery.STATUS_RECEIVED
+        session.commit()
+    except KeyError:
+        session.rollback()
+        session.close()
+        abort(BadRequest.code)
+    response = jsonify(delivery.as_dict())
+    session.close()
+    return response
