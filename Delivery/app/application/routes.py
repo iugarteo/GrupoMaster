@@ -30,7 +30,7 @@ def create_delivery():
     return response
 
 
-@app.route('/deliveries', methods=['GET'])
+@app.route('/delivery/deliveries', methods=['GET'])
 def view_deliveries():
     session = Session()
     print("GET All Orders.")
