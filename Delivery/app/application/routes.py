@@ -8,7 +8,7 @@ from . import Session
 
 
 # Order Routes #########################################################################################################
-@app.route('/create_delivery', methods=['POST'])
+@app.route('/delivery/create', methods=['POST'])
 def create_delivery():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
@@ -17,7 +17,7 @@ def create_delivery():
     return response
 
 
-@app.route('/deliveries', methods=['GET'])
+@app.route('/delivery/deliveries', methods=['GET'])
 def view_deliveries():
     response = delivery.getAllDeliveries()
     return response
@@ -29,12 +29,12 @@ def view_delivery(id):
     response = delivery.getDelivery(id)
     return response
 
-@app.route('/delivery_send/<int:id>', methods=['PATCH'])
+@app.route('/delivery/send/<int:id>', methods=['PATCH'])
 def update_status_sent(id):
     response = delivery.deliverySent(id)
     return response
 
-@app.route('/delivery_received/<int:id>', methods=['PATCH'])
+@app.route('/delivery/received/<int:id>', methods=['PATCH'])
 def update_status_received(id):
     response = delivery.deliveryReceived(id)
     return response
