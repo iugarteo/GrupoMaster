@@ -131,6 +131,7 @@ def deleteRole(role_id):
 def authentication(nickname, password):
     session = Session()
     client = session.query(Client).filter(Client.nickname==nickname).all()
+    role = session.query(Role).filter(Role.id==client.role_id).all()
     if not client:
         session.close()
         abort(NotFound.code)
@@ -138,7 +139,7 @@ def authentication(nickname, password):
     session.close()
     if (auth == True):
         print("Authentication correct!")
-        response = security.getToken(nickname, password)
+        response = security.getToken(client, role)
     else:
         print("Authentication incorrect! ERROR!!!!!!")
         abort(BadRequest.code)

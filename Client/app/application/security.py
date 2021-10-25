@@ -15,9 +15,10 @@ def checkPass(password, client):
         auth = False
     return auth
 
-def getToken(nickname):
+def getToken(client,role):
+
     private_key = getPrivateKey()
-    encoded = jwt.encode({"Hire ama": "pelele"}, private_key, algorithm="RS256")
+    encoded = jwt.encode({"Id": client.id, "Permisions": role.permisions}, private_key, algorithm="RS256")
     return encoded
 
 def readToken(encoded, public_key):
@@ -37,7 +38,7 @@ def genKeys():
         key_size=2048
     )
 
-    private_key_pass = b"password_encode_key"
+    private_key_pass = b"m8#Gc9RH!gRrE&h4"
 
     encrypted_pem_private_key = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
@@ -57,8 +58,6 @@ def genKeys():
     public_key_file = open("public_key.pem", "w")
     public_key_file.write(pem_public_key.decode())
     public_key_file.close()
-    token=getToken("Mendilu")
-    print(readToken(token,getPublicKey()))
 
     return pem_public_key, private_key
 
@@ -71,6 +70,6 @@ def getPublicKey():
 
 def getPrivateKey():
     private_key_file = open("private_key.pem", "rb")
-    private_key = serialization.load_pem_private_key(private_key_file.read(), b"password_encode_key")
+    private_key = serialization.load_pem_private_key(private_key_file.read(), b"m8#Gc9RH!gRrE&h4")
     private_key_file.close()
     return private_key

@@ -79,7 +79,7 @@ def delete_role(role_id):
     response = logic.deleteRole(role_id)
     return response
 
-@app.route('/roleUpdate/<int:role_id>', methods=['UPDATE'])
+@app.route('/roleUpdate/<int:role_id>', methods=['PATCH'])
 def update_Role(role_id):
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
