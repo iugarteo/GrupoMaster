@@ -2,7 +2,7 @@
 from . import Session
 from flask import request, jsonify, abort
 from .models import Client, Role
-from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
+from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType, Forbidden
 from . import security
 
 
@@ -17,7 +17,8 @@ def registClient(content):
             name=content['name'],
             surname=content['surname'],
             password=pasEnc,
-            nickname=content['nickname']
+            nickname=content['nickname'],
+            role_id=content['role_id']
         )
         session.add(new_client)
         session.commit()
@@ -68,7 +69,7 @@ def createRole(content):
     try:
         new_role = Role(
             name=content['name'],
-            permisions=content['permisions']
+            permissions=content['permissions']
         )
         session.add(new_role)
         session.commit()
@@ -131,17 +132,56 @@ def deleteRole(role_id):
 def authentication(nickname, password):
     session = Session()
     client = session.query(Client).filter(Client.nickname==nickname).all()
-    role = session.query(Role).filter(Role.id==client.role_id).all()
+    role = session.query(Role).filter(Role.id==client[0].role_id).all()
     if not client:
         session.close()
         abort(NotFound.code)
+    if not role:
+        session.close()
+        abort(NotFound.code)
     auth = security.checkPass(password, client[0])
-    session.close()
     if (auth == True):
         print("Authentication correct!")
-        response = security.getToken(client, role)
+        jwt = security.getToken(client[0], role[0])
+        client[0].refresh_token = security.getRefreshToken()
+        refresh_token = client[0].refresh_token
+        session.commit()
+        session.close()
     else:
+        session.commit()
+        session.close()
         print("Authentication incorrect! ERROR!!!!!!")
         abort(BadRequest.code)
-    return response
+    return jwt, refresh_token
 
+def checkPermissions(permision, token):
+
+    decoded = security.readToken(token, security.getPublicKey())
+    if decoded == None:
+        return False
+    else:
+        permisions = decoded["Permisions"].split(",")
+    if permision in permisions:
+        boolean = True
+    else:
+        boolean = False
+    return boolean
+
+
+def newJWT(refresh_token, nickname):
+    session = Session()
+    client = session.query(Client).filter(Client.nickname == nickname).all()
+    role = session.query(Role).filter(Role.id==client[0].role_id).all()
+    if not client:
+        session.close()
+        abort(NotFound.code)
+    if not role:
+        session.close()
+        abort(NotFound.code)
+
+    if security.checkRefreshToken(refresh_token, client[0].refresh_token):
+        jwt = security.getToken(client[0], role[0])
+    else:
+        abort(Forbidden.code)
+
+    return jwt

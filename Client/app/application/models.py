@@ -36,12 +36,13 @@ class Client(BaseModel):
     surname = Column(TEXT, nullable=False, default="No surname")
     password = Column(TEXT, nullable=False, default="No password")
     nickname = Column(TEXT, nullable=False, default="No nickname", unique=True)
+    refresh_token = Column(TEXT, nullable=False, default="No token")
     role_id = Column(Integer, ForeignKey('roles.id'))
 
 class Role(BaseModel):
     __tablename__ = "roles"
     id = Column(Integer, primary_key=True)
-    name = Column(TEXT, nullable=False, default="No name")
-    permisions = Column(TEXT, nullable=False, default="No permisions")
+    name = Column(TEXT, nullable=False, default="No name", unique=True)
+    permissions = Column(TEXT, nullable=False, default="No permisions")
     client = relationship("Client")
 

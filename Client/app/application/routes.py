@@ -6,11 +6,9 @@ from . import logic
 from . import security
 
 
-
 # Client Routes #########################################################################################################
 @app.route('/regist', methods=['POST'])
 def create_client():
-
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
@@ -19,21 +17,22 @@ def create_client():
 
     return response
 
+
 @app.route('/auth', methods=['GET'])
 def auth_client():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    response = logic.authentication(content['nickname'], content['password'])
-
-
+    jwt, refresh_token = logic.authentication(content['nickname'], content['password'])
+    response = jsonify(jwt, refresh_token)
     return response
 
-@app.route('/pubKey', methods=['GET'])
-def pub_key():
-
-    response = security.getPublicKey()
-
+@app.route('/newJWT', methods=['GET'])
+def new_jwt():
+    if request.headers['Content-Type'] != 'application/json':
+        abort(UnsupportedMediaType.code)
+    content = request.json
+    response = logic.newJWT(content['refresh_token'], content['nickname'])
     return response
 
 @app.route('/clients', methods=['GET'])
@@ -53,7 +52,28 @@ def delete_client(client_id):
     response = logic.deleteClient(client_id)
     return response
 
-#Role routes
+
+# Key routes
+@app.route('/pubKey', methods=['GET'])
+def pub_key():
+    response = security.getPublicKey()
+
+    return response
+
+
+@app.route('/refreshKeys', methods=['GET'])
+def refresh_key():
+    token = request.headers["token"]
+    admin = logic.checkPermissions("client.refresh", token)
+    if admin == True:
+        security.genKeys()
+        response = security.getPublicKey()
+    else:
+        abort(BadRequest.code)
+    return response
+
+
+# Role routes
 @app.route('/role', methods=['POST'])
 def create_Role():
     if request.headers['Content-Type'] != 'application/json':
@@ -61,6 +81,7 @@ def create_Role():
     content = request.json
     response = logic.createRole(content)
     return response
+
 
 @app.route('/roles', methods=['GET'])
 def view_roles():
@@ -79,13 +100,15 @@ def delete_role(role_id):
     response = logic.deleteRole(role_id)
     return response
 
+
 @app.route('/roleUpdate/<int:role_id>', methods=['PATCH'])
 def update_Role(role_id):
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    response = logic.updateRole(role_id,content)
+    response = logic.updateRole(role_id, content)
     return response
+
 
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)
@@ -110,6 +133,4 @@ def server_error_handler(e):
 
 def get_jsonified_error(e):
     traceback.print_tb(e.__traceback__)
-    return jsonify({"error_code":e.code, "error_message": e.description}), e.code
-
-
+    return jsonify({"error_code": e.code, "error_message": e.description}), e.code
