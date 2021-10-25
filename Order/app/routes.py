@@ -7,7 +7,7 @@ from .order import pedir_pago, realizar_pedido, llamar_delivery, cambiar_estado
 from . import Session
 
 # Order Routes #########################################################################################################
-@app.route('/order', methods=['POST'])
+@app.route('/crear_order', methods=['POST'])
 def create_order():
     session = Session()
     new_order = None
@@ -34,7 +34,7 @@ def create_order():
 
 
 #@app.route('/order', methods=['GET'])
-@app.route('/order/<int:order_id>', methods=['GET'])
+@app.route('/ver_order/<int:order_id>', methods=['GET'])
 def getOrder(order_id):
     session = Session()
     order = session.query(Order).get(order_id)
@@ -47,7 +47,7 @@ def getOrder(order_id):
     session.close()
     return response
 
-@app.route('/orders', methods=['GET'])
+@app.route('/ver_orders', methods=['GET'])
 def view_orders():
     session = Session()
     print("GET All Orders.")
@@ -57,7 +57,7 @@ def view_orders():
     return response
 
 
-@app.route('/order/realizar_pedido/<int:order_id>', methods=['GET'])
+@app.route('/llamr_pedido/<int:order_id>', methods=['GET'])
 def realizar_pedido_ruta(order_id):
     session = Session()
     order = session.query(Order).get(order_id)
@@ -70,7 +70,7 @@ def realizar_pedido_ruta(order_id):
     session.close()
     return string_resultado
 
-@app.route('/order/pedirPago/<int:order_id>', methods=['GET'])
+@app.route('/llamar_pago/<int:order_id>', methods=['GET'])
 def pedir_pago_ruta(order_id):
     session = Session()
     order = session.query(Order).get(order_id)
@@ -83,7 +83,7 @@ def pedir_pago_ruta(order_id):
     return string_resultado
 
 
-@app.route('/order/delete/<int:order_id>', methods=['DELETE'])
+@app.route('/borrar_order/<int:order_id>', methods=['DELETE'])
 def delete_order(order_id):
     session = Session()
     order = session.query(Order).get(order_id)
@@ -98,7 +98,7 @@ def delete_order(order_id):
     return response
 
 #Cambiar estados
-@app.route('/order/status/<int:order_id>/<string:estado>', methods=['PATCH'])
+@app.route('/alterar_estado_order/<int:order_id>/<string:estado>', methods=['PATCH'])
 def update_status(order_id, estado):
     session = Session()
     if request.headers['Content-Type'] != 'application/json':
