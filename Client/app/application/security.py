@@ -1,4 +1,6 @@
+import datetime
 import secrets
+from time import timezone
 
 import bcrypt
 import jwt
@@ -26,7 +28,7 @@ def checkPass(password, client):
 def getToken(client,role):
 
     private_key = getPrivateKey()
-    encoded = jwt.encode({"Id": client.id, "Permisions": role.permissions}, private_key, algorithm="RS256")
+    encoded = jwt.encode({"Id": client.id, "Permisions": role.permissions, "exp":datetime.datetime.now(tz=timezone.utc) + datetime.timedelta(minutes=30)}, private_key, algorithm="RS256")
     return encoded
 
 def getRefreshToken():
