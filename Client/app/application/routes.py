@@ -9,7 +9,6 @@ from . import security
 # Client Routes #########################################################################################################
 @app.route('/client/regist', methods=['POST'])
 def create_client():
-
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
@@ -27,19 +26,21 @@ def create_client():
 
 @app.route('/client/auth', methods=['GET'])
 def auth_client():
+    session = Session()
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    jwt, refresh_token = logic.authentication(content['nickname'], content['password'])
+    jwt, refresh_token = logic.authentication(content['nickname'], content['password'], session)
     response = jsonify(jwt, refresh_token)
     return response
 
 @app.route('/client/newJWT', methods=['GET'])
 def new_jwt():
+    session = Session()
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    response = logic.newJWT(content['refresh_token'], content['nickname'])
+    response = logic.newJWT(content['refresh_token'], content['nickname'], session)
     return response
 
 @app.route('/client/clients', methods=['GET'])
@@ -47,8 +48,8 @@ def view_clients():
     token = request.headers["token"]
     permisions = logic.checkPermissions("client.clients", token)
     if permisions == True:
-
-        response = logic.getAllClients()
+        session = Session()
+        response = logic.getAllClients(session)
     else:
         abort(BadRequest.code)
 
@@ -60,7 +61,8 @@ def view_client(client_id):
     token = request.headers["token"]
     permisions = logic.checkPermissions("client.getClient", token)
     if permisions == True:
-        response = logic.getClient(client_id)
+        session = Session()
+        response = logic.getClient(client_id,session)
 
     else:
         abort(BadRequest.code)
@@ -72,7 +74,8 @@ def delete_client(client_id):
     token = request.headers["token"]
     permisions = logic.checkPermissions("client.deleteClient", token)
     if permisions == True:
-        response = logic.deleteClient(client_id)
+        session = Session()
+        response = logic.deleteClient(client_id,session)
     else:
         abort(BadRequest.code)
 
@@ -97,7 +100,8 @@ def refresh_key():
     token = request.headers["token"]
     permisions = logic.checkPermissions("client.refresh", token)
     if permisions == True:
-        response=logic.refreshKeys()
+        session = Session()
+        response=logic.refreshKeys(session)
 
     else:
         abort(BadRequest.code)
@@ -113,7 +117,8 @@ def create_Role():
     token = request.headers["token"]
     permisions = logic.checkPermissions("client.role", token)
     if permisions == True:
-        response = logic.createRole(content)
+        session = Session()
+        response = logic.createRole(content, session)
     else:
         abort(BadRequest.code)
 
@@ -125,7 +130,8 @@ def view_roles():
     token = request.headers["token"]
     permisions = logic.checkPermissions("client.roles", token)
     if permisions == True:
-        response = logic.getAllRoles()
+        session = Session()
+        response = logic.getAllRoles(session)
     else:
         abort(BadRequest.code)
 
@@ -137,7 +143,8 @@ def view_role(role_id):
     token = request.headers["token"]
     permisions = logic.checkPermissions("client.getRole", token)
     if permisions == True:
-        response = logic.getRole(role_id)
+        session = Session()
+        response = logic.getRole(role_id, session)
     else:
         abort(BadRequest.code)
 
@@ -149,8 +156,8 @@ def delete_role(role_id):
     token = request.headers["token"]
     permisions = logic.checkPermissions("client.deleteRole", token)
     if permisions == True:
-
-        response = logic.deleteRole(role_id)
+        session = Session()
+        response = logic.deleteRole(role_id, session)
     else:
         abort(BadRequest.code)
 
@@ -165,7 +172,8 @@ def update_Role(role_id):
     token = request.headers["token"]
     permisions = logic.checkPermissions("client.roleUpdate", token)
     if permisions == True:
-        response = logic.updateRole(role_id, content)
+        session = Session()
+        response = logic.updateRole(role_id, content, session)
     else:
         abort(BadRequest.code)
     return response

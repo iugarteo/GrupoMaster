@@ -29,16 +29,14 @@ def registClient(content, session):
     session.close()
     return response
 
-def getAllClients():
-    session = Session()
+def getAllClients(session):
     print("GET All Clients.")
     clients = session.query(Client).all()
     response = jsonify(Client.list_as_dict(clients))
     session.close()
     return response
 
-def getClient(client_id):
-    session = Session()
+def getClient(client_id, session):
     client = session.query(Client).get(client_id)
     if not client:
         abort(NotFound.code)
@@ -47,8 +45,7 @@ def getClient(client_id):
     session.close()
     return response
 
-def deleteClient(client_id):
-    session = Session()
+def deleteClient(client_id, session):
     client = session.query(Client).get(client_id)
     if not client:
         session.close()
@@ -60,9 +57,8 @@ def deleteClient(client_id):
     session.close()
     return response
 
-def createRole(content):
+def createRole(content, session):
 
-    session = Session()
     new_role = None
     try:
         new_role = Role(
@@ -79,8 +75,7 @@ def createRole(content):
     session.close()
     return response
 
-def updateRole(id,content):
-    session = Session()
+def updateRole(id,content, session):
     role = session.query(Role).get(id)
     try:
         role.name = content['name']
@@ -95,16 +90,14 @@ def updateRole(id,content):
     session.close()
     return response
 
-def getAllRoles():
-    session = Session()
+def getAllRoles(session):
     print("GET All Roles.")
     roles = session.query(Role).all()
     response = jsonify(Role.list_as_dict(roles))
     session.close()
     return response
 
-def getRole(role_id):
-    session = Session()
+def getRole(role_id, session):
     role = session.query(Role).get(role_id)
     if not role:
         abort(NotFound.code)
@@ -113,8 +106,7 @@ def getRole(role_id):
     session.close()
     return response
 
-def deleteRole(role_id):
-    session = Session()
+def deleteRole(role_id, session):
     role = session.query(Role).get(role_id)
     if not role:
         session.close()
@@ -126,8 +118,7 @@ def deleteRole(role_id):
     session.close()
     return response
 
-def authentication(nickname, password):
-    session = Session()
+def authentication(nickname, password, session):
     client = session.query(Client).filter(Client.nickname==nickname).all()
     role = session.query(Role).filter(Role.id==client[0].role_id).all()
     if not client:
@@ -165,8 +156,7 @@ def checkPermissions(permision, token):
     return boolean
 
 
-def newJWT(refresh_token, nickname):
-    session = Session()
+def newJWT(refresh_token, nickname, session):
     client = session.query(Client).filter(Client.nickname == nickname).all()
     role = session.query(Role).filter(Role.id==client[0].role_id).all()
     if not client:
