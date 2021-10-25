@@ -66,8 +66,8 @@ def refresh_key():
     token = request.headers["token"]
     admin = logic.checkPermissions("client.refresh", token)
     if admin == True:
-        security.genKeys()
-        response = security.getPublicKey()
+        logic.refreshKeys()
+
     else:
         abort(BadRequest.code)
     return response

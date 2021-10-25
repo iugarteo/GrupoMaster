@@ -1,9 +1,11 @@
 
-from . import Session
 from flask import request, jsonify, abort
+from sqlalchemy.orm import Session
+
 from .models import Client, Role
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType, Forbidden
 from . import security
+from . import publisher
 
 
 
@@ -185,3 +187,9 @@ def newJWT(refresh_token, nickname):
         abort(Forbidden.code)
 
     return jwt
+
+
+def refreshKeys():
+    security.genKeys()
+    publisher.publishKey()
+    return None
