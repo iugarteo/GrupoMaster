@@ -1,7 +1,7 @@
 import jwt
 from werkzeug.exceptions import Forbidden, abort
 
-from Payment.app.application import consumer
+from . import consumer
 
 
 def readToken(encoded, public_key):

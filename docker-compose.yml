@@ -1,34 +1,35 @@
 version: '3.1'
 services:
   rabbit:
+    #hostname: rabbit
+    #image: rabbitmq:3-management
+    #volumes:
+    #  - './rabbit/app:/app'  
+    #ports:
+     # - "5672:5672"
+      #- "15672:15672"
+    #networks:
+     # lb7_network:
+     #   ipv4_address: '${RABBIT_IP}'
+    #restart: unless-stopped
     hostname: rabbit
-    image: rabbitmq:3-management
+    build: ./rabbit
     volumes:
-      - './rabbit/app:/app'  
+      - './rabbit/certs:/certs'  
     ports:
+      - "5671:5671"
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
     networks:
       lb7_network:
         ipv4_address: '${RABBIT_IP}'
     restart: unless-stopped
-    
-  client:
-    hostname: client
-    build: ./client    
-    volumes:
-      - './client/app:/app'  
-    expose:
-      - '${GUNICORN_PORT}'
-    environment:
-      GUNICORN_PORT: '${GUNICORN_PORT}'
-      SQLALCHEMY_DATABASE_URI: '${SQLALCHEMY_SQLITE_DATABASE_URI}'
-      SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
-    networks:
-      lb7_network:
-        ipv4_address: '${CLIENT_IP}'
-    restart: unless-stopped
-    
+     
   delivery:
     hostname: delivery
     build: ./delivery
@@ -44,6 +45,9 @@ services:
       lb7_network:
         ipv4_address: '${DELIVERY_IP}'
     restart: unless-stopped
+    depends_on:
+      rabbit:
+        condition: service_healthy
     
   order:
     hostname: order
@@ -60,6 +64,9 @@ services:
       lb7_network:
         ipv4_address: '${ORDER_IP}'
     restart: unless-stopped
+    depends_on:
+      rabbit:
+        condition: service_healthy
     
   machine:
     hostname: machine
@@ -76,6 +83,9 @@ services:
       lb7_network:
         ipv4_address: '${MACHINE_IP}'
     restart: unless-stopped
+    depends_on:
+      rabbit:
+        condition: service_healthy
     
   payment:
     hostname: payment
@@ -92,6 +102,9 @@ services:
       lb7_network:
         ipv4_address: '${PAYMENT_IP}'
     restart: unless-stopped
+    depends_on:
+      rabbit:
+        condition: service_healthy
     
   haproxy:
     build: ./haproxy
@@ -116,6 +129,33 @@ services:
       - 'HAPROXY_PORT=${HAPROXY_PORT}'
       - 'HAPROXY_STATS_PORT=${HAPROXY_STATS_PORT}'
     restart: unless-stopped
+    depends_on:
+      rabbit:
+        condition: service_healthy
+
+  client:
+    hostname: client
+    build: ./client    
+    volumes:
+      - './client/app:/app'  
+    expose:
+      - '${GUNICORN_PORT}'
+    environment:
+      GUNICORN_PORT: '${GUNICORN_PORT}'
+      SQLALCHEMY_DATABASE_URI: '${SQLALCHEMY_SQLITE_DATABASE_URI}'
+      SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
+    networks:
+      lb7_network:
+        ipv4_address: '${CLIENT_IP}'
+    restart: unless-stopped
+    depends_on:
+      - delivery
+      - rabbit
+      - payment
+      - order
+      - machine
+      - haproxy
+
 networks:
   lb7_network:
     driver: bridge
