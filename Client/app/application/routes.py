@@ -85,12 +85,8 @@ def delete_client(client_id):
 # Key routes
 @app.route('/client/pubKey', methods=['GET'])
 def pub_key():
-    token = request.headers["token"]
-    permisions = logic.checkPermissions("client.pubKey", token)
-    if permisions == True:
-        response = security.getPublicKey()
-    else:
-        abort(BadRequest.code)
+  
+    response = security.getPublicKey()
 
     return response
 
