@@ -1,8 +1,7 @@
 import jwt
 from werkzeug.exceptions import Forbidden, abort
 
-from Payment.app.application import consumer
-
+public_key = ''
 
 def readToken(encoded, public_key):
 
@@ -19,7 +18,7 @@ def readToken(encoded, public_key):
 
 def checkPermissions(permision, token):
 
-    decoded = readToken(token, consumer.public_key)
+    decoded = readToken(token, public_key)
     if decoded == None:
         return False
     else:
@@ -29,3 +28,8 @@ def checkPermissions(permision, token):
     else:
         boolean = False
     return boolean
+
+
+def set_public_key(key):
+    global public_key
+    public_key = key

@@ -76,8 +76,8 @@ def make_payment():
         response = jsonify(result=False, order_id=order_id)
     else:
         token = request.headers["token"]
-        permisions = checkJWT.checkPermissions("payment.createPayment", token)
-        if permisions == True:
+        permissions = checkJWT.checkPermissions("payment.createPayment", token)
+        if permissions:
             payment = create_payment(session, account, client_id, amount)
             response = jsonify(result=True, order_id=order_id)
         else:
@@ -93,8 +93,8 @@ def make_payment():
 def view_accounts():
     session = Session()
     token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("payment.getAccounts", token)
-    if permisions == True:
+    permissions = checkJWT.checkPermissions("payment.getAccounts", token)
+    if permissions:
         accounts = view_all_accounts(session)
         response = jsonify(Account.list_as_dict(accounts))
     else:
@@ -107,8 +107,8 @@ def view_accounts():
 def view_balance(client_id):
     session = Session()
     token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("payment.getAccount", token)
-    if permisions == True:
+    permissions = checkJWT.checkPermissions("payment.getAccount", token)
+    if permissions:
         account = view_account(session, client_id)
         response = jsonify(account.as_dict())
     else:
@@ -129,8 +129,8 @@ def add_money():
     amount = content['amount']
     account = view_account(session, client_id)
     token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("payment.createAccount", token)
-    if permisions == True:
+    permissions = checkJWT.checkPermissions("payment.createAccount", token)
+    if permissions:
         if not account:
             account = create_account(session, client_id, amount)
         else:
