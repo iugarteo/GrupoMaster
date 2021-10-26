@@ -43,8 +43,10 @@ def cambiar_estado(session, order_id, status):
 def crear_order(session, content):
     new_order = None
     new_order = Order(
-        description=content['description'],
+        client_id=content['client_id'],
         number_of_pieces=content['number_of_pieces'],
+        price_total=content['price_total'],
+        description=content['description'],
         status=Order.STATUS_CREATED
     )
     session.add(new_order)

@@ -30,12 +30,16 @@ class BaseModel(Base):
 
 class Order(BaseModel):
     STATUS_CREATED = "Created"
+    STATUS_PENDING_ON_PAYMENT = "Pending on payment"
+    STATUS_ACEPTED = "Acepted"
     STATUS_FINISHED = "Finished"
     STATUS_DECLINED = "Declined"
 
     __tablename__ = "manufacturing_order"
     id = Column(Integer, primary_key=True)
+    client_id = Column(Integer, nullable=False)
     number_of_pieces = Column(Integer, nullable=False)
+    price_total = Column(Integer, nullable=False)
     description = Column(TEXT, nullable=False, default="No description")
     status = Column(String(256), nullable=False, default="Created")
 
