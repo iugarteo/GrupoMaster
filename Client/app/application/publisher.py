@@ -19,7 +19,7 @@ def publishKey():
 
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
     channel.basic_publish(
-        #exchange='global', routing_key="client.key", body=key,
-        exchange='global', routing_key="order.create", body=json.dumps(message),
+        exchange='global', routing_key="client.key", body=key,
+        #exchange='global', routing_key="order.create", body=json.dumps(message),
         properties=pika.BasicProperties(delivery_mode=2))
     connection.close()
