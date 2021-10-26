@@ -1,5 +1,7 @@
 from threading import Thread, Lock, Event
 import sqlalchemy
+import json
+from . import publisher
 from . import Session
 from .models import Order
 
@@ -51,6 +53,8 @@ def crear_order(session, content):
     )
     session.add(new_order)
     session.commit()
+    message_pieces = {"number_of_pieces": content['number_of_pieces'],"order_id": new_order.id}
+    publish_event("md", json.dump(message_pieces))
     return new_order
 
 def ver_order_id(session, id):
