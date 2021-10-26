@@ -4,12 +4,12 @@ from .models import Piece, PieceGroup
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
 from .machine import Machine
-from . import Session
+from . import Session, checkJWT
 
 my_machine = Machine()
 
 # Order Routes #########################################################################################################
-@app.route('/addPieces', methods=['POST'])
+@app.route('/machine/addPieces', methods=['POST'])
 def create_order():
     session = Session()
     new_PieceGroup = None
@@ -28,7 +28,14 @@ def create_order():
             piece.group = new_PieceGroup
             session.add(piece)
         session.commit()
-        my_machine.add_pieces_to_queue(new_PieceGroup.pieces)
+
+        token = request.headers["token"]
+        permisions = checkJWT.checkPermissions("machine.addPieces", token)
+        if permisions == True:
+            my_machine.add_pieces_to_queue(new_PieceGroup.pieces)
+
+        else:
+            abort(BadRequest.code)
         session.commit()
     except KeyError:
         session.rollback()
@@ -40,16 +47,17 @@ def create_order():
 
 # Piece Routes #########################################################################################################
 
-@app.route('/piece', methods=['GET'])
-@app.route('/pieces', methods=['GET'])
+@app.route('/machine/pieces', methods=['GET'])
 def view_pieces():
     session = Session()
-    order_id = request.args.get('order_id')
-    if order_id:
-        pieces = session.query(Piece).filter_by(order_id=order_id).all()
-    else:
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("machine.pieces", token)
+    if permisions == True:
         pieces = session.query(Piece).all()
-    response = jsonify(Piece.list_as_dict(pieces))
+        response = jsonify(Piece.list_as_dict(pieces))
+
+    else:
+        abort(BadRequest.code)
     session.close()
     return response
 
@@ -57,23 +65,35 @@ def view_pieces():
 @app.route('/piece/<int:piece_ref>', methods=['GET'])
 def view_piece(piece_ref):
     session = Session()
-    piece = session.query(Piece).get(piece_ref)
-    if not piece:
-        session.close()
-        abort(NotFound.code)
-    print(piece)
-    response = jsonify(piece.as_dict())
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("machine.piece", token)
+    if permisions == True:
+        piece = session.query(Piece).get(piece_ref)
+        if not piece:
+            session.close()
+            abort(NotFound.code)
+        print(piece)
+        response = jsonify(piece.as_dict())
+    else:
+        abort(BadRequest.code)
+
     session.close()
     return response
 
 # Machine Routes #######################################################################################################
 @app.route('/machine/status', methods=['GET'])
 def view_machine_status():
-    working_piece = my_machine.working_piece
-    queue = my_machine.queue
-    if working_piece:
-        working_piece = working_piece.as_dict()
-    response = {"status": my_machine.status, "working_piece": working_piece, "queue": list(queue)}
+    token = request.headers["token"]
+    permisions = checkJWT.checkPermissions("machine.status", token)
+    if permisions == True:
+        working_piece = my_machine.working_piece
+        queue = my_machine.queue
+        if working_piece:
+            working_piece = working_piece.as_dict()
+        response = {"status": my_machine.status, "working_piece": working_piece, "queue": list(queue)}
+    else:
+        abort(BadRequest.code)
+
     return jsonify(response)
 
 
