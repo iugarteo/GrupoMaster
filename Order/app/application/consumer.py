@@ -40,7 +40,7 @@ def init_rabbitmq_key():
     channel.start_consuming()
 
 
-def init_rabbitmq_event_payment():
+def init_rabbitmq_event():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='192.168.17.2'))
     channel = connection.channel()
@@ -53,7 +53,7 @@ def init_rabbitmq_event_payment():
         exchange='global', queue="order", routing_key="payment.status")
 
     channel.basic_consume(
-        queue=queue_name, on_message_callback=callback_event_payment, auto_ack=True)
+        queue=queue_name, on_message_callback=callback_event, auto_ack=True)
 
     print("Waiting for event...")
     channel.start_consuming()
@@ -66,7 +66,7 @@ def callback_key(ch, method, properties, body):
     set_public_key(body)
 
 
-def callback_event_payment(ch, method, properties, body):
+def callback_event(ch, method, properties, body):
     from . import Session
     print(" [x] {} {}".format(method.routing_key, body))
     message = json.loads(body, object_hook=lambda d: SimpleNamespace(**d))
