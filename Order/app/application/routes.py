@@ -3,7 +3,7 @@ from flask import current_app as app
 from .models import Order
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from .order import realizar_pedido, cambiar_estado, crear_order, ver_order_id, ver_orders, delete_order
+from .order import pedir_pago, cambiar_estado, crear_order, ver_order_id, ver_orders, delete_order
 from . import Session
 from .checkJWT import checkPermissions
 
