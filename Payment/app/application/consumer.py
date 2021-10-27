@@ -50,7 +50,7 @@ def init_rabbitmq_event():
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='global', queue="payment", routing_key="order.create")
+        exchange='global', queue="payment", routing_key="order.pago")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_event, auto_ack=True)
@@ -68,7 +68,7 @@ def callback_event(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
     message = json.loads(body, object_hook=lambda d: SimpleNamespace(**d))
     session = Session()
-    valid = payment_validation(session, message.client_id, message.price)
+    valid = payment_validation(session, message["client_id"], message["price"])
     print(valid)
     session.close()
     if valid:
@@ -78,4 +78,4 @@ def callback_event(ch, method, properties, body):
     result = {'client_id': message.client_id,
               'payment_id': message.payment_id,
               'status': status}
-    publish_event(status, result)
+    publish_event("status", result)
