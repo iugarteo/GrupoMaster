@@ -4,7 +4,7 @@ from flask import Flask
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 from .config import Config
-from .consumer import init_rabbitmq
+from .consumer import init_rabbitmq_key, init_rabbitmq_event
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 Session = scoped_session(
@@ -22,8 +22,10 @@ def create_app():
     with app.app_context():
         from . import routes
         from . import models
+        key_consumer = threading.Thread(target=init_rabbitmq_key)
+        key_consumer.start()
 
-        t = threading.Thread(target=init_rabbitmq)
-        t.start()
+        event_consumer = threading.Thread(target=init_rabbitmq_event)
+        event_consumer.start()
         models.Base.metadata.create_all(engine)
         return app

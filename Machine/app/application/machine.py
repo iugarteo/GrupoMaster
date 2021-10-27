@@ -4,7 +4,7 @@ from collections import deque
 from .models import Piece, PieceGroup
 from threading import Thread, Lock, Event
 import sqlalchemy
-from . import Session
+
 from . import api
 
 
@@ -27,6 +27,7 @@ class Machine(Thread):
         self.start()
 
     def reload_pieces_at_startup(self):
+        from . import Session
         try:
             self.thread_session = Session()
             manufacturing_piece = self.thread_session.query(Piece).filter_by(status=Piece.STATUS_MANUFACTURING).first()
@@ -41,6 +42,7 @@ class Machine(Thread):
             print("Error getting Queued/Manufacturing Pieces at startup. It may be the first execution")
 
     def run(self):
+        from . import Session
         while True:
             self.queue_not_empty_event.wait()
             print("Thread notified that queue is not empty.")

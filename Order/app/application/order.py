@@ -1,36 +1,20 @@
 from threading import Thread, Lock, Event
 import sqlalchemy
+import json
+from . import publisher
 from . import Session
 from .models import Order
 
-def pedir_pago(id_o):
+def pedir_pago(id_o): #Cambios en este metodo
     session = Session()
     order = session.query(Order).get(id_o)
-    numero_piezas = order.number_of_pieces
     session.close()
-    precio = 100
-    pago_posible = True#llamadaPayment(numero_piezas*precio)
-    if(pago_posible):
-        realizar_pedido(id_o)
-        return "pago_posible"
-    else:
-        cambiar_estado("Declined")
-
-def realizar_pedido(id_o):#Mejor en payment? Igual este metodo se va a la puta
-    #maquina.create_piece(id_o)
-    print("Maquina llamada para el order de id :{}".format(id_o))
-    #en maquina habria que añadir uno de vuelta?
-    cambiar_estado(id_o,"Finished")
-    return "Maquina llamada para el order de id :{}".format(id_o)
-
-
-def llamar_delivery(): #Y este igual tambien se va a la grandisima puta y en el routes llamar a las que se quieren
-    printf("Piezas terminadas")
-    #delivery.entregar()
-    print("Entrega comenzada")
+    precio = order.price_total
+    message_pieces = {"price": precio,"client_id": order.client_id} #No se cuales serian los metodos
+    publisher.publish_event("pago", message_pieces) #No se cual seria la cola
 
 def cambiar_estado(session, order_id, status):
-    if(status == "Finished" or status == "Declined"): #Comprobar que se esta introduciendo un estado existente, a created no deberia poder cambiarse de vuelta
+    if(status == "Finished" or status == "Declined" or status == "Pending on payment" or status == "Acepted"): #Comprobar que se esta introduciendo un estado existente, a created no deberia poder cambiarse de vuelta
         order = session.query(Order).get(order_id)
         #LLamar a delivery para crear uno.
         order.status = status
@@ -40,17 +24,20 @@ def cambiar_estado(session, order_id, status):
     else:
         return "No existe ese estado"
 
-def crear_order(session, content):
+def crear_order(session, content): #Cambios en este metodo
     new_order = None
     new_order = Order(
         client_id=content['client_id'],
         number_of_pieces=content['number_of_pieces'],
-        price_total=content['price_total'],
+        price_total=content['number_of_pieces'] * 30,
         description=content['description'],
         status=Order.STATUS_CREATED
     )
     session.add(new_order)
     session.commit()
+    pedir_pago(new_order.client_id)
+
+    session.close()
     return new_order
 
 def ver_order_id(session, id):
@@ -62,5 +49,5 @@ def ver_orders(session):
     return orders
 
 def delete_order(session):
-    session.delete(order)
+    session.delete()
     session.commit()

@@ -1,12 +1,9 @@
 import jwt
 from werkzeug.exceptions import Forbidden, abort
 
-from . import consumer
-
-public_key = ""
+public_key = ''
 
 def readToken(encoded, public_key):
-    print(public_key)
 
     try:
         decoded = jwt.decode(encoded, public_key, algorithms=["RS256"])
@@ -20,7 +17,7 @@ def readToken(encoded, public_key):
     return decoded
 
 def checkPermissions(permision, token):
-    print(public_key)
+
     decoded = readToken(token, public_key)
     if decoded == None:
         return False
@@ -32,6 +29,7 @@ def checkPermissions(permision, token):
         boolean = False
     return boolean
 
-def setKey(key):
+
+def set_public_key(key):
     global public_key
     public_key = key

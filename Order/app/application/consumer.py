@@ -1,30 +1,78 @@
-import pika
-from .checkJWT import setKey
+import json
+from types import SimpleNamespace
 
-def init_rabbitmq():
+import pika
+from . import Config, publisher
+
+from .checkJWT import set_public_key
+from .models import Order
+from .publisher import publish_event
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import create_engine
+
+engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+Session = scoped_session(
+            sessionmaker(
+                autocommit=False,
+                autoflush=True,
+                bind=engine)
+        )
+
+public_key = None
+
+
+def init_rabbitmq_key():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='192.168.17.2'))
     channel = connection.channel()
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
-    #channel.exchange_declare(exchange='services', exchange_type='topic', durable=True)
 
-    result = channel.queue_declare('order', durable=True)
-    #result = channel.queue_declare('services', durable=True)
+    result = channel.queue_declare('order_key', durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='global', queue="order", routing_key="client.key")
-    #channel.queue_bind(
-        #exchange='services', queue="services", routing_key="*.*")
+        exchange='global', queue="order_key", routing_key="client.key")
 
     channel.basic_consume(
-        queue=queue_name, on_message_callback=callback, auto_ack=True)
+        queue=queue_name, on_message_callback=callback_key, auto_ack=True)
+
+    print("Waiting for key...")
+    channel.start_consuming()
+
+
+def init_rabbitmq_event():
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host='192.168.17.2'))
+    channel = connection.channel()
+    channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
+
+    result = channel.queue_declare('order', durable=True)
+    queue_name = result.method.queue
+
+    channel.queue_bind(
+        exchange='global', queue="order", routing_key="payment.status")
+
+    channel.basic_consume(
+        queue=queue_name, on_message_callback=callback_event, auto_ack=True)
 
     print("Waiting for event...")
     channel.start_consuming()
 
 
-def callback(ch, method, properties, body):
-    print(" [x] {} {}".format(method.routing_key, body))
-    setKey(body)
 
+
+def callback_key(ch, method, properties, body):
+    print(" [x] {} {}".format(method.routing_key, body))
+    set_public_key(body)
+
+
+def callback_event(ch, method, properties, body):
+    from . import Session
+    print(" [x] {} {}".format(method.routing_key, body))
+    message = json.loads(body, object_hook=lambda d: SimpleNamespace(**d))
+    if message["status"] == "accepted":
+        session = Session()
+        order = session.query(Order).filter(Order.client_id == message["client_id"]).all()
+        message={"order_id":order[0].id,"number_of_pieces":order[0].number_of_pieces}
+        session.close()
+        publisher.publish_event("md", message)

@@ -3,7 +3,7 @@ from flask import current_app as app
 from .models import Order
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from .order import pedir_pago, realizar_pedido, llamar_delivery, cambiar_estado, crear_order, ver_order_id, ver_orders, delete_order
+from .order import pedir_pago, cambiar_estado, crear_order, ver_order_id, ver_orders, delete_order
 from . import Session
 from .checkJWT import checkPermissions
 
@@ -69,38 +69,6 @@ def view_orders():
     else:
         response = "Error - Token sin autorización"
         return response
-
-
-@app.route('/order/llamar_pedido/<int:order_id>', methods=['GET'])
-def realizar_pedido_ruta(order_id):
-
-    token = request.headers['token']
-
-    if checkPermissions("order.llamar_pedido", token):
-        session = Session()
-        print("GET realizar_pedido_ruta {}.".format(order_id))
-        string_response = realizar_pedido(order_id)
-        session.close()
-        return string_response
-    else:
-        string_response = "Error - Token sin autorización"
-        return string_response
-
-@app.route('/order/llamar_pago/<int:order_id>', methods=['GET'])
-def pedir_pago_ruta(order_id):
-
-    token = request.headers['token']
-
-    if checkPermissions("order.llamar_pago", token):
-        session = Session()
-        string_resultado = pedir_pago(order_id)
-        session.close()
-        return string_resultado
-
-    else:
-        string_resultado = "Error - Token sin autorización"
-        return string_resultado
-
 
 @app.route('/order/borrar_order/<int:order_id>', methods=['DELETE'])
 def delete_order(order_id):
