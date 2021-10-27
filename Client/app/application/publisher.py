@@ -10,7 +10,7 @@ def publishKey():
     key = security.getPublicKey()
 
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='localhost'))
+        pika.ConnectionParameters(host='192.168.17.2'))
     #credentials = pika.PlainCredentials('guest', 'guest')
     #parameters = pika.ConnectionParameters('192.168.17.2', 5672, '/', credentials)
     #connection = pika.BlockingConnection(parameters)

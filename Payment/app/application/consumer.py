@@ -4,9 +4,9 @@ from types import SimpleNamespace
 import pika
 from . import Config
 
-from Payment.app.application.checkJWT import set_public_key
-from Payment.app.application.payment_service import payment_validation
-from Payment.app.application.publisher import publish_event
+from .checkJWT import set_public_key
+from .payment_service import payment_validation
+from .publisher import publish_event
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 
