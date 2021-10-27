@@ -30,8 +30,7 @@ def auth_client():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    jwt, refresh_token = logic.authentication(content['nickname'], content['password'], session)
-    response = jsonify(jwt, refresh_token)
+    response = logic.authentication(content['nickname'], content['password'], session)
     return response
 
 @app.route('/client/newJWT', methods=['GET'])
@@ -40,8 +39,9 @@ def new_jwt():
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
     content = request.json
-    response = logic.newJWT(content['refresh_token'], content['nickname'], session)
-    return response
+    refreshToken=request.headers["refresh_token"]
+    response = logic.newJWT(refreshToken, content['nickname'], session)
+    return jsonify(newJWT=response)
 
 @app.route('/client/clients', methods=['GET'])
 def view_clients():

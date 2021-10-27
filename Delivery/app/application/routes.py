@@ -7,7 +7,7 @@ import traceback
 from . import Session
 
 
-# Order Routes #########################################################################################################
+# Delivery Routes #########################################################################################################
 @app.route('/delivery/create', methods=['POST'])
 def create_delivery():
     if request.headers['Content-Type'] != 'application/json':
@@ -38,7 +38,7 @@ def view_deliveries():
 
 
 # view one delivery
-@app.route('/delivery/getDelivery<int:id>', methods=['GET'])
+@app.route('/delivery/getDelivery/<int:id>', methods=['GET'])
 def view_delivery(id):
     token = request.headers["token"]
     permisions = checkJWT.checkPermissions("delivery.getDelivery", token)
