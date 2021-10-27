@@ -68,7 +68,7 @@ def callback_key(ch, method, properties, body):
 
 def callback_event(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
-    message = json.loads(body, object_hook=lambda d: SimpleNamespace(**d))
+    message = json.loads(body)
     my_machine = Machine()
     session = Session()
     try:

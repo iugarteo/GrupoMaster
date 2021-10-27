@@ -70,9 +70,9 @@ def callback_key(ch, method, properties, body):
 
 def callback_order_event(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
-    message = json.loads(body, object_hook=lambda d: SimpleNamespace(**d))
+    message = json.loads(body)
     session = Session()
-    delivery = create_delivery(session, message.order_id)
+    delivery = create_delivery(session, message["order_id"])
     if not delivery:
         print("Error during delivery registration with {} order_id".format(message.order_id))
     session.close()
@@ -80,12 +80,12 @@ def callback_order_event(ch, method, properties, body):
 
 def callback_machine_event(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
-    message = json.loads(body, object_hook=lambda d: SimpleNamespace(**d))
+    message = json.loads(body)
     session = Session()
-    delivery = update_delivery_by_order(session, message.order_id, Delivery.STATUS_SENT)
+    delivery = update_delivery_by_order(session, message["order_id"], Delivery.STATUS_SENT)
     if delivery:
         # sleep for 10 seconds
-        update_delivery_by_order(session, message.order_id, Delivery.STATUS_RECEIVED)
+        update_delivery_by_order(session, message["order_id"], Delivery.STATUS_RECEIVED)
     else:
         print("Error while updating delivery with {} order_id".format(message.order_id))
     session.close()

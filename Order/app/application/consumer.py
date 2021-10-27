@@ -69,10 +69,10 @@ def callback_key(ch, method, properties, body):
 def callback_event(ch, method, properties, body):
     from . import Session
     print(" [x] {} {}".format(method.routing_key, body))
-    message = json.loads(body, object_hook=lambda d: SimpleNamespace(**d))
+    message = json.loads(body)
     if message["status"] == "accepted":
         session = Session()
-        order = session.query(Order).filter(Order.client_id == message["client_id"]).all()
-        message={"order_id":order[0].id,"number_of_pieces":order[0].number_of_pieces}
+        order = session.query(Order).get(message["order_id"])
+        message={"order_id":order.id,"number_of_pieces":order.number_of_pieces}
         session.close()
         publisher.publish_event("md", message)

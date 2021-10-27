@@ -68,7 +68,7 @@ class Machine(Thread):
         self.working_piece_to_manufacturing()
 
         # Simulate piece is being manufactured
-        sleep(randint(5, 20))
+        sleep(randint(1, 5))
 
         # Machine and piece status updated after manufacturing
         self.working_piece_to_finished()
@@ -91,7 +91,7 @@ class Machine(Thread):
                 order_finished = False
         if order_finished:
             self.working_piece.group.status = PieceGroup.STATUS_FINISHED
-            api.notifyPiecesAreDone(PieceGroup)
+            api.notifyPiecesAreDone(self.working_piece.group)
 
         self.thread_session.commit()
         self.thread_session.flush()

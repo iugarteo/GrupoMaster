@@ -5,12 +5,10 @@ from . import publisher
 from . import Session
 from .models import Order
 
-def pedir_pago(id_o): #Cambios en este metodo
-    session = Session()
-    order = session.query(Order).get(id_o)
-    session.close()
+def pedir_pago(order): #Cambios en este metodo
+    
     precio = order.price_total
-    message_pieces = {"price": precio,"client_id": order.client_id} #No se cuales serian los metodos
+    message_pieces = {"price": precio,"client_id": order.client_id,"order_id": order.id} #No se cuales serian los metodos
     publisher.publish_event("create", message_pieces) #No se cual seria la cola
 
 def cambiar_estado(session, order_id, status):
@@ -35,7 +33,7 @@ def crear_order(session, content): #Cambios en este metodo
     )
     session.add(new_order)
     session.commit()
-    pedir_pago(new_order.client_id)
+    pedir_pago(new_order)
 
     session.close()
     return new_order

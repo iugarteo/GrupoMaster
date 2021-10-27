@@ -11,7 +11,7 @@ services:
       - "15672:15672"
     healthcheck:
         test: ["CMD", "curl", "-f", "http://localhost:15672"]
-        interval: 30s
+        interval: 15s
         timeout: 10s
         retries: 5
     networks:
@@ -151,7 +151,7 @@ services:
 
 
   log:
-    hostname: client
+    hostname: log
     build: ./log
     volumes:
       - './log/app:/app'  

@@ -6,7 +6,7 @@ from . import Config
 
 from .checkJWT import set_public_key
 from .payment_service import payment_validation
-from .publisher import publish_event
+from . import publisher
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 
@@ -66,16 +66,21 @@ def callback_key(ch, method, properties, body):
 
 def callback_event(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
-    message = json.loads(body, object_hook=lambda d: SimpleNamespace(**d))
+    message = json.loads(body)
     session = Session()
     valid = payment_validation(session, message["client_id"], message["price"])
+    valid=True
     print(valid)
     session.close()
     if valid:
         status = 'accepted'
     else:
         status = 'declined'
-    result = {'client_id': message.client_id,
-              'payment_id': message.payment_id,
+    result = {'client_id': message["client_id"],
+              'payment_id': message["price"],
+              'order_id': message["order_id"],
               'status': status}
-    publish_event("status", result)
+    publisher.publish_event("status", result)
+    
+
+

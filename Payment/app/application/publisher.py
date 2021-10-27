@@ -5,7 +5,7 @@ import pika
 
 def publish_event(topic, message):
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='localhost'))
+        pika.ConnectionParameters(host='192.168.17.2'))
     channel = connection.channel()
 
     print(json.dumps(message))
@@ -14,3 +14,5 @@ def publish_event(topic, message):
         exchange='global', routing_key="payment."+topic, body=json.dumps(message),
         properties=pika.BasicProperties(delivery_mode=2))
     connection.close()
+
+#exchange='global', routing_key="payment."+topic, body=json.dumps(message),
