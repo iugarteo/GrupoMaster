@@ -50,7 +50,7 @@ def init_rabbitmq_event():
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='global', queue="payment", routing_key="order.pago")
+        exchange='global', queue="payment", routing_key="order.create")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_event, auto_ack=True)
