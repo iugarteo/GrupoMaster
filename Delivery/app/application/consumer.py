@@ -6,7 +6,7 @@ public_key = None
 def init_rabbitmq():
     connection = pika.BlockingConnection(
         #pika.ConnectionParameters(host='192.168.17.2'))
-        pika.ConnectionParameters(host='localhost'))
+        pika.ConnectionParameters(host='192.168.17.2'))
     channel = connection.channel()
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
     #channel.exchange_declare(exchange='services', exchange_type='topic', durable=True)
