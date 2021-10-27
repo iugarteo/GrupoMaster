@@ -140,7 +140,8 @@ def authentication(nickname, password, session):
         session.close()
         print("Authentication incorrect! ERROR!!!!!!")
         abort(BadRequest.code)
-    return jwt, refresh_token
+    message = {"jwt":jwt, "refresh_token":refresh_token}
+    return message
 
 def checkPermissions(permision, token):
 
