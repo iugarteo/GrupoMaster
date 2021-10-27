@@ -16,8 +16,9 @@ def create_delivery():
     token = request.headers["token"]
     permisions = checkJWT.checkPermissions("delivery.create", token)
     if permisions == True:
-        response = delivery.registDelivery(content)
-
+        session = Session()
+        response = delivery.registDelivery(session, content)
+        session.close()
     else:
         abort(BadRequest.code)
     return response
@@ -28,7 +29,9 @@ def view_deliveries():
     token = request.headers["token"]
     permisions = checkJWT.checkPermissions("delivery.deliveries", token)
     if permisions == True:
-        response = delivery.getAllDeliveries()
+        session = Session()
+        response = delivery.getAllDeliveries(session)
+        session.close()
     else:
         abort(BadRequest.code)
     return response
@@ -40,7 +43,9 @@ def view_delivery(id):
     token = request.headers["token"]
     permisions = checkJWT.checkPermissions("delivery.getDelivery", token)
     if permisions == True:
-        response = delivery.getDelivery(id)
+        session = Session()
+        response = delivery.getDelivery(session, id)
+        session.close()
     else:
         abort(BadRequest.code)
     return response
@@ -50,7 +55,9 @@ def update_status_sent(id):
     token = request.headers["token"]
     permisions = checkJWT.checkPermissions("delivery.send", token)
     if permisions == True:
-        response = delivery.deliverySent(id)
+        session = Session()
+        response = delivery.deliverySent(session, id)
+        session.close()
     else:
         abort(BadRequest.code)
     return response
@@ -60,7 +67,9 @@ def update_status_received(id):
     token = request.headers["token"]
     permisions = checkJWT.checkPermissions("delivery.received", token)
     if permisions == True:
+        session = Session()
         response = delivery.deliveryReceived(id)
+        session.close()
     else:
         abort(BadRequest.code)
     return response
