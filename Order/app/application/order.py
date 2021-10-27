@@ -13,22 +13,6 @@ def pedir_pago(id_o): #Cambios en este metodo
     message_pieces = {"price": precio,"client_id": order.client_id} #No se cuales serian los metodos
     publisher.publish_event("pago", message_pieces) #No se cual seria la cola
 
-
-def realizar_pedido(id_o):#Esto hay que mandarlo a la putisima, no sirve de nada
-    #maquina.create_piece(id_o)
-    print("Maquina llamada para el order de id :{}".format(id_o))
-    #en maquina habria que añadir uno de vuelta?
-    cambiar_estado(id_o,"Finished")
-    return "Maquina llamada para el order de id :{}".format(id_o)
-    message_pieces = {"price": precio,"client_id": order.client_id} #No se cuales serian los metodos
-    publisher.publish_event("pago", message_pieces) #No se cual seria la cola
-
-
-def llamar_delivery():
-    print("Piezas terminadas")
-    #delivery.entregar()
-    print("Entrega comenzada")
-
 def cambiar_estado(session, order_id, status):
     if(status == "Finished" or status == "Declined" or status == "Pending on payment" or status == "Acepted"): #Comprobar que se esta introduciendo un estado existente, a created no deberia poder cambiarse de vuelta
         order = session.query(Order).get(order_id)
