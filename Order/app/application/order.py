@@ -65,5 +65,5 @@ def ver_orders(session):
     return orders
 
 def delete_order(session):
-    session.delete(order)
+    session.delete()
     session.commit()
