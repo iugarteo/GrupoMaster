@@ -1,17 +1,6 @@
 version: '3.1'
 services:
   rabbit:
-    #hostname: rabbit
-    #image: rabbitmq:3-management
-    #volumes:
-    #  - './rabbit/app:/app'  
-    #ports:
-     # - "5672:5672"
-      #- "15672:15672"
-    #networks:
-     # lb7_network:
-     #   ipv4_address: '${RABBIT_IP}'
-    #restart: unless-stopped
     hostname: rabbit
     build: ./rabbit
     volumes:
@@ -155,6 +144,26 @@ services:
       - order
       - machine
       - haproxy
+
+
+  log:
+    hostname: client
+    build: ./log
+    volumes:
+      - './log/app:/app'  
+    expose:
+      - '${GUNICORN_PORT}'
+    environment:
+      GUNICORN_PORT: '${GUNICORN_PORT}'
+      SQLALCHEMY_DATABASE_URI: '${SQLALCHEMY_SQLITE_DATABASE_URI}'
+      SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
+    networks:
+      lb7_network:
+        ipv4_address: '${LOG_IP}'
+    restart: unless-stopped
+    depends_on:
+      rabbit:
+        condition: service_healthy
 
 networks:
   lb7_network:

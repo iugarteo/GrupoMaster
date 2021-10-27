@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import pika
 from . import Config
 
-from Payment.app.application.checkJWT import set_public_key
+from .checkJWT import set_public_key
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 
@@ -25,8 +25,8 @@ public_key = None
 
 def init_rabbitmq_key():
     connection = pika.BlockingConnection(
-        # pika.ConnectionParameters(host='192.168.17.2'))
-        pika.ConnectionParameters(host='localhost'))
+        pika.ConnectionParameters(host='192.168.17.2'))
+       
     channel = connection.channel()
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
 
@@ -45,8 +45,8 @@ def init_rabbitmq_key():
 
 def init_rabbitmq_event(queue, routing_key, callback):
     connection = pika.BlockingConnection(
-        # pika.ConnectionParameters(host='192.168.17.2'))
-        pika.ConnectionParameters(host='localhost'))
+        pika.ConnectionParameters(host='192.168.17.2'))
+        #pika.ConnectionParameters(host='localhost'))
     channel = connection.channel()
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
 
