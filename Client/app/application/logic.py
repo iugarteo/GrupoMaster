@@ -4,6 +4,7 @@ from .models import Client, Role
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType, Forbidden
 from . import security
 from . import publisher
+import json
 
 
 
@@ -141,7 +142,7 @@ def authentication(nickname, password, session):
         print("Authentication incorrect! ERROR!!!!!!")
         abort(BadRequest.code)
     message = {"jwt":jwt, "refresh_token":refresh_token}
-    return message
+    return json.dumps(message)
 
 def checkPermissions(permision, token):
 
