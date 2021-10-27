@@ -11,7 +11,7 @@ def pedir_pago(id_o): #Cambios en este metodo
     session.close()
     precio = order.price_total
     message_pieces = {"price": precio,"client_id": order.client_id} #No se cuales serian los metodos
-    publisher.publish_event("pago", message_pieces) #No se cual seria la cola
+    publisher.publish_event("create", message_pieces) #No se cual seria la cola
 
 def cambiar_estado(session, order_id, status):
     if(status == "Finished" or status == "Declined" or status == "Pending on payment" or status == "Acepted"): #Comprobar que se esta introduciendo un estado existente, a created no deberia poder cambiarse de vuelta
