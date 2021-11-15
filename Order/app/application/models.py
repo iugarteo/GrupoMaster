@@ -42,6 +42,7 @@ class Order(BaseModel):
     price_total = Column(Integer, nullable=False)
     description = Column(TEXT, nullable=False, default="No description")
     status = Column(String(256), nullable=False, default="Created")
+    piezasConstruidas = Column(Integer, nullable=False, default=0)
 
     def as_dict(self):
         d = super().as_dict()
