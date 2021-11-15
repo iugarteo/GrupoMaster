@@ -10,11 +10,8 @@ from . import Session
 # Delivery Routes #########################################################################################################
 @app.route('/delivery/create', methods=['POST'])
 def create_delivery():
-    if request.headers['Content-Type'] != 'application/json':
-        abort(UnsupportedMediaType.code)
-    content = request.json
-    token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("delivery.create", token)
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("delivery.create", token[1])
     if permisions == True:
         session = Session()
         response = delivery.registDelivery(session, content)
@@ -26,8 +23,8 @@ def create_delivery():
 
 @app.route('/delivery/deliveries', methods=['GET'])
 def view_deliveries():
-    token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("delivery.deliveries", token)
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("delivery.deliveries", token[1])
     if permisions == True:
         session = Session()
         response = delivery.getAllDeliveries(session)
@@ -40,8 +37,8 @@ def view_deliveries():
 # view one delivery
 @app.route('/delivery/getDelivery/<int:id>', methods=['GET'])
 def view_delivery(id):
-    token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("delivery.getDelivery", token)
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("delivery.getDelivery", token[1])
     if permisions == True:
         session = Session()
         response = delivery.getDelivery(session, id)
@@ -52,8 +49,8 @@ def view_delivery(id):
 
 @app.route('/delivery/send/<int:id>', methods=['PATCH'])
 def update_status_sent(id):
-    token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("delivery.send", token)
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("delivery.send", token[1])
     if permisions == True:
         session = Session()
         response = delivery.deliverySent(session, id)
@@ -64,8 +61,8 @@ def update_status_sent(id):
 
 @app.route('/delivery/received/<int:id>', methods=['PATCH'])
 def update_status_received(id):
-    token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("delivery.received", token)
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("delivery.received", token[1])
     if permisions == True:
         session = Session()
         response = delivery.deliveryReceived(id)
