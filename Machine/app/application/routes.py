@@ -29,8 +29,8 @@ def create_order():
             session.add(piece)
         session.commit()
 
-        token = request.headers["token"]
-        permisions = checkJWT.checkPermissions("machine.addPieces", token)
+        token = request.headers["Authorization"].split(" ")
+        permisions = checkJWT.checkPermissions("machine.addPieces", token[1])
         if permisions == True:
             my_machine.add_pieces_to_queue(new_PieceGroup.pieces)
 
@@ -50,8 +50,8 @@ def create_order():
 @app.route('/machine/pieces', methods=['GET'])
 def view_pieces():
     session = Session()
-    token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("machine.pieces", token)
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("machine.pieces", token[1])
     if permisions == True:
         pieces = session.query(Piece).all()
         response = jsonify(Piece.list_as_dict(pieces))
@@ -65,8 +65,8 @@ def view_pieces():
 @app.route('/piece/<int:piece_ref>', methods=['GET'])
 def view_piece(piece_ref):
     session = Session()
-    token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("machine.piece", token)
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("machine.piece", token[1])
     if permisions == True:
         piece = session.query(Piece).get(piece_ref)
         if not piece:
@@ -83,8 +83,8 @@ def view_piece(piece_ref):
 # Machine Routes #######################################################################################################
 @app.route('/machine/status', methods=['GET'])
 def view_machine_status():
-    token = request.headers["token"]
-    permisions = checkJWT.checkPermissions("machine.status", token)
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("machine.status", token[1])
     if permisions == True:
         working_piece = my_machine.working_piece
         queue = my_machine.queue
