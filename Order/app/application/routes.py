@@ -1,122 +1,148 @@
 from flask import request, jsonify, abort
 from flask import current_app as app
-from .models import Order
+from .models import Account, Payment
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from .order import pedir_pago, cambiar_estado, crear_order, ver_order_id, ver_orders, delete_order
-from . import Session
-from .checkJWT import checkPermissions
+from . import Session, checkJWT
 
-# Order Routes #########################################################################################################
-@app.route('/order/crear_order', methods=['POST'])
-def create_order():
+# Payment Routes #######################################################################################################
+from .payment_service import view_all_payments, view_payment_by_id, view_all_payments_by_client, view_account, \
+    view_all_accounts, create_account, increment_balance, create_payment
 
+
+@app.route('/payment/getPayment/<int:payment_id>', methods=['GET'])
+def view_payment(payment_id):
+    session = Session()
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("payment.getPayment", token[1])
+    if permisions == True:
+        payment = view_payment_by_id(session, payment_id)
+        response = jsonify(payment.as_dict())
+    else:
+        abort(BadRequest.code)
+    if not payment:
+        abort(NotFound.code)
+    session.close()
+    return response
+
+
+@app.route('/payment/getPaymentsbyClient', methods=['PATCH'])
+def view_clients_payments():
+    session = Session()
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
-
     content = request.json
-    token = request.headers['token']
+    client_id = content['client_id']
 
-    if checkPermissions("order.create_order", token):
-        session = Session()
-        new_order = crear_order(session,content)
-        response = jsonify(new_order.as_dict())
-        #LLamar a create Delivery
-        session.close()
-        return response
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("payment.getPaymentsbyClient", token[1])
+    if permisions == True:
+        payments = view_all_payments_by_client(session, client_id)
+        response = jsonify(Payment.list_as_dict(payments))
     else:
-        response = "Error - Token sin autorización"
-        return response
+        abort(BadRequest.code)
+    session.close()
+    return response
 
 
-#@app.route('/order', methods=['GET'])
-@app.route('/order/ver_order/<int:order_id>', methods=['GET'])
-def getOrder(order_id):
-
-    #if request.headers['Content-Type'] != 'application/json':
-    #    abort(UnsupportedMediaType.code)
-
-    token = request.headers['token']
-
-    if checkPermissions("order.ver_order", token):
-        session = Session()
-        order = ver_order_id(session, order_id)
-        if not order:
-            session.close()
-            abort(NotFound.code)
-        print("GET Order {}.".format(order_id))
-        response = jsonify(order.as_dict())
-        # LLamar a create Delivery
-        session.close()
-        return response
+@app.route('/payment/getPayments', methods=['GET'])
+def view_payments():
+    session = Session()
+    token = request.headers["Authorization"].split(" ")
+    permisions = checkJWT.checkPermissions("payment.getPayments", token[1])
+    if permisions == True:
+        payments = view_all_payments(session)
+        response = jsonify(Payment.list_as_dict(payments))
     else:
-        response = "Error - Token sin autorización"
-        return response
+        abort(BadRequest.code)
+    session.close()
+    return response
 
-@app.route('/order/ver_orders', methods=['GET'])
-def view_orders():
 
-    print("GET All Orders.")
+@app.route('/payment/createPayment', methods=['POST'])
+def make_payment():
+    if request.headers['Content-Type'] != 'application/json':
+        abort(UnsupportedMediaType.code)
+    content = request.json
+    client_id = content['client']
+    amount = content['amount']
+    order_id = content['order']
+    session = Session()
+    account = view_account(session, client_id)
 
-    token = request.headers['token']
-
-    if checkPermissions("order.ver_orders", token):
-        session = Session()
-        orders = ver_orders(session)
-        response = jsonify(Order.list_as_dict(orders))
-        session.close()
-        return response
+    if not account:
+        abort(NotFound.code)
+    if account.balance < amount:
+        response = jsonify(result=False, order_id=order_id)
     else:
-        response = "Error - Token sin autorización"
-        return response
-
-@app.route('/order/borrar_order/<int:order_id>', methods=['DELETE'])
-def delete_order(order_id):
-
-    token = request.headers['token']
-
-    if checkPermissions("order.borrar_order", token):
-        session = Session()
-        order = session.query(Order).get(order_id)
-        if not order:
-            session.close()
-            abort(NotFound.code)
-        print("DELETED Order {}.".format(order_id))
-        response = jsonify(order.as_dict())
-        session.close()
-        return response
-
-    else:
-        response = "Error - Token sin autorización"
-        return response
-
-#Cambiar estados
-@app.route('/order/alterar_estado_order/<int:order_id>/<string:estado>', methods=['PATCH'])
-def update_status(order_id, estado):
-
-    token = request.headers['token']
-
-    if checkPermissions("order.alterar_estado_order", token):
-        session = Session()
-        try:
-            print("order_id: ", order_id)
-            order = cambiar_estado(session, order_id, estado)
-            if(order != "No existe ese estado"):
-                session.commit()
-                response = jsonify(order.as_dict())
-            else:
-                print(order)
-                abort(BadRequest.code)
-        except KeyError:
-            session.rollback()
+        token = request.headers["Authorization"].split(" ")
+        permissions = checkJWT.checkPermissions("payment.createPayment", token[1])
+        if permissions:
+            payment = create_payment(session, account, client_id, amount)
+            response = jsonify(result=True, order_id=order_id)
+        else:
             abort(BadRequest.code)
+        if not payment:
+            abort(BadRequest.code)
+    session.close()
+    return response
 
-        session.close()
-        return response
 
+# Account Routes #######################################################################################################
+@app.route('/payment/getAccounts', methods=['GET'])
+def view_accounts():
+    session = Session()
+    token = request.headers["Authorization"].split(" ")
+    permissions = checkJWT.checkPermissions("payment.getAccounts", token[1])
+    if permissions:
+        accounts = view_all_accounts(session)
+        response = jsonify(Account.list_as_dict(accounts))
     else:
-        response = "Error - Token sin autorización"
-        return response
+        abort(BadRequest.code)
+    session.close()
+    return response
+
+
+@app.route('/payment/getAccount/<int:client_id>', methods=['GET'])
+def view_balance(client_id):
+    session = Session()
+    token = request.headers["Authorization"].split(" ")
+    permissions = checkJWT.checkPermissions("payment.getAccount", token[1])
+    if permissions:
+        account = view_account(session, client_id)
+        response = jsonify(account.as_dict())
+    else:
+        abort(BadRequest.code)
+    if not account:
+        abort(NotFound.code)
+    session.close()
+    return response
+
+
+@app.route('/payment/createAccount', methods=['POST'])
+def add_money():
+    if request.headers['Content-Type'] != 'application/json':
+        abort(UnsupportedMediaType.code)
+    session = Session()
+    content = request.json
+    client_id = content['client']
+    amount = content['amount']
+    account = view_account(session, client_id)
+    token = request.headers["Authorization"].split(" ")
+    permissions = checkJWT.checkPermissions("payment.createAccount", token[1])
+    if permissions:
+        if not account:
+            account = create_account(session, client_id, amount)
+        else:
+            account = increment_balance(session, account.id, amount)
+        response = jsonify(account.as_dict())
+    else:
+        abort(BadRequest.code)
+
+    if not account:
+        abort(BadRequest.code)
+    session.close()
+    return response
 
 
 # Error Handling #######################################################################################################
@@ -142,6 +168,4 @@ def server_error_handler(e):
 
 def get_jsonified_error(e):
     traceback.print_tb(e.__traceback__)
-    return jsonify({"error_code":e.code, "error_message": e.description}), e.code
-
-
+    return jsonify({"error_code": e.code, "error_message": e.description}), e.code
