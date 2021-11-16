@@ -69,6 +69,20 @@ def view_orders():
         response = "Error - Token sin autorización"
         return response
 
+@app.route('/order/anyadir_piexa/<int:order_id>', methods=['GET']) 
+def view_orders(order_id):
+	
+	##Diria que no necesita permisos
+	print("Add piece to Order ", order_id)
+	
+	session = Session()
+        orders = anyadirPieza(session, order_id)
+        response = jsonify(Order.list_as_dict(orders))
+        session.close()
+        return response
+    else:
+        response = "Error - Token sin autorización"
+        return response
 
 @app.route('/order/borrar_order/<int:order_id>', methods=['DELETE'])
 def delete_order(order_id):
