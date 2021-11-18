@@ -13,7 +13,6 @@ def create_order():
 
     if request.headers['Content-Type'] != 'application/json':
         abort(UnsupportedMediaType.code)
-
     content = request.json
     token = request.headers["Authorization"].split(" ")
 
@@ -28,12 +27,10 @@ def create_order():
         response = "Error - Token sin autorización"
         return response
 
+
 #@app.route('/order', methods=['GET'])
 @app.route('/order/ver_order/<int:order_id>', methods=['GET'])
 def getOrder(order_id):
-
-    #if request.headers['Content-Type'] != 'application/json':
-    #    abort(UnsupportedMediaType.code)
 
     token = request.headers["Authorization"].split(" ")
 
@@ -99,6 +96,16 @@ def delete_order(order_id):
         response = "Error - Token sin autorización"
         return response
 
+
+@app.route('/order/anyadir_pieza/<int:order_id>', methods=['GET'])
+def anyadir_pieza(order_id):
+    ##Diria que no necesita permisos
+    print("Add piece to Order ", order_id)
+    session = Session()
+    anyadirPieza(session, order_id)
+    session.close()
+    return "Pieces Added!"
+
 #Cambiar estados
 @app.route('/order/alterar_estado_order/<int:order_id>/<string:estado>', methods=['PATCH'])
 def update_status(order_id, estado):
@@ -130,3 +137,5 @@ def update_status(order_id, estado):
 def get_jsonified_error(e):
     traceback.print_tb(e.__traceback__)
     return jsonify({"error_code":e.code, "error_message": e.description}), e.code
+
+

@@ -49,11 +49,11 @@ def ver_orders(session):
 def delete_order(session):
     session.delete()
     session.commit()
-    
+
 def anyadirPieza(session, id): ##LLaamar desde el ¿consumer?
     session = Session()
     order =  session.query(Order).get(id)
-    if order.number_of_pieces > piezasConstruidas: ##Asi no se le asignan de más
+    if order.number_of_pieces > order.piezasConstruidas: ##Asi no se le asignan de más
         order.piezasConstruidas += 1
         print("Pieza añadida {} de {} construidas".format(order.piezasConstruida, order.number_of_pieces))
     session.commit()
