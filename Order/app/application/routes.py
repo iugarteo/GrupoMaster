@@ -3,7 +3,7 @@ from flask import current_app as app
 from .models import Order
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from .order import pedir_pago, cambiar_estado, crear_order, ver_order_id, ver_orders, delete_order
+from .order import anyadirPieza, pedir_pago, cambiar_estado, crear_order, ver_order_id, ver_orders, delete_order
 from . import Session
 from .checkJWT import checkPermissions
 
@@ -70,20 +70,15 @@ def view_orders():
         return response
 
 @app.route('/order/anyadir_piexa/<int:order_id>', methods=['GET']) 
-def view_orders(order_id):
+def anadir_piezas(order_id):	
+##Diria que no necesita permisos
+    print("Add piece to Order ", order_id)
 	
-	##Diria que no necesita permisos
-	print("Add piece to Order ", order_id)
-	
-	session = Session()
-        orders = anyadirPieza(session, order_id)
-        response = jsonify(Order.list_as_dict(orders))
-        session.close()
-        return response
-    else:
-        response = "Error - Token sin autorización"
-        return response
-
+    session = Session()
+    anyadirPieza(session, order_id)
+    session.close()
+    return "Piece added!"
+    
 @app.route('/order/borrar_order/<int:order_id>', methods=['DELETE'])
 def delete_order(order_id):
 
@@ -131,9 +126,6 @@ def update_status(order_id, estado):
     else:
         response = "Error - Token sin autorización"
         return response
-
-# Error Handling #######################################################################################################
-	@@ -142,6 +168,4 @@ def server_error_handler(e):
 
 def get_jsonified_error(e):
     traceback.print_tb(e.__traceback__)
