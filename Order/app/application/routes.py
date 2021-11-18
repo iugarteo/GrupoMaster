@@ -11,10 +11,6 @@ from .checkJWT import checkPermissions
 @app.route('/order/crear_order', methods=['POST'])
 def create_order():
 
-    if request.headers['Content-Type'] != 'application/json':
-        abort(UnsupportedMediaType.code)
-
-    content = request.json
     token = request.headers["Authorization"].split(" ")
 
     if checkPermissions("order.create_order", token[1]):
@@ -28,12 +24,10 @@ def create_order():
         response = "Error - Token sin autorización"
         return response
 
+
 #@app.route('/order', methods=['GET'])
 @app.route('/order/ver_order/<int:order_id>', methods=['GET'])
 def getOrder(order_id):
-
-    #if request.headers['Content-Type'] != 'application/json':
-    #    abort(UnsupportedMediaType.code)
 
     token = request.headers["Authorization"].split(" ")
 
@@ -69,21 +63,6 @@ def view_orders():
         response = "Error - Token sin autorización"
         return response
 
-@app.route('/order/anyadir_piexa/<int:order_id>', methods=['GET']) 
-def view_orders(order_id):
-	
-	##Diria que no necesita permisos
-	print("Add piece to Order ", order_id)
-	
-	session = Session()
-        orders = anyadirPieza(session, order_id)
-        response = jsonify(Order.list_as_dict(orders))
-        session.close()
-        return response
-    else:
-        response = "Error - Token sin autorización"
-        return response
-
 @app.route('/order/borrar_order/<int:order_id>', methods=['DELETE'])
 def delete_order(order_id):
 
@@ -103,6 +82,17 @@ def delete_order(order_id):
     else:
         response = "Error - Token sin autorización"
         return response
+
+
+@app.route('/order/anyadir_pieza/<int:order_id>', methods=['GET'])
+def anyadir_pieza(order_id):
+    ##Diria que no necesita permisos
+    print("Add piece to Order ", order_id)
+    session = Session()
+    orders = anyadirPieza(session, order_id)
+    response = jsonify(Order.list_as_dict(orders))
+    session.close()
+    return response
 
 #Cambiar estados
 @app.route('/order/alterar_estado_order/<int:order_id>/<string:estado>', methods=['PATCH'])
@@ -132,9 +122,30 @@ def update_status(order_id, estado):
         response = "Error - Token sin autorización"
         return response
 
+
 # Error Handling #######################################################################################################
-	@@ -142,6 +168,4 @@ def server_error_handler(e):
+@app.errorhandler(UnsupportedMediaType)
+def unsupported_media_type_handler(e):
+    return get_jsonified_error(e)
+
+
+@app.errorhandler(BadRequest)
+def bad_request_handler(e):
+    return get_jsonified_error(e)
+
+
+@app.errorhandler(NotFound)
+def resource_not_found_handler(e):
+    return get_jsonified_error(e)
+
+
+@app.errorhandler(InternalServerError)
+def server_error_handler(e):
+    return get_jsonified_error(e)
+
 
 def get_jsonified_error(e):
     traceback.print_tb(e.__traceback__)
     return jsonify({"error_code":e.code, "error_message": e.description}), e.code
+
+
