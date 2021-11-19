@@ -49,11 +49,25 @@ def ver_orders(session):
 def delete_order(session):
     session.delete()
     session.commit()
-
+   
+def notifyDelivery(order):
+    # r = requests.post("http://localhost:13000/notify", headers={'Content-type': 'application/json'},json={"orderID": group.order_id, "status": group.status})
+    # print(r.content)
+    message = {'order_id': order.id,
+               'status': order.status}
+    publisher.publish_event("finished", message)
+    
 def anyadirPieza(session, id): ##LLaamar desde el ¿consumer?
     session = Session()
     order =  session.query(Order).get(id)
     if order.number_of_pieces > order.piezasConstruidas: ##Asi no se le asignan de más
         order.piezasConstruidas += 1
         print("Pieza añadida {} de {} construidas".format(order.piezasConstruida, order.number_of_pieces))
-    session.commit()
+        session.commit()
+        session.close()
+    if order.number_of_pieces == order.piezasConstruidas:
+        order.status = STATUS_FINISHED
+        session.commit()
+        session.close()
+        notifyDelivery(order)
+    
