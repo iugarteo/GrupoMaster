@@ -54,8 +54,8 @@ def init_rabbitmq_event():
     channel.queue_bind(
         exchange='global', queue="machine", routing_key="order.md")
 
-    """channel.basic_consume(
-        queue=queue_name, on_message_callback=callback_event, auto_ack=True)"""
+    channel.basic_consume(
+        queue=queue_name, on_message_callback=callback_event, auto_ack=True)
 
     print("Waiting for event...")
     channel.start_consuming()
@@ -66,7 +66,7 @@ def callback_key(ch, method, properties, body):
     write_public_key_to_file(body)
 
 
-"""def callback_event(ch, method, properties, body):
+def callback_event(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
     message = json.loads(body)
     my_machine = Machine()
@@ -87,5 +87,5 @@ def callback_key(ch, method, properties, body):
         session.commit()
     except KeyError:
         session.rollback()
-        session.close()"""
+        session.close()
 
