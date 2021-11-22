@@ -1,11 +1,9 @@
 import json
-import threading
-from types import SimpleNamespace
 
 import pika
 from . import Config
 
-from .checkJWT import set_public_key
+from .checkJWT import write_public_key_to_file
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 
@@ -25,7 +23,7 @@ public_key = None
 
 def init_rabbitmq_key():
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='192.168.17.2'))
+        pika.ConnectionParameters(host=Config.RABBIT_IP))
        
     channel = connection.channel()
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
@@ -45,8 +43,7 @@ def init_rabbitmq_key():
 
 def init_rabbitmq_event(queue, routing_key, callback):
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='192.168.17.2'))
-        #pika.ConnectionParameters(host='localhost'))
+        pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
 
@@ -65,7 +62,7 @@ def init_rabbitmq_event(queue, routing_key, callback):
 
 def callback_key(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
-    set_public_key(body)
+    write_public_key_to_file(body)
 
 
 def callback_order_event(ch, method, properties, body):

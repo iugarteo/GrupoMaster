@@ -1,7 +1,10 @@
 import jwt
 from werkzeug.exceptions import Forbidden, abort
+import threading
 
+mutex = threading.Lock()
 public_key = ''
+
 
 def readToken(encoded, public_key):
 
@@ -15,6 +18,7 @@ def readToken(encoded, public_key):
         return abort(Forbidden.code)
     # Signature has expired
     return decoded
+
 
 def checkPermissions(permision, token):
 
@@ -30,6 +34,30 @@ def checkPermissions(permision, token):
     return boolean
 
 
-def set_public_key(key):
-    global public_key
-    public_key = key
+def load_public_key_from_file():
+    try:
+        mutex.acquire()
+        # file = open(r"./public_key.pem", "rb")
+        file = open(r"C:\\Users\ASUS\\Desktop\\MasterInfor\\1\\apis\\GrupoMaster\\Delivery\\app\\public_key.pem", "rb")
+        global public_key
+        public_key = file.read().decode("utf-8")
+        file.close()
+    except Exception:
+        print("Error al leer la clave pública del fichero")
+    finally:
+        mutex.release()
+
+
+def write_public_key_to_file(key):
+    try:
+        mutex.acquire()
+        global public_key
+        public_key = key
+        # file = open(r"./public_key.pem", "w")
+        file = open(r"C:\\Users\ASUS\\Desktop\\MasterInfor\\1\\apis\\GrupoMaster\\Delivery\\app\\public_key.pem", "w")
+        file.write(key.decode())
+        file.close()
+    except Exception:
+        print("Error al escribir la clave pública en el fichero")
+    finally:
+        mutex.release()

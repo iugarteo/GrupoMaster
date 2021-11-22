@@ -1,11 +1,12 @@
 import json
 
 import pika
+from . import Config
 
 
 def publish_event(topic, message):
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='192.168.17.2'))
+        pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
 
     print(json.dumps(message))

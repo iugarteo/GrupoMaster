@@ -11,29 +11,30 @@ from .models import Event
 
 @app.route('/log/<int:event_id>', methods=['GET'])
 def view_payment(event_id):
+    token = request.headers["Authorization"].split(" ")
+    permissions = checkJWT.checkPermissions("payment.getPayment", token[1])
     session = Session()
-    #token = request.headers["token"]
-    #permissions = checkJWT.checkPermissions("payment.getPayments", token)
-    #if permissions == True:
-    event = read_event_by_id(session, event_id)
-    response = jsonify(event.as_dict())
-    #else:
-    #    abort(BadRequest.code)
+    if permissions:
+        event = read_event_by_id(session, event_id)
+        response = jsonify(event.as_dict())
+    else:
+        abort(BadRequest.code)
     if not event:
         abort(NotFound.code)
     session.close()
     return response
 
+
 @app.route('/log', methods=['GET'])
 def view_all_logs():
+    token = request.headers["Authorization"].split(" ")
+    permissions = checkJWT.checkPermissions("payment.getPayment", token[1])
     session = Session()
-    #token = request.headers["token"]
-    #permissions = checkJWT.checkPermissions("payment.getPayments", token)
-    #if permissions:
-    events = read_all_events(session)
-    response = jsonify(Event.list_as_dict(events))
-    #else:
-    #    abort(BadRequest.code)
+    if permissions:
+        events = read_all_events(session)
+        response = jsonify(Event.list_as_dict(events))
+    else:
+        abort(BadRequest.code)
     session.close()
     return response
 

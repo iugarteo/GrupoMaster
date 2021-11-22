@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pika
 from . import Config
 
-from .checkJWT import set_public_key
+from .checkJWT import write_public_key_to_file
 from .payment_service import payment_validation
 from . import publisher
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -18,12 +18,10 @@ Session = scoped_session(
                 bind=engine)
         )
 
-public_key = None
-
 
 def init_rabbitmq_key():
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='192.168.17.2'))
+        pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
 
@@ -42,7 +40,7 @@ def init_rabbitmq_key():
 
 def init_rabbitmq_event():
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='192.168.17.2'))
+        pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
 
@@ -61,7 +59,7 @@ def init_rabbitmq_event():
 
 def callback_key(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
-    set_public_key(body)
+    write_public_key_to_file(body)
 
 
 def callback_event(ch, method, properties, body):
@@ -69,7 +67,6 @@ def callback_event(ch, method, properties, body):
     message = json.loads(body)
     session = Session()
     valid = payment_validation(session, message["client_id"], message["price"])
-    valid=True
     print(valid)
     session.close()
     if valid:
@@ -80,7 +77,4 @@ def callback_event(ch, method, properties, body):
               'payment_id': message["price"],
               'order_id': message["order_id"],
               'status': status}
-    publisher.publish_event("status", result)
-    
-
-
+    publisher.publish_event(status, result)

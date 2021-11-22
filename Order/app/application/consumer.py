@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pika
 from . import Config, publisher
 
-from .checkJWT import set_public_key
+from .checkJWT import write_public_key_to_file
 from .models import Order
 from .publisher import publish_event
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -23,7 +23,7 @@ public_key = None
 
 def init_rabbitmq_key():
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='192.168.17.2'))
+        pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
 
@@ -42,7 +42,7 @@ def init_rabbitmq_key():
 
 def init_rabbitmq_event():
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='192.168.17.2'))
+        pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
     channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
 
@@ -50,7 +50,9 @@ def init_rabbitmq_event():
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='global', queue="order", routing_key="payment.status")
+        exchange='global', queue="order", routing_key="payment.accepted")
+    channel.queue_bind(
+        exchange='global', queue="order", routing_key="payment.declined")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_event, auto_ack=True)
@@ -59,20 +61,18 @@ def init_rabbitmq_event():
     channel.start_consuming()
 
 
-
-
 def callback_key(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
-    set_public_key(body)
+    write_public_key_to_file(body)
 
 
 def callback_event(ch, method, properties, body):
     from . import Session
     print(" [x] {} {}".format(method.routing_key, body))
     message = json.loads(body)
-    if message["status"] == "accepted":
+    if body == "accepted":
         session = Session()
         order = session.query(Order).get(message["order_id"])
-        message={"order_id":order.id,"number_of_pieces":order.number_of_pieces}
+        message = {"order_id": order.id, "number_of_pieces": order.number_of_pieces}
         session.close()
         publisher.publish_event("md", message)
