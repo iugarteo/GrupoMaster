@@ -76,25 +76,24 @@ def genKeys():
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
 
-    private_key_file = open("C:\\Users\\ASUS\\Desktop\\MasterInfor\\1\\apis\\GrupoMaster\\Client\\app\\private_key.pem", "w")
+    private_key_file = open("private_key.pem", "w")
     private_key_file.write(encrypted_pem_private_key.decode())
     private_key_file.close()
 
-
-    public_key_file = open("C:\\Users\\ASUS\\Desktop\\MasterInfor\\1\\apis\\GrupoMaster\\Client\\app\\public_key.pem", "w")
+    public_key_file = open("public_key.pem", "w")
     public_key_file.write(pem_public_key.decode())
     public_key_file.close()
 
     return pem_public_key, private_key
 
 def getPublicKey():
-    public_key_file = open(r"C:\\Users\\ASUS\\Desktop\\MasterInfor\\1\\apis\\GrupoMaster\\Client\\app\\public_key.pem", "rb")
+    public_key_file = open(r"public_key.pem", "rb")
     public_key = public_key_file.read().decode("utf-8")
     public_key_file.close()
     return public_key
 
 def getPrivateKey():
-    private_key_file = open(r"C:\\Users\\ASUS\\Desktop\\MasterInfor\\1\\apis\\GrupoMaster\\Client\\app\\private_key.pem", "rb")
+    private_key_file = open(r"private_key.pem", "rb")
     private_key = serialization.load_pem_private_key(private_key_file.read(), b"m8#Gc9RH!gRrE&h4")
     private_key_file.close()
     return private_key

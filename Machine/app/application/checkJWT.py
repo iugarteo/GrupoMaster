@@ -36,8 +36,7 @@ def checkPermissions(permision, token):
 def load_public_key_from_file():
     try:
         mutex.acquire()
-        # file = open(r"./public_key.pem", "rb")
-        file = open(r"C:\\Users\ASUS\\Desktop\\MasterInfor\\1\\apis\\GrupoMaster\\Machine\\app\\public_key.pem", "rb")
+        file = open(r"./public_key.pem", "rb")
         global public_key
         public_key = file.read().decode("utf-8")
         file.close()
@@ -52,8 +51,7 @@ def write_public_key_to_file(key):
         mutex.acquire()
         global public_key
         public_key = key
-        # file = open(r"./public_key.pem", "w")
-        file = open(r"C:\\Users\ASUS\\Desktop\\MasterInfor\\1\\apis\\GrupoMaster\\Machine\\app\\public_key.pem", "w")
+        file = open(r"./public_key.pem", "w")
         file.write(key.decode())
         file.close()
     except Exception:
