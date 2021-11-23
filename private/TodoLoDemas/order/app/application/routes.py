@@ -3,7 +3,7 @@ from flask import current_app as app
 from .models import Order
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
-from .order import anyadirPieza, pedir_pago, cambiar_estado, crear_order, ver_order_id, ver_orders, delete_order
+from .order import addPiece, pedir_pago, cambiar_estado, crear_order, ver_order_id, ver_orders, delete_order
 from . import Session
 from .checkJWT import checkPermissions
 
@@ -66,14 +66,13 @@ def view_orders():
         response = "Error - Token sin autorización"
         return response
 
-@app.route('/order/anyadir_piexa/<int:order_id>', methods=['GET']) 
-def anadir_piezas(order_id):	
+@app.route('/order/addPiece/<int:order_id>', methods=['GET']) 
+def addPiece(order_id):	
 ##Diria que no necesita permisos
     print("Add piece to Order ", order_id)
 	
-    session = Session()
-    anyadirPieza(session, order_id)
-    session.close()
+    addPiece(order_id)
+
     return "Piece added!"
     
 @app.route('/order/borrar_order/<int:order_id>', methods=['DELETE'])

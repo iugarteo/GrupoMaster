@@ -75,7 +75,7 @@ def callback_order_event(ch, method, properties, body):
     session.close()
 
 
-def callback_machine_event(ch, method, properties, body):
+def callback_finish_event(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
     message = json.loads(body)
     session = Session()

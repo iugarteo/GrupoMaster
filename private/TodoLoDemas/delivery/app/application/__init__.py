@@ -4,7 +4,7 @@ from flask import Flask
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 from .config import Config
-from .consumer import init_rabbitmq_key, init_rabbitmq_event, callback_order_event, callback_machine_event
+from .consumer import init_rabbitmq_key, init_rabbitmq_event, callback_order_event, callback_finish_event
 from .checkJWT import load_public_key_from_file
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
@@ -30,11 +30,11 @@ def create_app():
         key_consumer.start()
 
         event_consumer1 = threading.Thread(target=init_rabbitmq_event,
-                                           args=('delivery_order', 'order.md', callback_order_event))
+                                           args=('delivery_order', 'order.piece', callback_order_event))
         event_consumer1.start()
 
         event_consumer2 = threading.Thread(target=init_rabbitmq_event,
-                                           args=('delivery_machine', 'machine.produced', callback_machine_event))
+                                           args=('delivery_finish', 'order.finished', callback_finish_event))
         event_consumer2.start()
 
         models.Base.metadata.create_all(engine)
