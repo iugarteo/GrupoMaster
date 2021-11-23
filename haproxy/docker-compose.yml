@@ -1,0 +1,26 @@
+version: '3.1'
+services:    
+  haproxy:
+    build: ./haproxy
+    ports:
+      - '${HAPROXY_PORT}:${HAPROXY_PORT}'
+      - '${HAPROXY_STATS_PORT}:${HAPROXY_STATS_PORT}'
+    expose:
+      - '${HAPROXY_PORT}'
+      - '${HAPROXY_STATS_PORT}'
+    environment:
+      - 'CLIENT_IP=10.0.2.197'
+      - 'CLIENT_PORT=8002'
+      - 'DELIVERY_IP=10.0.2.197'
+      - 'DELIVERY_PORT=8001'
+      - 'PAYMENT_IP=10.0.2.197'
+      - 'PAYMENT_PORT=8003'
+      - 'ORDER_IP=10.0.2.197'
+      - 'ORDER_PORT=8004' 
+      - 'LOG_IP=10.0.2.197'
+      - 'LOG_PORT=8006'     
+      - 'MACHINE_IP=10.0.2.197'
+      - 'MACHINE_PORT=8005'        
+      - 'HAPROXY_PORT=HAPROXY_PORT'
+      - 'HAPROXY_STATS_PORT=HAPROXY_STATS_PORT'
+    restart: unless-stopped
