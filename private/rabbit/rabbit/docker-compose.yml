@@ -1,0 +1,28 @@
+version: '3.1'
+services:
+  rabbit:
+    hostname: rabbit
+    build: .
+    volumes:
+      - './rabbit/certs:/certs'
+    ports:
+      - "5671:5671"
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+        interval: 15s
+        timeout: 10s
+        retries: 5
+    networks:
+      lb7_network:
+        ipv4_address: 192.168.17.2
+    restart: unless-stopped
+
+networks:
+  lb7_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.17.0/24
