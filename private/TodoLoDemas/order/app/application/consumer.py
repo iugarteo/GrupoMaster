@@ -92,11 +92,15 @@ def callback_event(ch, method, properties, body):
         session = Session()
         order = session.query(Order).get(message["order_id"])
         session.close()
+        message1 = {"order_id": order.id}
+        publisher.publish_event("created", message1)
         for x in range(order.number_of_pieces):
-            message = {"order_id": order.id, "number_of_pieces": 1}
-            publisher.publish_event("piece", message)
+            message2 = {"order_id": order.id, "number_of_pieces": 1}
+            publisher.publish_event("piece", message2)
 
 def callback_event_piece(ch, method, properties, body):
     message = json.loads(body)
+    #message2 = {"order_id": order.id, "status": "finished"}
+    #publisher.publish_event("finished",message2)
     order.addPiece(message["order_id"])
 

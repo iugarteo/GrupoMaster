@@ -2,6 +2,7 @@ from threading import Thread, Lock, Event
 import sqlalchemy
 import json
 from . import publisher
+from .publisher import publish_event
 from .models import Order
 
 def pedir_pago(order): #Cambios en este metodo
@@ -49,11 +50,6 @@ def delete_order(session):
     session.delete()
     session.commit()
    
-def notifyFinished(order):
-    message = {'order_id': order.id,
-               'status': order.status}
-    publisher.publish_event("finished", message)
-    
 def addPiece(id):
     from . import Session
     session = Session()
@@ -64,10 +60,11 @@ def addPiece(id):
     if order.number_of_pieces > order.piezasConstruidas: #Asi no se le asignan de más
         order.piezasConstruidas = order.piezasConstruidas + 1
         session.commit()
-    if order.number_of_pieces == order.piezasConstruidas:
-        order.status = STATUS_FINISHED
+    if order.number_of_pieces <= order.piezasConstruidas:
+        order.status = Order.STATUS_FINISHED
         session.commit()
+        message = {'order_id': id, 'status': order.status}
         session.close()
-        notifyFinished(order)
+        publisher.publish_event("finished", message)
     session.close()
     

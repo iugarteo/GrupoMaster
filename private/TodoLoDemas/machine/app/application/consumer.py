@@ -78,10 +78,9 @@ def callback_event(ch, method, properties, body):
             status="Created"
         )
         session.add(new_PieceGroup)
-        for i in range(new_PieceGroup.number_of_pieces):
-            piece = Piece()
-            piece.group = new_PieceGroup
-            session.add(piece)
+        piece = Piece()
+        piece.group = new_PieceGroup
+        session.add(piece)
         session.commit()
         my_machine.add_pieces_to_queue(new_PieceGroup.pieces)
         session.commit()

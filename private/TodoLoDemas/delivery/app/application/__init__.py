@@ -30,7 +30,7 @@ def create_app():
         key_consumer.start()
 
         event_consumer1 = threading.Thread(target=init_rabbitmq_event,
-                                           args=('delivery_order', 'order.piece', callback_order_event))
+                                           args=('delivery_order', 'order.created', callback_order_event))
         event_consumer1.start()
 
         event_consumer2 = threading.Thread(target=init_rabbitmq_event,

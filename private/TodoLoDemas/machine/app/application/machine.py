@@ -68,7 +68,7 @@ class Machine(Thread):
         self.working_piece_to_manufacturing()
 
         # Simulate piece is being manufactured
-        sleep(randint(1, 5))
+        sleep(randint(5, 10))
 
         # Machine and piece status updated after manufacturing
         self.working_piece_to_finished()
