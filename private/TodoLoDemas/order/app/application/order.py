@@ -30,7 +30,8 @@ def crear_order(session, content): #Cambios en este metodo
             number_of_pieces=content['number_of_pieces'],
             price_total=content['number_of_pieces'] * 30,
             description=content['description'],
-            status=Order.STATUS_CREATED
+            status=Order.STATUS_CREATED,
+            zip_code = content['zip_code']
         )
         session.add(new_order)
         session.commit()
