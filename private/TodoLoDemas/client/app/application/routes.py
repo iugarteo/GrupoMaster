@@ -179,7 +179,7 @@ def update_Role(role_id):
 
 # Health Check ################
 
-@app.route('/health', methods=['HEAD', 'GET'])
+@app.route('/client/health', methods=['HEAD', 'GET'])
 def health_check():
  #abort(BadRequest)
  return "OK"
