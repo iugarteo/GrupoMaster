@@ -144,6 +144,11 @@ def add_money():
     session.close()
     return response
 
+# Health Check ################
+@app.route('/health', methods=['HEAD', 'GET'])
+def health_check():
+ #abort(BadRequest)
+ return "OK"
 
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)
