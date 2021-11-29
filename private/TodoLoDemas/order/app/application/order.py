@@ -23,19 +23,22 @@ def cambiar_estado(session, order_id, status):
         return "No existe ese estado"
 
 def crear_order(session, content): #Cambios en este metodo
-    new_order = None
-    new_order = Order(
-        client_id=content['client_id'],
-        number_of_pieces=content['number_of_pieces'],
-        price_total=content['number_of_pieces'] * 30,
-        description=content['description'],
-        status=Order.STATUS_CREATED
-    )
-    session.add(new_order)
-    session.commit()
-    pedir_pago(new_order)
+    if (content['zip_code'] == 48 or content['zip_code'] == 20 or content['zip_code'] == 01):
+        new_order = None
+        new_order = Order(
+            client_id=content['client_id'],
+            number_of_pieces=content['number_of_pieces'],
+            price_total=content['number_of_pieces'] * 30,
+            description=content['description'],
+            status=Order.STATUS_CREATED
+        )
+        session.add(new_order)
+        session.commit()
+        pedir_pago(new_order)
 
-    session.close()
+        session.close()
+    else:
+        new_order = None
     return new_order
 
 def ver_order_id(session, id):
