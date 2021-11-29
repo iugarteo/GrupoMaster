@@ -34,6 +34,9 @@ class Order(BaseModel):
     STATUS_ACEPTED = "Acepted"
     STATUS_FINISHED = "Finished"
     STATUS_DECLINED = "Declined"
+    ZIP_CODE_AR = 01
+    ZIP_CODE_GI = 20
+    ZIP_CODE_BI = 48
 
     __tablename__ = "manufacturing_order"
     id = Column(Integer, primary_key=True)
@@ -43,6 +46,7 @@ class Order(BaseModel):
     description = Column(TEXT, nullable=False, default="No description")
     status = Column(String(256), nullable=False, default="Created")
     piezasConstruidas = Column(Integer, nullable=False, default=0)
+    zip_code = Column(Integer, nullable=False)
 
     def as_dict(self):
         d = super().as_dict()
