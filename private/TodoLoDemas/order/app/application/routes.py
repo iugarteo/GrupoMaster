@@ -132,7 +132,14 @@ def update_status(order_id, estado):
     else:
         response = "Error - Token sin autorización"
         return response
+# Health Check ################
 
+@app.route('/health', methods=['HEAD', 'GET'])
+def health_check():
+ #abort(BadRequest)
+ return "OK"
+
+# Errores ###############
 def get_jsonified_error(e):
     traceback.print_tb(e.__traceback__)
     return jsonify({"error_code":e.code, "error_message": e.description}), e.code
