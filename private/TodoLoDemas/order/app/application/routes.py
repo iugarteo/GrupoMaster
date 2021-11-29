@@ -134,7 +134,7 @@ def update_status(order_id, estado):
         return response
 # Health Check ################
 
-@app.route('/health', methods=['HEAD', 'GET'])
+@app.route('/order/health', methods=['HEAD', 'GET'])
 def health_check():
  #abort(BadRequest)
  return "OK"
