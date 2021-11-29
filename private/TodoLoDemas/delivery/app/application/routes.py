@@ -73,7 +73,7 @@ def update_status_received(id):
 
 # Health Check ################
 
-@app.route('/health', methods=['HEAD', 'GET'])
+@app.route('/delivery/health', methods=['HEAD', 'GET'])
 def health_check():
  #abort(BadRequest)
  return "OK"
