@@ -38,6 +38,12 @@ def view_all_logs():
     session.close()
     return response
 
+# Health Check ################
+@app.route('/log/health', methods=['HEAD', 'GET'])
+def health_check():
+ #abort(BadRequest)
+ return "OK"
+
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)
 def unsupported_media_type_handler(e):
