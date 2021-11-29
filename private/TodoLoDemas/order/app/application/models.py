@@ -34,9 +34,6 @@ class Order(BaseModel):
     STATUS_ACEPTED = "Acepted"
     STATUS_FINISHED = "Finished"
     STATUS_DECLINED = "Declined"
-    ZIP_CODE_AR = 01
-    ZIP_CODE_GI = 20
-    ZIP_CODE_BI = 48
 
     __tablename__ = "manufacturing_order"
     id = Column(Integer, primary_key=True)
