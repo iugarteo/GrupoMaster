@@ -96,6 +96,12 @@ def view_machine_status():
 
     return jsonify(response)
 
+# Health Check ################
+
+@app.route('/machine/health', methods=['HEAD', 'GET'])
+def health_check():
+ #abort(BadRequest)
+ return "OK"
 
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)
