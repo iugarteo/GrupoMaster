@@ -38,8 +38,9 @@ def crear_order(session, content, zip_code): #Cambios en este metodo
 
         session.close()
     if (zip_code != 48 or zip_code != 20 or zip_code != 1): ##Para asegurar más que otra cosa
-        new_order = None ##LLamar de vuelta al cliente denegando el order
-        #message = {'messagge':"No"}
+        new_order = None ##LLamar de vuelta al cliente denegando el order?
+        #Por si aca:
+        #message = {'client_id':content['client_id'] ,'messagge':"No"}
         #publisher.publish_event("declined", message)
     return new_order
 
