@@ -138,11 +138,13 @@ def update_status(order_id, estado):
 def health_check():
  #abort(BadRequest)
 #if(machine.state == "Free"):
-    #return "The service Order is up and free, give it some work."
+    #messagge"The service Order is up and free, give it some work."
  #if(machine.state == "Working"):
-    #return "The service Order is up but currently working, wait a little." 
+    #messagge = "The service Order is up but currently working, wait a little." 
 #if(machine.state == "Down"):
-    #return "The machine is down, we are working on it."
+    #messagge = "The machine is down, we are working on it."
+#return messagge
+
  return "OK"
 
 # Errores ###############
