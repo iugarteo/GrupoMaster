@@ -22,8 +22,8 @@ def cambiar_estado(session, order_id, status):
     else:
         return "No existe ese estado"
 
-def crear_order(session, content): #Cambios en este metodo
-    if (content['zip_code'] == 48 or content['zip_code'] == 20 or content['zip_code'] == 01):
+def crear_order(session, content, zip_code): #Cambios en este metodo
+    if (zip_code == 48 or zip_code == 20 or zip_code == 01):
         new_order = None
         new_order = Order(
             client_id=content['client_id'],
