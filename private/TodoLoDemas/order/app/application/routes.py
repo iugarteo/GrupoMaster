@@ -137,6 +137,12 @@ def update_status(order_id, estado):
 @app.route('/order/health', methods=['HEAD', 'GET'])
 def health_check():
  #abort(BadRequest)
+#if(machine.state == "Free"):
+    #return "The service Order is up and free, give it some work."
+ #if(machine.state == "Working"):
+    #return "The service Order is up but currently working, wait a little." 
+#if(machine.state == "Down"):
+    #return "The machine is down, we are working on it."
  return "OK"
 
 # Errores ###############
