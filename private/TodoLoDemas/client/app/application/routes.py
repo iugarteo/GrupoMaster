@@ -181,14 +181,14 @@ def update_Role(role_id):
 
 @app.route('/client/health', methods=['HEAD', 'GET'])
 def health_check():
- #abort(BadRequest)
 #if(machine.state == "Free"):
     #messagge"The service Order is up and free, give it some work."
  #if(machine.state == "Working"):
     #messagge = "The service Order is up but currently working, wait a little." 
 #if(machine.state == "Down"):
     #messagge = "The machine is down, we are working on it."
- return messagge
+#return messagge
+ return "Ok"
 
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)
