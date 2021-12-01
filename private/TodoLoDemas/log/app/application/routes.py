@@ -43,7 +43,7 @@ def view_all_logs():
 def health_check():
  #abort(BadRequest)
 #if(machine.state == "Free"):
-    #messagge"The service Order is up and free, give it some work."
+    #messagge = "The service Order is up and free, give it some work."
  #if(machine.state == "Working"):
     #messagge = "The service Order is up but currently working, wait a little." 
 #if(machine.state == "Down"):
