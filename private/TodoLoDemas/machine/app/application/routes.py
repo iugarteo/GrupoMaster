@@ -96,6 +96,19 @@ def view_machine_status():
 
     return jsonify(response)
 
+# Health Check ################
+
+@app.route('/machine/health', methods=['HEAD', 'GET'])
+def health_check():
+ #abort(BadRequest)
+#if(machine.state == "Free"):
+    #messagge = "The service Order is up and free, give it some work."
+ #if(machine.state == "Working"):
+    #messagge = "The service Order is up but currently working, wait a little." 
+#if(machine.state == "Down"):
+    #messagge = "The machine is down, we are working on it."
+#return messagge
+ return "OK"
 
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)

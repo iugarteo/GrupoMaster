@@ -17,7 +17,8 @@ def registClient(content, session):
             surname=content['surname'],
             password=pasEnc,
             nickname=content['nickname'],
-            role_id=content['role_id']
+            role_id=content['role_id'],
+            zip_code=content['zip_code']
         )
         session.add(new_client)
         session.commit()
