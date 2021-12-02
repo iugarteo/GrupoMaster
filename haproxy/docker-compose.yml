@@ -9,18 +9,24 @@ services:
       - '${HAPROXY_PORT}'
       - '${HAPROXY_STATS_PORT}'
     environment:
-      - 'CLIENT_IP=10.0.2.197'
-      - 'CLIENT_PORT=8002'
-      - 'DELIVERY_IP=10.0.2.197'
-      - 'DELIVERY_PORT=8001'
-      - 'PAYMENT_IP=10.0.2.197'
-      - 'PAYMENT_PORT=8003'
-      - 'ORDER_IP=10.0.2.197'
-      - 'ORDER_PORT=8004' 
-      - 'LOG_IP=10.0.2.197'
-      - 'LOG_PORT=8006'     
-      - 'MACHINE_IP=10.0.2.197'
-      - 'MACHINE_PORT=8005'        
+      - 'CLIENT_IP=${CLIENT_IP}'
+      - 'CLIENT_PORT=${CLIENT_PORT}'
+      - 'DELIVERY_IP=${DELIVERY_IP}'
+      - 'DELIVERY_PORT=${DELIVERY_PORT}'
+      - 'PAYMENT_IP=${PAYMENT_IP}'
+      - 'PAYMENT_PORT=${PAYMENT_PORT}'
+      - 'ORDER_IP=${ORDER_IP}'
+      - 'ORDER_PORT=${ORDER_PORT}' 
+      - 'LOG_IP=${LOG_IP}'
+      - 'LOG_PORT=${LOG_PORT}'     
+      - 'MACHINE_IP=${MACHINE_IP}'
+      - 'MACHINE_PORT=${MACHINE_PORT}'        
       - 'HAPROXY_PORT=HAPROXY_PORT'
       - 'HAPROXY_STATS_PORT=HAPROXY_STATS_PORT'
+    networks:
+      4taldea_lb7_network:
+        ipv4_address: '${HAPROXY_IP}'
     restart: unless-stopped
+networks:
+  4taldea_lb7_network:
+    external: true
