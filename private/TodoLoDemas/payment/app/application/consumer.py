@@ -5,7 +5,7 @@ import pika
 from . import Config
 
 from .checkJWT import write_public_key_to_file
-from .payment_service import payment_validation
+from .payment_service import payment_validation, view_account, create_payment
 from . import publisher
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
@@ -68,11 +68,13 @@ def callback_event(ch, method, properties, body):
     session = Session()
     valid = payment_validation(session, message["client_id"], message["price"])
     print(valid)
-    session.close()
     if valid:
         status = 'accepted'
+        account = view_account(session, message["client_id"])
+        create_payment(session, account, message["client_id"], message["price"])
     else:
         status = 'declined'
+    session.close()
     result = {'client_id': message["client_id"],
               'payment_id': message["price"],
               'order_id': message["order_id"],

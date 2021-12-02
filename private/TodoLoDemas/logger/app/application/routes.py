@@ -5,34 +5,34 @@ import traceback
 from . import Session, checkJWT
 
 # Log Routes #######################################################################################################
-from .logic import read_all_events, read_event_by_id
-from .models import Event
+from .logic import read_all_logs, read_log_by_id
+from .models import Log
 
 
-@app.route('/log/<int:event_id>', methods=['GET'])
-def view_event(event_id):
+@app.route('/logger/<int:event_id>', methods=['GET'])
+def view_log(event_id):
     token = request.headers["Authorization"].split(" ")
-    permissions = checkJWT.checkPermissions("log.view_event", token[1])
+    permissions = checkJWT.checkPermissions("logger.view_log", token[1])
     session = Session()
     if permissions:
-        event = read_event_by_id(session, event_id)
-        response = jsonify(event.as_dict())
+        log = read_log_by_id(session, event_id)
+        response = jsonify(log.as_dict())
     else:
         abort(BadRequest.code)
-    if not event:
+    if not log:
         abort(NotFound.code)
     session.close()
     return response
 
 
-@app.route('/log', methods=['GET'])
-def view_all_events():
+@app.route('/logger', methods=['GET'])
+def view_all_logs():
     token = request.headers["Authorization"].split(" ")
-    permissions = checkJWT.checkPermissions("log.view_all_events", token[1])
+    permissions = checkJWT.checkPermissions("logger.view_all_logs", token[1])
     session = Session()
     if permissions:
-        events = read_all_events(session)
-        response = jsonify(Event.list_as_dict(events))
+        events = read_all_logs(session)
+        response = jsonify(Log.list_as_dict(events))
     else:
         abort(BadRequest.code)
     session.close()
