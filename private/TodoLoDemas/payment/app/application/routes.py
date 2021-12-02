@@ -145,7 +145,7 @@ def add_money():
     return response
 
 # Health Check ################
-@app.route('/health', methods=['HEAD', 'GET'])
+@app.route('/payment/health', methods=['HEAD', 'GET'])
 def health_check():
  #abort(BadRequest)
 #if(machine.state == "Free"):
