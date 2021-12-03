@@ -42,10 +42,10 @@ def checkZIP(token):
     else:
         #zip_code = decoded["Zip"]
     #if (zip_code == 1 or zip_code == 20 or zip_code == 48)
-        #boolean = True
+        #return True
     #if (zip_code != 1 or zip_code != 20 or zip_code != 48)
-        #boolean = False  
-    return boolean
+        #return False  
+        return True
 
 def load_public_key_from_file():
     try:
