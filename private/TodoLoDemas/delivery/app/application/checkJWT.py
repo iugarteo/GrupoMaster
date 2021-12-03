@@ -37,15 +37,10 @@ def checkPermissions(permision, token):
 def checkZIP(token):
 
     decoded = readToken(token, public_key)
-    if decoded == None:
-        return False
-    else:
-        #zip_code = decoded["Zip"]
-    #if (zip_code == 1 or zip_code == 20 or zip_code == 48)
-        #return True
+    #zip_code = decoded["Zip"]
     #if (zip_code != 1 or zip_code != 20 or zip_code != 48)
-        #return False  
-        return True
+        #message_pieces = {"price": precio,"client_id": order.client_id,"order_id": order.id} 
+        #publisher.publish_event("declined", message_pieces)
 
 def load_public_key_from_file():
     try:
