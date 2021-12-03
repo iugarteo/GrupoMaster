@@ -12,6 +12,7 @@ from . import Session
 def create_delivery():
     token = request.headers["Authorization"].split(" ")
     permisions = checkJWT.checkPermissions("delivery.create", token[1])
+    #checkJWT.checkZIP(token[1])	
     if permisions == True:
         session = Session()
         response = delivery.registDelivery(session, content)
