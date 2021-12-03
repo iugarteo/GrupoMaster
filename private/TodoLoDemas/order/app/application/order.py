@@ -23,25 +23,19 @@ def cambiar_estado(session, order_id, status):
         return "No existe ese estado"
 
 def crear_order(session, content, zip_code): #Cambios en este metodo
-    if (zip_code == 48 or zip_code == 20 or zip_code == 1):
-        new_order = None
-        new_order = Order(
-            client_id=content['client_id'],
-            number_of_pieces=content['number_of_pieces'],
-            price_total=content['number_of_pieces'] * 30,
-            description=content['description'],
-            status=Order.STATUS_CREATED,
+    new_order = None
+    new_order = Order(
+        client_id=content['client_id'],
+        number_of_pieces=content['number_of_pieces'],
+        price_total=content['number_of_pieces'] * 30,
+        description=content['description'],
+        status=Order.STATUS_CREATED,
         )
-        session.add(new_order)
-        session.commit()
-        pedir_pago(new_order)
+    session.add(new_order)
+    session.commit()
+    pedir_pago(new_order)
 
-        session.close()
-    if (zip_code != 48 or zip_code != 20 or zip_code != 1): ##Para asegurar más que otra cosa
-        new_order = None ##LLamar de vuelta al cliente denegando el order?
-        #Por si aca:
-        #message = {'client_id':content['client_id'] ,'messagge':"No"}
-        #publisher.publish_event("declined", message)
+    session.close()
     return new_order
 
 def ver_order_id(session, id):
