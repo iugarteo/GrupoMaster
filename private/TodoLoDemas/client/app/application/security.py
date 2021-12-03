@@ -29,6 +29,7 @@ def getToken(client,role):
 
     private_key = getPrivateKey()
     encoded = jwt.encode({"Id": client.id, "Permisions": role.permissions, "exp":datetime.datetime.now(tz=timezone.utc) + datetime.timedelta(minutes=30)}, private_key, algorithm="RS256")
+    #encoded = jwt.encode({"Id": client.id, "Zip": client.zip_code, "Permisions": role.permissions, "exp":datetime.datetime.now(tz=timezone.utc) + datetime.timedelta(minutes=30)}, private_key, algorithm="RS256")
     return encoded
 
 def getRefreshToken():
