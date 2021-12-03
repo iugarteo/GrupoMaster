@@ -26,6 +26,7 @@ def checkPermissions(permision, token):
     if decoded == None:
         return False
     else:
+        #zip_code = decoded["Zip"]
         permisions = decoded["Permisions"].split(",")
     if permision in permisions:
         boolean = True
@@ -33,6 +34,18 @@ def checkPermissions(permision, token):
         boolean = False
     return boolean
 
+def checkZIP(token):
+
+    decoded = readToken(token, public_key)
+    if decoded == None:
+        return False
+    else:
+        #zip_code = decoded["Zip"]
+    #if (zip_code == 1 or zip_code == 20 or zip_code == 48)
+        #boolean = True
+    #if (zip_code != 1 or zip_code != 20 or zip_code != 48)
+        #boolean = False  
+    return boolean
 
 def load_public_key_from_file():
     try:
