@@ -24,8 +24,9 @@ bcrypt==3.2.0
 cryptography
 
 #Movidas del eñaut 2
-dns
+dnspython
 netifaces
+flask-consulate
 
 #Health
 psutil

@@ -4,6 +4,7 @@ from .models import Delivery
 from . import delivery, checkJWT
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
+from . import config
 from . import Session
 import psutil
 import os
@@ -16,6 +17,7 @@ def create_delivery():
     token = request.headers["Authorization"].split(" ")
     permisions = checkJWT.checkPermissions("delivery.create", token[1])
     #checkJWT.checkZIP(token[1])	
+    content= request.json
     if permisions == True:
         session = Session()
         response = delivery.registDelivery(session, content)
@@ -97,7 +99,7 @@ def health_check():
 	ramTest = psutil.virtual_memory().percent
 	memTest = (psutil.virtual_memory().available * 100 / psutil.virtual_memory().total)
 
-	engineTest = create_engine(Config.SQLALCHEMY_DATABASE_URI) ##Supongo que este engine luego habria que cerrarlo, 
+	engineTest = create_engine(config.SQLALCHEMY_DATABASE_URI) ##Supongo que este engine luego habria que cerrarlo, 
 								## Lo unico encontrado es dispose(), pero no se si es eso
 	if(engineTest.connect()):
 		conexionDB = "Es posible la conexión con la BD"
