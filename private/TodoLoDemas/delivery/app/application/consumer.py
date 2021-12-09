@@ -26,13 +26,13 @@ def init_rabbitmq_key():
         pika.ConnectionParameters(host=Config.RABBIT_IP))
        
     channel = connection.channel()
-    channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
+    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
 
     result = channel.queue_declare('delivery_key', durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='global', queue="delivery_key", routing_key="client.key")
+        exchange='events', queue="delivery_key", routing_key="client.key")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_key, auto_ack=True)
@@ -45,13 +45,13 @@ def init_rabbitmq_event(queue, routing_key, callback):
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
-    channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
+    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
 
     result = channel.queue_declare(queue, durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='global', queue=queue, routing_key=routing_key)
+        exchange='events', queue=queue, routing_key=routing_key)
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback, auto_ack=True)

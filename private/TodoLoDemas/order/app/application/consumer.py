@@ -25,13 +25,13 @@ def init_rabbitmq_key():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
-    channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
+    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
 
     result = channel.queue_declare('order_key', durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='global', queue="order_key", routing_key="client.key")
+        exchange='events', queue="order_key", routing_key="client.key")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_key, auto_ack=True)
@@ -44,15 +44,15 @@ def init_rabbitmq_event():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
-    channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
+    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
 
     result = channel.queue_declare('order', durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='global', queue="order", routing_key="payment.accepted")
+        exchange='events', queue="order", routing_key="payment.accepted")
     channel.queue_bind(
-        exchange='global', queue="order", routing_key="payment.declined")
+        exchange='events', queue="order", routing_key="payment.declined")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_event, auto_ack=True)
@@ -64,13 +64,13 @@ def init_rabbitmq_event_piece():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
-    channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
+    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
 
     result = channel.queue_declare('order_piece', durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='global', queue="order_piece", routing_key="machine.produced")
+        exchange='events', queue="order_piece", routing_key="machine.produced")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_event_piece, auto_ack=True)
