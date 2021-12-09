@@ -4,5 +4,6 @@ ADD requirements.txt ./app
 WORKDIR /app
 RUN pip install -r requirements.txt
 RUN pip install requests
-EXPOSE 8004
-ENTRYPOINT gunicorn -b 0.0.0.0:8004 app:app
+#EXPOSE 8004
+#ENTRYPOINT gunicorn -b 0.0.0.0:8004 app:app
+ENTRYPOINT gunicorn -b 0.0.0.0:${GUNICORN_PORT} app:app
