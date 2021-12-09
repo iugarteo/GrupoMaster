@@ -19,6 +19,14 @@ pika==1.0.0
 PyJWT~=2.2.0
 requests~=2.26.0
 
-#Movidas del eñaut
+#Movidas del eñaut crypto
 bcrypt==3.2.0
 cryptography
+
+#Movidas del eñaut 2
+dns
+netifaces
+
+#Health
+psutil
+os
