@@ -10,8 +10,8 @@ def publish_event(topic, message):
     channel = connection.channel()
 
     print(json.dumps(message))
-    channel.exchange_declare(exchange='global', exchange_type='topic', durable=True)
+    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
     channel.basic_publish(
-        exchange='global', routing_key="machine."+topic, body=json.dumps(message),
+        exchange='events', routing_key="machine."+topic, body=json.dumps(message),
         properties=pika.BasicProperties(delivery_mode=2))
     connection.close()
