@@ -14,7 +14,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
-html.Label('Graph Type'),
+html.H3('Graph Type'),
     dcc.Dropdown(
         id='graphType',
         options=[
@@ -24,7 +24,7 @@ html.Label('Graph Type'),
         ],
         value='pie'
     ),
-html.Label('Equipo'),
+html.H3('Equipo'),
     dcc.RadioItems(
         options=[
             {'label': 'Baskonia', 'value': 'CAJ'},
@@ -38,7 +38,7 @@ html.Label('Equipo'),
         id="teams",
         value='CAJ'
     ),
-html.Label('Columna'),
+html.H3('Columna'),
     dcc.RadioItems(
         options=[
             {'label': 'Triples intentados', 'value': '3PA'},
@@ -69,11 +69,10 @@ html.Label('Columna'),
     Input('year', 'value'),
     Input('graphType', 'value')])
 def update_figure(team, columna, year, tipo):
-    df2016 = df_EL.loc[df_EL['Season'] == "2016-2017"]
+    df2016 = df_EL.loc[df_EL['Season'] == "2016 - 2017"]
     df_team = df2016.loc[df_EL['Team'] == team]
     titulo = "{} from {} players of team {}".format(columna, year, team)
     if(tipo == "pie"):
-        pie1 = df_team.Player
         pie1_list = df_team[columna]  
         labels = df_team.Player
         return {
@@ -109,7 +108,7 @@ def update_figure(team, columna, year, tipo):
         };
         data = [trace1];
         layout = {
-          'xaxis': {'title': titulo},
+          'xaxis': {'title': "A"},
           'barmode': 'relative',
           'title': titulo
         };
