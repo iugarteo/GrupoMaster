@@ -4,6 +4,7 @@ from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
+import plotly.express as px
 import pandas as pd
 
 df = pd.read_csv('players_stats.csv')
@@ -99,21 +100,9 @@ def update_figure(team, columna, year, tipo):
             }
         }
     if(tipo == "bar"):
-        x = df_team.Player
-        trace1 = {
-          'x': x,
-          'y':df_team[columna],
-          'name': columna,
-          'type': tipo
-        };
-        data = [trace1];
-        layout = {
-          'xaxis': {'title': "A"},
-          'barmode': 'relative',
-          'title': titulo
-        };
-        fig = go.Figure(data = data, layout = layout)
-        
+        fig = px.bar(df_team, x="Player", y=columna, barmode="group")
+        return fig
+           
     if(tipo == "mark"):
         trace1 =go.Scatter(
             x = df2016.Player,
