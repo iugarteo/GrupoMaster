@@ -1,0 +1,42 @@
+version: '2'
+services:
+
+  # simple myself setup
+  mysql:
+    build: .
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: DB
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    volumes:
+      - my-datavolume:/var/lib/mysql
+    networks:
+      net:
+        ipv4_address: 192.168.18.3
+
+  # grafana used for graphing mysql data
+  grafana:
+    image: grafana/grafana-oss
+    ports:
+      - '80:3000'
+    environment:
+      GF_INSTALL_PLUGINS: percona-percona-app
+    networks:
+      net:
+        ipv4_address: 192.168.18.2
+    volumes:
+      - my-datavolume2:/var/lib/grafana
+volumes:
+  my-datavolume:
+  my-datavolume2:
+
+networks:
+  net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.18.0/24
