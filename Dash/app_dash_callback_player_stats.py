@@ -25,6 +25,8 @@ html.H3('Graph Type'),
         ],
         value='pie'
     ),
+html.Div([
+html.Div([
 html.H3('Equipo'),
     dcc.RadioItems(
         options=[
@@ -37,8 +39,10 @@ html.H3('Equipo'),
             {'label': 'Real Madrid', 'value': 'RMB'}
         ],
         id="teams",
-        value='CAJ'
-    ),
+        value='CAJ',
+    ),],style={'width': '48%', 'display': 'inline-block'}),
+    
+html.Div([
 html.H3('Columna'),
     dcc.RadioItems(
         options=[
@@ -50,9 +54,14 @@ html.H3('Columna'),
             {'label': 'Puntos logrados', 'value': 'PTS'}
         ],
         id="columnas",
-        value='3PM'
+        value='3PM',
     ),
+    ],
+    style={'width': '48%', 'display': 'inline-block'}
+    ),
+    ]),
     dcc.Graph(id='graph'),
+    html.H3("Year:"),
     dcc.Slider(
        id='year',
        min=anyos[0],
@@ -104,19 +113,8 @@ def update_figure(team, columna, year, tipo):
         return fig
            
     if(tipo == "mark"):
-        trace1 =go.Scatter(
-            x = df2016.Player,
-            y = df2016[columna],
-            mode = "markers",
-            name = year,
-            marker = dict(color = 'rgba(255, 128, 255, 0.8)')
-        )
-        data = [trace1]
-        layout = dict(title = titulo,
-                      xaxis= dict(title= 'Field goald attempt',ticklen= 5,zeroline= False), ##No se que poner en estos
-                      yaxis= dict(title= 'Field goald made',ticklen= 5,zeroline= False)
-                     )
-        fig = dict(data = data, layout = layout)
+        fig = px.scatter(df_team, x="Player", y=columna)
+        return fig
     
 if __name__ == '__main__':
     app.run_server(debug=True)
