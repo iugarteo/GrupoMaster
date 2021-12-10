@@ -1,11 +1,12 @@
 import dash
+import plotly
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 import pandas as pd
 
-df = pd.read_csv('C:/Users/mendi/Desktop/Eñaut/Uni/Master/Visualizacion de datos/players_stats.csv')
+df = pd.read_csv('players_stats.csv')
 df_EL = df.loc[df['League'] == "Euroleague"]
 anyos = [2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -13,6 +14,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
+html.Label('Graph Type'),
     dcc.Dropdown(
         id='graphType',
         options=[
@@ -22,6 +24,7 @@ app.layout = html.Div([
         ],
         value='pie'
     ),
+html.Label('Equipo'),
     dcc.RadioItems(
         options=[
             {'label': 'Baskonia', 'value': 'CAJ'},
@@ -35,6 +38,7 @@ app.layout = html.Div([
         id="teams",
         value='CAJ'
     ),
+html.Label('Columna'),
     dcc.RadioItems(
         options=[
             {'label': 'Triples intentados', 'value': '3PA'},
@@ -50,9 +54,9 @@ app.layout = html.Div([
     dcc.Graph(id='graph'),
     dcc.Slider(
        id='year',
-       min=anyos.min(),
-       max=anyos.max(),
-       value="2016 - 2017",
+       min=anyos[0],
+       max=anyos[-1],
+       value=anyos[0],
        marks={str(year): str(year) for year in anyos},
        step=None
     )
@@ -65,20 +69,20 @@ app.layout = html.Div([
     Input('year', 'value'),
     Input('graphType', 'value')])
 def update_figure(team, columna, year, tipo):
-    df2016 = df_EL.loc[df_EL['Season'] == year]
+    df2016 = df_EL.loc[df_EL['Season'] == "2016-2017"]
     df_team = df2016.loc[df_EL['Team'] == team]
+    titulo = "{} from {} players of team {}".format(columna, year, team)
     if(tipo == "pie"):
         pie1 = df_team.Player
         pie1_list = df_team[columna]  
         labels = df_team.Player
-        titulo = "{} from {} players of team {}".format(columna.label, year, team.label)
         return {
             "data": [
                 {
                     "values": pie1_list,
                     "labels": labels,
                     "domain": {"x": [0, .5]},
-                    "name": columna.label, ##Esto no se
+                    "name": columna, ##Esto no se
                     "hoverinfo": "label+percent+name",
                     "hole": .3,
                     "type": tipo
@@ -100,7 +104,7 @@ def update_figure(team, columna, year, tipo):
         trace1 = {
           'x': x,
           'y':df_team[columna],
-          'name': columna.label,
+          'name': columna,
           'type': tipo
         };
         data = [trace1];
@@ -110,7 +114,6 @@ def update_figure(team, columna, year, tipo):
           'title': titulo
         };
         fig = go.Figure(data = data, layout = layout)
-        iplot(fig)
         
     if(tipo == "mark"):
         trace1 =go.Scatter(
@@ -126,8 +129,6 @@ def update_figure(team, columna, year, tipo):
                       yaxis= dict(title= 'Field goald made',ticklen= 5,zeroline= False)
                      )
         fig = dict(data = data, layout = layout)
-        iplot(fig)
     
 if __name__ == '__main__':
     app.run_server(debug=True)
- 
