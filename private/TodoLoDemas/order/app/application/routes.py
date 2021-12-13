@@ -36,20 +36,20 @@ def getOrder(order_id):
 
     token = request.headers["Authorization"].split(" ")
 
-    if checkPermissions("order.ver_order", token[1]):
-        session = Session()
-        order = ver_order_id(session, order_id)
-        if not order:
-            session.close()
-            abort(NotFound.code)
-        print("GET Order {}.".format(order_id))
-        response = jsonify(order.as_dict())
-        # LLamar a create Delivery
+    #if checkPermissions("order.ver_order", token[1]):
+    session = Session()
+    order = ver_order_id(session, order_id)
+    if not order:
         session.close()
-        return response
-    else:
-        response = "Error - Token sin autorización"
-        return response
+        abort(NotFound.code)
+    print("GET Order {}.".format(order_id))
+    response = jsonify(order.as_dict())
+        # LLamar a create Delivery
+    session.close()
+    return response
+    #else:
+        #response = "Error - Token sin autorización"
+        #return response
 
 @app.route('/order/ver_orders', methods=['GET'])
 def view_orders():
@@ -58,15 +58,15 @@ def view_orders():
 
     token = request.headers["Authorization"].split(" ")
 
-    if checkPermissions("order.ver_orders", token[1]):
-        session = Session()
-        orders = ver_orders(session)
-        response = jsonify(Order.list_as_dict(orders))
-        session.close()
-        return response
-    else:
-        response = "Error - Token sin autorización"
-        return response
+    #if checkPermissions("order.ver_orders", token[1]):
+    session = Session()
+    orders = ver_orders(session)
+    response = jsonify(Order.list_as_dict(orders))
+    session.close()
+    return response
+    #else:
+        #response = "Error - Token sin autorización"
+        #return response
 
 @app.route('/order/addPiece/<int:order_id>', methods=['GET']) 
 def addPiece(order_id):	

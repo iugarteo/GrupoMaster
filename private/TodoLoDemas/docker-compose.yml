@@ -25,6 +25,7 @@ services:
       SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
       CONSUL_HOST: '${CONSUL_HOST}'
       DELIVERY_NAME: '${DELIVERY_NAME}'
+      DELIVERY_IP: '${DELIVERY_IP}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${DELIVERY_IP}'
@@ -42,6 +43,7 @@ services:
       SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
       CONSUL_HOST: '${CONSUL_HOST}'
       ORDER_NAME: '${ORDER_NAME}'
+      ORDER_IP: '${ORDER_IP}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${ORDER_IP}'
@@ -59,6 +61,7 @@ services:
       SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
       CONSUL_HOST: '${CONSUL_HOST}'
       MACHINE_NAME: '${MACHINE_NAME}'
+      MACHINE_IP: '${MACHINE_IP}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${MACHINE_IP}'
@@ -76,6 +79,7 @@ services:
       SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
       CONSUL_HOST: '${CONSUL_HOST}'
       PAYMENT_NAME: '${PAYMENT_NAME}'
+      PAYMENT_IP: '${PAYMENT_IP}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${PAYMENT_IP}'
@@ -93,6 +97,7 @@ services:
       SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
       CONSUL_HOST: '${CONSUL_HOST}'
       CLIENT_NAME: '${CLIENT_NAME}'
+      CLIENT_IP: '${CLIENT_IP}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${CLIENT_IP}'
@@ -116,6 +121,7 @@ services:
       SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
       CONSUL_HOST: '${CONSUL_HOST}'
       LOG_NAME: '${LOG_NAME}'
+      LOG_IP: '${LOG_IP}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${LOG_IP}'

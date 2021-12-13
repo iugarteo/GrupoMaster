@@ -9,6 +9,7 @@ services:
       - '${HAPROXY_PORT}'
       - '${HAPROXY_STATS_PORT}'
     environment:
+      - 'CONSUL_HOST=${CONSUL_HOST}'
       - 'CLIENT_IP=${CLIENT_IP}'
       - 'CLIENT_PORT=${CLIENT_PORT}'
       - 'DELIVERY_IP=${DELIVERY_IP}'
@@ -20,9 +21,11 @@ services:
       - 'LOG_IP=${LOG_IP}'
       - 'LOG_PORT=${LOG_PORT}'     
       - 'MACHINE_IP=${MACHINE_IP}'
-      - 'MACHINE_PORT=${MACHINE_PORT}'        
-      - 'HAPROXY_PORT=HAPROXY_PORT'
-      - 'HAPROXY_STATS_PORT=HAPROXY_STATS_PORT'
+      - 'MACHINE_PORT=${MACHINE_PORT}'
+      - 'RABBIT_IP=${RABBIT_IP}'
+      - 'RABBIT_PORT_MAN=${RABBIT_PORT_MAN}'        
+      - 'HAPROXY_PORT=${HAPROXY_PORT}'
+      - 'HAPROXY_STATS_PORT=${HAPROXY_STATS_PORT}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${HAPROXY_IP}'

@@ -24,13 +24,14 @@ def cambiar_estado(session, order_id, status):
     else:
         return "No existe ese estado"
 
-def crear_order(session, content, zip_code): #Cambios en este metodo
+def crear_order(session, content): #Cambios en este metodo
     new_order = None
     new_order = Order(
         client_id=content['client_id'],
         number_of_pieces=content['number_of_pieces'],
         price_total=content['number_of_pieces'] * 30,
         description=content['description'],
+        zip_code=content['zip_code'],
         status=Order.STATUS_CREATED,
         )
     session.add(new_order)

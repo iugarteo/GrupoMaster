@@ -5,7 +5,7 @@ from flask_consulate import Consul
 import dns
 
 CONSUL_HOST = environ.get("CONSUL_HOST")
-PORT = environ.get("DELIVERY_PORT")
+PORT = int(environ.get("GUNICORN_PORT"))
 SERVICE_NAME = environ.get("DELIVERY_NAME")
 SERVICE_ID = environ.get("DELIVERY_ID")
 IP = environ.get("DELIVERY_IP")
@@ -16,7 +16,6 @@ consul_resolver.port = 8600
 consul_resolver.nameservers = [CONSUL_HOST]
 
 class BLConsul:
-    IP = ""
     __instance = None
     consul = None
 

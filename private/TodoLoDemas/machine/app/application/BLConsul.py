@@ -5,7 +5,7 @@ from flask_consulate import Consul
 import dns
 
 CONSUL_HOST = environ.get("CONSUL_HOST")
-PORT = environ.get("MACHINE_PORT")
+PORT = int(environ.get("GUNICORN_PORT"))
 SERVICE_NAME = environ.get("MACHINE_NAME")
 SERVICE_ID = environ.get("MACHINE_ID")
 IP= environ.get("MACHINE_IP")

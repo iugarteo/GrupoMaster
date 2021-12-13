@@ -12,7 +12,7 @@ consul_resolver.nameservers = [CONSUL_HOST]
 
 class BLConsul:
     
-    PORT = environ.get("LOG_PORT")
+    PORT = int(environ.get("GUNICORN_PORT"))
     SERVICE_NAME = environ.get("LOG_NAME")
     SERVICE_ID = environ.get("LOG_ID")
     IP = environ.get("LOG_IP")  

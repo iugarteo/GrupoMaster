@@ -38,7 +38,7 @@ class Client(BaseModel):
     nickname = Column(TEXT, nullable=False, default="No nickname", unique=True)
     refresh_token = Column(TEXT, nullable=False, default="No token")
     role_id = Column(Integer, ForeignKey('roles.id'))
-    zip_code = Column(Integer, nullable=False)
+    zip_code = Column(String, nullable=False,default="01010")
 
 class Role(BaseModel):
     __tablename__ = "roles"
