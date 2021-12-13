@@ -2,8 +2,10 @@ from threading import Thread, Lock, Event
 import sqlalchemy
 import json
 from . import publisher
+from .device import Device
 from .publisher import publish_event
 from .models import Order
+from .manager import getManager
 
 def pedir_pago(order): #Cambios en este metodo
     
@@ -33,7 +35,10 @@ def crear_order(session, content, zip_code): #Cambios en este metodo
         )
     session.add(new_order)
     session.commit()
-    pedir_pago(new_order)
+    device = Device(new_order)
+    manager = getManager()
+    manager.device_list.append(device)
+    #pedir_pago(new_order)
 
     session.close()
     return new_order

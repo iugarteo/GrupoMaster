@@ -4,6 +4,7 @@ from flask import Flask
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 
+from .BLConsul import BLConsul
 from .checkJWT import load_public_key_from_file
 from .config import Config
 from .consumer import init_rabbitmq_key, init_rabbitmq_event, init_rabbitmq_event_piece
@@ -24,6 +25,9 @@ def create_app():
     with app.app_context():
         from . import routes
         from . import models
+
+        bl_consul = BLConsul.get_instance()
+        bl_consul.init_and_register(app)
 
         load_public_key_from_file()
 

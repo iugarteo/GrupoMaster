@@ -23,7 +23,6 @@ def create_order():
         session = Session()
         new_order = crear_order(session,content)
         response = jsonify(new_order.as_dict())
-        #LLamar a create Delivery
         session.close()
         return response
     else:
