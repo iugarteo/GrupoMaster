@@ -85,7 +85,7 @@ def init_rabbitmq_event_check():
     channel = connection.channel()
     channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
 
-    result = channel.queue_declare('order_piece', durable=True)
+    result = channel.queue_declare('order_check', durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(

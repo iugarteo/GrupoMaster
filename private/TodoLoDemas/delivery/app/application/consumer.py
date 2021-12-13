@@ -91,9 +91,10 @@ def callback_finish_event(ch, method, properties, body):
 def callback_check_event(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
     message = json.loads(body)
+    topic = message["topic"]
     if (message["zipCode"] == "01") or (message["zipCode"] == "20") or (message["zipCode"] == "48"):
         message = {"orderId":message["orderId"],"check":"Accepted"}
-        publish_event(message["topic"], message)
+        publish_event(topic, message)
     else:
         message = {"orderId": message["orderId"], "check": "Declined"}
-        publish_event(message["topic"], message)
+        publish_event(topic, message)

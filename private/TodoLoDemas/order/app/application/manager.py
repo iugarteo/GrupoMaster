@@ -7,7 +7,7 @@ class Manager(object):
 
     def manage_devices(self, orderId, event):
         for x in self.device_list:
-            if x.orderId == orderId:
+            if x.order.id == orderId:
                 x.on_event(event)
 
 
