@@ -47,3 +47,12 @@ class Order(BaseModel):
     def as_dict(self):
         d = super().as_dict()
         return d
+
+
+class Log:
+    CRITICAL = 50
+    ERROR = 40
+    WARNING = 30
+    INFO = 20
+    DEBUG = 10
+    NOTSET = 0

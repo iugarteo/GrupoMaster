@@ -1,6 +1,7 @@
 from flask import Flask
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
+
 from .config import Config
 from . import publisher, logic
 
@@ -20,6 +21,7 @@ def create_app():
     with app.app_context():
         from . import routes
         from . import models
+
         models.Base.metadata.create_all(engine)
         logic.refreshKeys()
         return app

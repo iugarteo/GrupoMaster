@@ -41,3 +41,11 @@ class Payment(BaseModel):
     client_id = Column(Integer, nullable=False)
     amount = Column(Integer, nullable=False)
 
+
+class Log:
+    CRITICAL = 50
+    ERROR = 40
+    WARNING = 30
+    INFO = 20
+    DEBUG = 10
+    NOTSET = 0

@@ -1,3 +1,5 @@
+import logging
+
 from flask import request, jsonify, abort
 from flask import current_app as app
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
@@ -9,10 +11,20 @@ import psutil
 import os
 from sqlalchemy import create_engine
 
+
 # Client Routes #########################################################################################################
+from .LoggingHandler import LoggingHandler
+
+logger = logging.getLogger('client')
+handler = LoggingHandler()
+logger.addHandler(handler)
+
+
 @app.route('/client/regist', methods=['POST'])
 def create_client():
     if request.headers['Content-Type'] != 'application/json':
+        logger = None
+        logger.warning("Request does not")
         abort(UnsupportedMediaType.code)
     content = request.json
     #token = request.headers["token"]
@@ -22,7 +34,6 @@ def create_client():
     response = logic.registClient(content, session)
     #else:
     #    abort(BadRequest.code)
-
 
     return response
 
@@ -91,7 +102,7 @@ def delete_client(client_id):
 # Key routes
 @app.route('/client/pubKey', methods=['GET'])
 def pub_key():
-  
+
     response = security.getPublicKey()
 
     return response
@@ -187,7 +198,7 @@ def health_check():
 	#if(machine.state == "Free"):
 	    #messagge = "The service Order is up and free, give it some work."
 	 #if(machine.state == "Working"):
-	    #messagge = "The service Order is up but currently working, wait a little." 
+	    #messagge = "The service Order is up but currently working, wait a little."
 	#if(machine.state == "Down"):
 	    #messagge = "The machine is down, we are working on it."
 	###Extra
@@ -201,7 +212,7 @@ def health_check():
 	#ramTest = psutil.virtual_memory().percent
 	#memTest = (psutil.virtual_memory().available * 100 / psutil.virtual_memory().total)
 
-	#engineTest = create_engine(Config.SQLALCHEMY_DATABASE_URI) ##Supongo que este engine luego habria que cerrarlo, 
+	#engineTest = create_engine(Config.SQLALCHEMY_DATABASE_URI) ##Supongo que este engine luego habria que cerrarlo,
 								## Lo unico encontrado es dispose(), pero no se si es eso
 	#if(engineTest.connect()):
 	#	conexionDB = "Es posible la conexión con la BD"
@@ -211,16 +222,19 @@ def health_check():
 	#response = jsonify(estado = messagge,
 	#pubKey=testFich,
 	#cpu=cpuTest,
-	#ram= ramTest, 
+	#ram= ramTest,
 	#mem = memTest,
 	#db = conexionDB)
 
 	#return response
 	return "Ok"
 
+
 # Error Handling #######################################################################################################
+
 @app.errorhandler(UnsupportedMediaType)
 def unsupported_media_type_handler(e):
+    logger.error(traceback.format_exc())
     return get_jsonified_error(e)
 
 
@@ -236,6 +250,7 @@ def resource_not_found_handler(e):
 
 @app.errorhandler(InternalServerError)
 def server_error_handler(e):
+    logger.error(e)
     return get_jsonified_error(e)
 
 

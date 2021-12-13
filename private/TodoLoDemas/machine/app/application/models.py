@@ -60,3 +60,12 @@ class Piece(BaseModel):
     status = Column(String(256), default=STATUS_QUEUED)
     order_id = Column(Integer, ForeignKey('manufacturing_order.id'))
     group = relationship('PieceGroup', backref='piece')
+
+
+class Log:
+    CRITICAL = 50
+    ERROR = 40
+    WARNING = 30
+    INFO = 20
+    DEBUG = 10
+    NOTSET = 0

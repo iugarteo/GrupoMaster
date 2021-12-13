@@ -40,10 +40,10 @@ class Client(BaseModel):
     role_id = Column(Integer, ForeignKey('roles.id'))
     zip_code = Column(Integer, nullable=False)
 
+
 class Role(BaseModel):
     __tablename__ = "roles"
     id = Column(Integer, primary_key=True)
     name = Column(TEXT, nullable=False, default="No name", unique=True)
     permissions = Column(TEXT, nullable=False, default="No permisions")
     client = relationship("Client")
-

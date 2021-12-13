@@ -6,6 +6,7 @@ from . import security
 from . import publisher
 import json
 
+from .publisher import publish_log
 
 
 def registClient(content, session):

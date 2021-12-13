@@ -13,11 +13,11 @@ def init_rabbitmq_key():
     channel = connection.channel()
     channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
 
-    result = channel.queue_declare('log_key', durable=True)
+    result = channel.queue_declare('logger_key', durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='events', queue="log_key", routing_key="client.key")
+        exchange='events', queue="logger_key", routing_key="client.key")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_key, auto_ack=True)
