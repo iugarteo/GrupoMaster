@@ -1,4 +1,4 @@
-from my_states import deliveryChecking
+from .my_states import deliveryChecking
 
 class Device(object):
     """

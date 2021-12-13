@@ -1,6 +1,6 @@
-from state import State
-import publisher
-from .order import cambiar_estado
+from .state import State
+from .publisher import publish_event
+from . import order
 
 # Start of our states
 class deliveryChecking(State):
@@ -11,7 +11,7 @@ class deliveryChecking(State):
         self.order = order
         print('Processing current state:', str(self))
         message = {"orderId": order.id, "zipCode": order.zip_code, "topic": "checkAddress"}
-        publisher.publish_event("checkAddress", message)
+        publish_event("checkAddress", message)
 
 
     def on_event(self, event):
@@ -31,7 +31,7 @@ class paymentChecking(State):
         print('Processing current state:', str(self))
         precio = order.price_total
         message = {"price": precio, "client_id": order.client_id, "order_id": order.id, "topic": "checkPayment"}
-        publisher.publish_event("checkPayment", message)
+        publish_event("checkPayment", message)
 
     def on_event(self, event):
         if event == 'Accepted':
@@ -58,7 +58,7 @@ class orderDeclined(State):
         self.order = order
         from . import Session
         session = Session()
-        cambiar_estado(session, order.id, order.STATUS_DECLINED)
+        order.cambiar_estado(session, order.id, order.STATUS_DECLINED)
 
 
 
@@ -70,11 +70,11 @@ class orderAccepted(State):
         self.order = order
         from . import Session
         session = Session()
-        cambiar_estado(session, order.id, order.STATUS_ACEPTED)
+        order.cambiar_estado(session, order.id, order.STATUS_ACEPTED)
         message1 = {"order_id": order.id}
-        publisher.publish_event("created", message1)
+        publish_event("created", message1)
         for x in range(order.number_of_pieces):
             message2 = {"order_id": order.id, "number_of_pieces": 1}
-            publisher.publish_event("piece", message2)
+            publish_event("piece", message2)
 
 # End of our states.

@@ -5,9 +5,11 @@ from flask_consulate import Consul
 import dns
 
 CONSUL_HOST = environ.get("CONSUL_HOST")
-PORT = int(environ.get("ORDER_PORT"))
+PORT = environ.get("ORDER_PORT")
 SERVICE_NAME = environ.get("ORDER_NAME")
 SERVICE_ID = environ.get("ORDER_ID")
+IP = environ.get("ORDER_IP")
+
 
 
 consul_resolver = dns.resolver.Resolver(configure=False)
@@ -15,7 +17,6 @@ consul_resolver.port = 8600
 consul_resolver.nameservers = [CONSUL_HOST]
 
 class BLConsul:
-    IP = ""
     __instance = None
     consul = None
 
@@ -30,7 +31,6 @@ class BLConsul:
         if BLConsul.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
-            self.get_ip()
             BLConsul.__instance = self
 
     def init_and_register(self, app):
@@ -44,9 +44,9 @@ class BLConsul:
             interval='10s',
             tags=['flask', 'microservice', 'aas'],
             port=PORT,
-            address=self.IP,
+            address=IP,
             httpcheck='http://{host}:{port}/{service_name}/health'.format(
-                host=self.IP,
+                host=IP,
                 port=PORT,
                 service_name=SERVICE_NAME
             )
@@ -102,12 +102,3 @@ class BLConsul:
     def get_service_replicas(self):
         return self.consul.session.agent.services()
 
-    def get_ip(self):
-        ifaces = ni.interfaces()
-        if "eth0" in ifaces:  # this is the default interface in docker
-            self.IP = self.get_ip_iface("eth0")
-        else:
-            self.IP = "127.0.0.1"
-
-    def get_ip_iface(iface):
-        return ni.ifaddresses(iface)[ni.AF_INET][0]['addr']
