@@ -149,6 +149,7 @@ def add_money():
 # Health Check ################
 @app.route('/payment/health', methods=['HEAD', 'GET'])
 def health_check():
+	abort(BadRequest)
 	fichero = os.path.exists("./public_key.pem")
 	bool ok = False
 	cpuTest = psutil.cpu_percent(1)
