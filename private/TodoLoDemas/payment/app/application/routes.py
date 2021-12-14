@@ -1,4 +1,4 @@
-from flask import request, jsonify, abort
+ººººººfrom flask import request, jsonify, abort
 from flask import current_app as app
 from .models import Account, Payment
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
@@ -151,7 +151,6 @@ def add_money():
 def health_check():
 	abort(BadRequest)
 	fichero = os.path.exists("./public_key.pem")
-	bool ok = False
 	cpuTest = psutil.cpu_percent(1)
 	ramTest = psutil.virtual_memory().percent
 	if(fichero == True and cpuTest <= 50 and ramTest <= 50):
