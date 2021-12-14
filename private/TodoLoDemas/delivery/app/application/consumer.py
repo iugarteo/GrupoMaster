@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 
 from .delivery import update_delivery_by_order, create_delivery
 from .models import Delivery
-import publisher
+from .publisher import publish_event
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 Session = scoped_session(
@@ -91,9 +91,10 @@ def callback_finish_event(ch, method, properties, body):
 def callback_check_event(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
     message = json.loads(body)
+    topic = message["topic"]
     if (message["zipCode"] == "01") or (message["zipCode"] == "20") or (message["zipCode"] == "48"):
         message = {"orderId":message["orderId"],"check":"Accepted"}
-        publisher.publish_event(message["topic"], message)
+        publish_event(topic, message)
     else:
         message = {"orderId": message["orderId"], "check": "Declined"}
-        publisher.publish_event(message["topic"], message)
+        publish_event(topic, message)

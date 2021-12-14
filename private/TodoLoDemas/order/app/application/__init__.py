@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from .BLConsul import BLConsul
 from .checkJWT import load_public_key_from_file
 from .config import Config
-from .consumer import init_rabbitmq_key, init_rabbitmq_event, init_rabbitmq_event_piece
+from .consumer import init_rabbitmq_key, init_rabbitmq_event, init_rabbitmq_event_piece, init_rabbitmq_event_check
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 Session = scoped_session(
@@ -38,6 +38,9 @@ def create_app():
         event_consumer.start()
 
         event_consumer_piece = threading.Thread(target=init_rabbitmq_event_piece)
+        event_consumer_piece.start()
+
+        event_consumer_piece = threading.Thread(target=init_rabbitmq_event_check)
         event_consumer_piece.start()
 
         models.Base.metadata.create_all(engine)
