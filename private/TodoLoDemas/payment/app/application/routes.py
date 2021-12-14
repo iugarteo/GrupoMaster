@@ -153,10 +153,8 @@ def health_check():
 	bool ok = False
 	cpuTest = psutil.cpu_percent(1)
 	ramTest = psutil.virtual_memory().percent
-	if (fichero == True and cpuTest <= 50 and ramTest <= 50):
+	if(fichero == True and cpuTest <= 50 and ramTest <= 50):
 		return "Ok"
-	else:
-		return "No Ok"
 
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)
