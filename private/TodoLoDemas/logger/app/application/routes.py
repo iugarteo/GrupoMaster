@@ -3,6 +3,8 @@ from flask import current_app as app
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 import traceback
 from . import Session, checkJWT
+import psutil
+import os
 
 # Log Routes #######################################################################################################
 from .logic import read_all_logs, read_log_by_id
@@ -41,15 +43,13 @@ def view_all_logs():
 # Health Check ################
 @app.route('/log/health', methods=['HEAD', 'GET'])
 def health_check():
- #abort(BadRequest)
-#if(machine.state == "Free"):
-    #messagge = "The service Order is up and free, give it some work."
- #if(machine.state == "Working"):
-    #messagge = "The service Order is up but currently working, wait a little." 
-#if(machine.state == "Down"):
-    #messagge = "The machine is down, we are working on it."
-#return messagge
- return "OK"
+    fichero = os.path.exists("./public_key.pem")
+    cpuTest = psutil.cpu_percent(1)
+    ramTest = psutil.virtual_memory().percent
+    if(fichero == True and cpuTest <= 50 and ramTest <= 50):
+        return "Ok"
+    else:
+        abort(BadRequest.code)
 
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)

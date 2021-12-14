@@ -126,6 +126,24 @@ services:
       4taldea_lb7_network:
         ipv4_address: '${LOG_IP}'
     restart: unless-stopped
+  logger:
+    hostname: logger
+    build: ./logger
+    volumes:
+      - './logger/app:/app'
+    expose:
+      - '${LOGGER_PORT}'
+    environment:
+      GUNICORN_PORT: '${LOGGER_PORT}'
+      SQLALCHEMY_DATABASE_URI: '${SQLALCHEMY_SQLITE_DATABASE_URI}'
+      SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
+      CONSUL_HOST: '${CONSUL_HOST}'
+      LOGGER_NAME: '${LOGGER_NAME}'
+      LOGGER_IP: '${LOGGER_IP}'
+    networks:
+      4taldea_lb7_network:
+        ipv4_address: '${LOGGER_IP}'
+    restart: unless-stopped
 networks:
   4taldea_lb7_network:
     external: true
