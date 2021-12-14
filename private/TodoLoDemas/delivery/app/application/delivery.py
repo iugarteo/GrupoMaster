@@ -6,6 +6,7 @@ from .LoggingHandler import LoggingHandler
 from .models import Delivery
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
 
+logging.basicConfig(level=logging.DEBUG)  # Enables Debug and Info logs
 logger = logging.getLogger('client')
 handler = LoggingHandler()
 logger.addHandler(handler)

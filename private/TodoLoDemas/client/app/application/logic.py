@@ -11,7 +11,7 @@ import json
 from .LoggingHandler import LoggingHandler
 
 
-# logging.basicConfig(level=logging.DEBUG) Enables Debug and Info logs
+logging.basicConfig(level=logging.DEBUG)  # Enables Debug and Info logs
 logger = logging.getLogger('client')
 handler = LoggingHandler()
 logger.addHandler(handler)
