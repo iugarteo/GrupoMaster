@@ -41,7 +41,7 @@ def view_all_logs():
     return response
 
 # Health Check ################
-@app.route('/log/health', methods=['HEAD', 'GET'])
+@app.route('/logger/health', methods=['HEAD', 'GET'])
 def health_check():
     fichero = os.path.exists("./public_key.pem")
     cpuTest = psutil.cpu_percent(1)

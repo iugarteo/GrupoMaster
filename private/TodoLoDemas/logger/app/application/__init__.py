@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 from .checkJWT import load_public_key_from_file
 from .config import Config
 from .consumer import init_rabbitmq_log, init_rabbitmq_key
+from .BLConsul import BLConsul
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 Session = scoped_session(
@@ -23,6 +24,9 @@ def create_app():
         from . import routes
         from . import models
         models.Base.metadata.create_all(engine)
+
+        bl_consul = BLConsul.get_instance()
+        bl_consul.init_and_register(app)
 
         load_public_key_from_file()
 

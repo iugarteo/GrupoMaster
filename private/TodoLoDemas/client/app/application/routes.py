@@ -197,12 +197,13 @@ def update_Role(role_id):
 
 @app.route('/client/health', methods=['HEAD', 'GET'])
 def health_check():
-abort(BadRequest)
-	fichero = os.path.exists("./public_key.pem")
-	cpuTest = psutil.cpu_percent(1)
-	ramTest = psutil.virtual_memory().percent
-	if(fichero == True and cpuTest <= 50 and ramTest <= 50):
-		return "Ok"
+    fichero = os.path.exists("./public_key.pem")
+    cpuTest = psutil.cpu_percent(1)
+    ramTest = psutil.virtual_memory().percent
+    if(fichero == True and cpuTest <= 50 and ramTest <= 50):
+        return "Ok"
+    else:
+        abort(BadRequest.code)
 
 
 # Error Handling #######################################################################################################
