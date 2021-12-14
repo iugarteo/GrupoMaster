@@ -1,12 +1,18 @@
+import logging
 from random import randint
 from time import sleep
 from collections import deque
+
+from .LoggingHandler import LoggingHandler
 from .models import Piece, PieceGroup
 from threading import Thread, Lock, Event
 import sqlalchemy
 
 from . import api
 
+logger = logging.getLogger('client')
+handler = LoggingHandler()
+logger.addHandler(handler)
 
 
 class Machine(Thread):

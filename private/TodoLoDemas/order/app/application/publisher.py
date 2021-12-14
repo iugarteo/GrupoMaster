@@ -1,11 +1,10 @@
 import json
-from datetime import datetime
 
 import pika
-from flask import jsonify
+from flask import request
 
 from . import Config
-
+from .BLConsul import SERVICE_ID, SERVICE_NAME
 
 def publish_event(topic, message):
     connection = pika.BlockingConnection(
@@ -20,18 +19,26 @@ def publish_event(topic, message):
     connection.close()
 
 
-def publish_log(service, level, message):
+def publish_log(timestamp, severity, message, filename=None, function=None):
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
 
-    datetime_object = datetime.now()
-    timestamp = datetime_object.strftime("%d-%b-%Y %H:%M:%S:%f")
-    log = jsonify(timestamp=timestamp, service=service, level=level, message=message)
+    log = {
+        "timestamp": timestamp,
+        "url": request.base_url,
+        "request_body": request.data.decode("utf-8"),
+        "service": SERVICE_NAME,
+        "service_id": SERVICE_ID,
+        "severity": severity,
+        "filename": filename,
+        "function": function,
+        "message": str(message)
+    }
+    print(log)
 
-    print(json.dumps(message))
     channel.exchange_declare(exchange='logger', exchange_type='topic', durable=True)
     channel.basic_publish(
-        exchange='logger', routing_key=service + "." + level, body=log,
+        exchange='logger', routing_key=SERVICE_NAME + "." + severity, body=json.dumps(log).encode('utf8'),
         properties=pika.BasicProperties(delivery_mode=2))
     connection.close()

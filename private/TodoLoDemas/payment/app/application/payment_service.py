@@ -1,4 +1,11 @@
+import logging
+
+from private.TodoLoDemas.client.app.application.LoggingHandler import LoggingHandler
 from .models import Payment, Account
+
+logger = logging.getLogger('client')
+handler = LoggingHandler()
+logger.addHandler(handler)
 
 
 def view_payment_by_id(session, payment_id):
@@ -7,26 +14,26 @@ def view_payment_by_id(session, payment_id):
         # ApiClient.log("warning", "view_payment_by_id", "Payment {} not found".format(payment_id))
         session.close()
         return None
-    print("GET Payment {}: {}".format(payment_id, payment))
+    logger.info("GET Payment {}: {}".format(payment_id, payment))
     return payment
 
 
 def view_all_payments_by_client(session, client_id):
-    print("GET All Payments of Client {}".format(client_id))
+    logger.info("GET All Payments of Client {}".format(client_id))
     # ApiClient.log("warning", "view_all_payments_by_client", "View {} client's all payments".format(client_id))
     payments = session.query(Payment).filter_by(client_id=client_id).all()
     return payments
 
 
 def view_all_payments(session):
-    print("GET All Payments")
+    logger.info("GET All Payments")
     # ApiClient.log("information", "view_all_payments", "Get all payments")
     payments = session.query(Payment).all()
     return payments
 
 
 def view_all_accounts(session):
-    print("GET All Accounts.")
+    logger.info("GET All Accounts.")
     accounts = session.query(Account).all()
     return accounts
 
@@ -36,7 +43,7 @@ def view_account(session, client_id):
     if not account:
         session.close()
         return None
-    print("GET Client {}: {}".format(client_id, account))
+    logger.info("GET Client {}: {}".format(client_id, account))
     return account
 
 

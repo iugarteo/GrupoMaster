@@ -1,14 +1,20 @@
+import logging
 from threading import Thread, Lock, Event
 import sqlalchemy
 import json
 from . import publisher
+from .LoggingHandler import LoggingHandler
 from .device import Device
 from .publisher import publish_event
 from .models import Order
 from .manager import getManager
 
+logger = logging.getLogger('client')
+handler = LoggingHandler()
+logger.addHandler(handler)
+
+
 def pedir_pago(order): #Cambios en este metodo
-    
     precio = order.price_total
     message_pieces = {"price": precio,"client_id": order.client_id,"order_id": order.id} #No se cuales serian los metodos
     publisher.publish_event("create", message_pieces) #No se cual seria la cola

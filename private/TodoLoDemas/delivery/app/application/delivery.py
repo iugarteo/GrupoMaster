@@ -1,6 +1,14 @@
+import logging
+
 from flask import request, jsonify, abort
+
+from .LoggingHandler import LoggingHandler
 from .models import Delivery
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
+
+logger = logging.getLogger('client')
+handler = LoggingHandler()
+logger.addHandler(handler)
 
 
 def registDelivery(session, content):
