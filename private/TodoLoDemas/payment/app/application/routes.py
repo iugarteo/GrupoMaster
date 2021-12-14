@@ -1,4 +1,4 @@
-ººººººfrom flask import request, jsonify, abort
+from flask import request, jsonify, abort
 from flask import current_app as app
 from .models import Account, Payment
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
