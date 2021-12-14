@@ -7,20 +7,19 @@ from .publisher import publish_log
 
 class LoggingHandler(logging.Handler):
     def __init__(self):
-        super(LoggingHandler, self).__init__(level=logging.INFO)
+        super(LoggingHandler, self).__init__(level=logging.DEBUG)
 
     def emit(self, record):
+        timestamp = datetime.fromtimestamp(record.created).strftime("%d-%b-%Y %H:%M:%S:%f")
         if record.levelname == 'CRITICAL':  # 50
-            return 1
+            trace = traceback.format_exc()
+            publish_log(timestamp, record.levelname, trace)
         elif record.levelname == 'ERROR':  # 40
-            timestamp = datetime.fromtimestamp(record.created).strftime("%d-%b-%Y %H:%M:%S:%f")
             trace = traceback.format_exc()
-            publish_log(timestamp, record.name, record.levelname,trace)
+            publish_log(timestamp, record.levelname, trace)
         elif record.levelname == 'WARNING':  # 30
-            trace = traceback.format_exc()
+            publish_log(timestamp, record.levelname, record.msg, record.filename, record.funcName)
         elif record.levelname == 'INFO':  # 20
-            trace = traceback.format_exc()
+            publish_log(timestamp, record.levelname, record.msg, record.filename, record.funcName)
         elif record.levelname == 'DEBUG':  # 10
-            trace = traceback.format_exc()
-        else:
-            trace = traceback.format_exc()
+            publish_log(timestamp, record.levelname, record.msg, record.filename, record.funcName)

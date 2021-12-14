@@ -1,12 +1,20 @@
+import logging
 
-from flask import request, jsonify, abort
+from flask import jsonify, abort
+
 from .models import Client, Role
-from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType, Forbidden
+from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 from . import security
 from . import publisher
 import json
 
-from .publisher import publish_log
+from .LoggingHandler import LoggingHandler
+
+
+# logging.basicConfig(level=logging.DEBUG) Enables Debug and Info logs
+logger = logging.getLogger('client')
+handler = LoggingHandler()
+logger.addHandler(handler)
 
 
 def registClient(content, session):
@@ -23,10 +31,10 @@ def registClient(content, session):
         )
         session.add(new_client)
         session.commit()
-        session.commit()
-    except KeyError:
+    except Exception as e:
         session.rollback()
         session.close()
+        logger.warning(e)
         abort(BadRequest.code)
     response = jsonify(new_client.as_dict())
     session.close()
@@ -42,8 +50,7 @@ def getAllClients(session):
 def getClient(client_id, session):
     client = session.query(Client).get(client_id)
     if not client:
-        abort(NotFound.code)
-    print("GET Client {}: {}".format(client_id, client))
+     print("GET Client {}: {}".format(client_id, client))
     response = jsonify(client.as_dict())
     session.close()
     return response
@@ -52,7 +59,7 @@ def deleteClient(client_id, session):
     client = session.query(Client).get(client_id)
     if not client:
         session.close()
-        abort(NotFound.code)
+        abort(NotFound.code, "Client not found")
     print("DELETE Client {}.".format(client_id))
     session.delete(client)
     session.commit()
@@ -121,18 +128,19 @@ def deleteRole(role_id, session):
     session.close()
     return response
 
+
 def authentication(nickname, password, session):
     client = session.query(Client).filter(Client.nickname==nickname).all()
-    role = session.query(Role).filter(Role.id==client[0].role_id).all()
+    role = None #session.query(Role).filter(Role.id==client[0].role_id).all()
     if not client:
         session.close()
-        abort(NotFound.code)
+        abort(NotFound.code, f"Client {nickname} not found")
     if not role:
         session.close()
-        abort(NotFound.code)
+        abort(NotFound.code, f"Client's role not found ({role})")
     auth = security.checkPass(password, client[0])
-    if (auth == True):
-        print("Authentication correct!")
+    if auth:
+        logger.info("Authentication correct %s", nickname)
         jwt = security.getToken(client[0], role[0])
         client[0].refresh_token = security.getRefreshToken()
         refresh_token = client[0].refresh_token
@@ -146,8 +154,8 @@ def authentication(nickname, password, session):
     message = {"jwt":jwt, "refresh_token":refresh_token}
     return json.dumps(message)
 
-def checkPermissions(permision, token):
 
+def checkPermissions(permision, token):
     decoded = security.readToken(token, security.getPublicKey())
     if decoded == None:
         return False

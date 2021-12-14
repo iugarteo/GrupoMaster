@@ -2,7 +2,7 @@ from flask import Flask
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 from .config import Config
-from . import publisher, logic
+from . import logic
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 Session = scoped_session(

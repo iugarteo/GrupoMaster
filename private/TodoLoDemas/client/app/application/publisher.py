@@ -1,9 +1,10 @@
 import json
 
 import pika
+from flask import request
 
-from . import security
-from . import Config
+from . import security, Config
+from .BLConsul import SERVICE_ID, SERVICE_NAME
 
 
 def publishKey():
@@ -20,21 +21,27 @@ def publishKey():
     connection.close()
 
 
-def publish_log(timestamp, service_name, severity, message):
+def publish_log(timestamp, severity, message, filename=None, function=None):
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
 
     log = {
         "timestamp": timestamp,
-        "service": service_name,
+        "url": request.base_url,
+        "request_body": request.data.decode("utf-8"),
+        "service": SERVICE_NAME,
+        "service_id": SERVICE_ID,
         "severity": severity,
-        "message": message}
+        "filename": filename,
+        "function": function,
+        "message": str(message)
+    }
     print(log)
 
     channel.exchange_declare(exchange='logger', exchange_type='topic', durable=True)
     channel.basic_publish(
-        exchange='logger', routing_key=service_name + "." + severity, body=json.dumps(log),
+        exchange='logger', routing_key=SERVICE_NAME + "." + severity, body=json.dumps(log).encode('utf8'),
         properties=pika.BasicProperties(delivery_mode=2))
     connection.close()
 

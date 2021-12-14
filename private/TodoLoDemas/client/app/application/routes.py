@@ -1,30 +1,33 @@
-import logging
-
 from flask import request, jsonify, abort
 from flask import current_app as app
-from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType
+from werkzeug.exceptions import NotFound, InternalServerError, BadRequest, UnsupportedMediaType, Forbidden
 import traceback
-from . import logic, Session
+from . import logic
+from .__init__ import Session
 from . import security
 import base64
+from flask import request
+
 import psutil
 import os
 from sqlalchemy import create_engine
 
 
 # Client Routes #########################################################################################################
-from .LoggingHandler import LoggingHandler
+from .logic import logger
 
-logger = logging.getLogger('client')
-handler = LoggingHandler()
-logger.addHandler(handler)
+NOT_FOUND_MESSAGE =  "The requested URL was not found on the server. If you entered the URL manually please check " \
+                        "your spelling and try again."
 
 
 @app.route('/client/regist', methods=['POST'])
 def create_client():
+    logger.info("abc")
+    logger.debug("text")
+    if 'Content-Type' not in request.headers:
+        logger.warning("Request does not have 'Content-Type' header")
+        abort(BadRequest.code)
     if request.headers['Content-Type'] != 'application/json':
-        logger = None
-        logger.warning("Request does not")
         abort(UnsupportedMediaType.code)
     content = request.json
     #token = request.headers["token"]
@@ -68,7 +71,7 @@ def view_clients():
         session = Session()
         response = logic.getAllClients(session)
     else:
-        abort(BadRequest.code)
+        abort(Forbidden.code)
 
     return response
 
@@ -82,7 +85,7 @@ def view_client(client_id):
         response = logic.getClient(client_id,session)
 
     else:
-        abort(BadRequest.code)
+        abort(Forbidden.code)
     return response
 
 
@@ -94,7 +97,7 @@ def delete_client(client_id):
         session = Session()
         response = logic.deleteClient(client_id,session)
     else:
-        abort(BadRequest.code)
+        abort(Forbidden.code)
 
     return response
 
@@ -116,7 +119,7 @@ def refresh_key():
         response=logic.refreshKeys()
 
     else:
-        abort(BadRequest.code)
+        abort(Forbidden.code)
     return response
 
 
@@ -158,7 +161,7 @@ def view_role(role_id):
         session = Session()
         response = logic.getRole(role_id, session)
     else:
-        abort(BadRequest.code)
+        abort(Forbidden.code)
 
     return response
 
@@ -171,7 +174,7 @@ def delete_role(role_id):
         session = Session()
         response = logic.deleteRole(role_id, session)
     else:
-        abort(BadRequest.code)
+        abort(Forbidden.code)
 
     return response
 
@@ -187,7 +190,7 @@ def update_Role(role_id):
         session = Session()
         response = logic.updateRole(role_id, content, session)
     else:
-        abort(BadRequest.code)
+        abort(Forbidden.code)
     return response
 
 # Health Check ################
@@ -234,7 +237,7 @@ def health_check():
 
 @app.errorhandler(UnsupportedMediaType)
 def unsupported_media_type_handler(e):
-    logger.error(traceback.format_exc())
+    logger.warning("Request does not have correct 'Content-Type' header")
     return get_jsonified_error(e)
 
 
@@ -243,8 +246,19 @@ def bad_request_handler(e):
     return get_jsonified_error(e)
 
 
+@app.errorhandler(Forbidden)
+def server_error_handler(e):
+    logger.warning(e)
+    return get_jsonified_error(e)
+
+
 @app.errorhandler(NotFound)
 def resource_not_found_handler(e):
+    if e.description == NOT_FOUND_MESSAGE:
+        logger.warning("URL Not found")
+    else:
+        logger.warning(e)
+        e.description = NOT_FOUND_MESSAGE
     return get_jsonified_error(e)
 
 

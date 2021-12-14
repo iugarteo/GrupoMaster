@@ -1,4 +1,3 @@
-from .api_client import ApiClient
 from .models import Payment, Account
 
 
