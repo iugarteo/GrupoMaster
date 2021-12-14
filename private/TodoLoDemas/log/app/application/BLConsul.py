@@ -5,6 +5,10 @@ import netifaces as ni
 from flask_consulate import Consul
 import dns
 
+PORT = int(environ.get("GUNICORN_PORT"))
+SERVICE_NAME = environ.get("LOG_NAME")
+SERVICE_ID = environ.get("LOG_ID")
+IP = environ.get("LOG_IP")  
 CONSUL_HOST = environ.get("CONSUL_HOST")
 consul_resolver = dns.resolver.Resolver(configure=False)
 consul_resolver.port = 8600
@@ -12,10 +16,7 @@ consul_resolver.nameservers = [CONSUL_HOST]
 
 class BLConsul:
     
-    PORT = int(environ.get("GUNICORN_PORT"))
-    SERVICE_NAME = environ.get("LOG_NAME")
-    SERVICE_ID = environ.get("LOG_ID")
-    IP = environ.get("LOG_IP")  
+    
     __instance = None
     consul = None
 
@@ -38,17 +39,17 @@ class BLConsul:
 
     def register_service(self):
         self.consul.register_service(
-            service_id=self.SERVICE_ID,
-            name=self.SERVICE_NAME,
+            service_id=SERVICE_ID,
+            name=SERVICE_NAME,
             interval='10s',
             tags=['flask', 'microservice', 'aas'],
-            port=self.PORT,
-            address=self.IP
-           #httpcheck='http://{host}:{port}/{service_name}/health'.format(
-           #     host=IP,
-            #    port=PORT,
-             #   service_name="log"
-            #)
+            port=PORT,
+            address=IP,
+            httpcheck='http://{host}:{port}/{service_name}/health'.format(
+                host=IP,
+                port=PORT,
+                service_name=SERVICE_NAME
+            )
         )
 
     # This could be an alternative using Consul's REST API

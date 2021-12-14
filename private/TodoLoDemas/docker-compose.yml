@@ -26,6 +26,7 @@ services:
       CONSUL_HOST: '${CONSUL_HOST}'
       DELIVERY_NAME: '${DELIVERY_NAME}'
       DELIVERY_IP: '${DELIVERY_IP}'
+      DELIVERY_ID: '${DELIVERY_ID}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${DELIVERY_IP}'
@@ -43,6 +44,7 @@ services:
       SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
       CONSUL_HOST: '${CONSUL_HOST}'
       ORDER_NAME: '${ORDER_NAME}'
+      ORDER_ID: '${ORDER_ID}'
       ORDER_IP: '${ORDER_IP}'
     networks:
       4taldea_lb7_network:
@@ -61,6 +63,7 @@ services:
       SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
       CONSUL_HOST: '${CONSUL_HOST}'
       MACHINE_NAME: '${MACHINE_NAME}'
+      MACHINE_ID: '${MACHINE_ID}'
       MACHINE_IP: '${MACHINE_IP}'
     networks:
       4taldea_lb7_network:
@@ -79,35 +82,12 @@ services:
       SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
       CONSUL_HOST: '${CONSUL_HOST}'
       PAYMENT_NAME: '${PAYMENT_NAME}'
+      PAYMENT_ID: '${PAYMENT_ID}'
       PAYMENT_IP: '${PAYMENT_IP}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${PAYMENT_IP}'
     restart: unless-stopped
-  client:
-    hostname: client
-    build: ./client
-    volumes:
-      - './client/app:/app'
-    expose:
-      - '${CLIENT_PORT}'
-    environment:
-      GUNICORN_PORT: '${CLIENT_PORT}'
-      SQLALCHEMY_DATABASE_URI: '${SQLALCHEMY_SQLITE_DATABASE_URI}'
-      SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
-      CONSUL_HOST: '${CONSUL_HOST}'
-      CLIENT_NAME: '${CLIENT_NAME}'
-      CLIENT_IP: '${CLIENT_IP}'
-    networks:
-      4taldea_lb7_network:
-        ipv4_address: '${CLIENT_IP}'
-    restart: unless-stopped
-    depends_on:
-      - delivery
-      - payment
-      - order
-      - machine
-
   log:
     hostname: log
     build: ./log
@@ -122,6 +102,7 @@ services:
       CONSUL_HOST: '${CONSUL_HOST}'
       LOG_NAME: '${LOG_NAME}'
       LOG_IP: '${LOG_IP}'
+      LOG_ID: '${LOG_ID}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${LOG_IP}'
@@ -140,10 +121,37 @@ services:
       CONSUL_HOST: '${CONSUL_HOST}'
       LOGGER_NAME: '${LOGGER_NAME}'
       LOGGER_IP: '${LOGGER_IP}'
+      LOGGER_ID: '${LOGGER_ID}'
     networks:
       4taldea_lb7_network:
         ipv4_address: '${LOGGER_IP}'
     restart: unless-stopped
+  client:
+    hostname: client
+    build: ./client
+    volumes:
+      - './client/app:/app'
+    expose:
+      - '${CLIENT_PORT}'
+    environment:
+      GUNICORN_PORT: '${CLIENT_PORT}'
+      SQLALCHEMY_DATABASE_URI: '${SQLALCHEMY_SQLITE_DATABASE_URI}'
+      SQLALCHEMY_TRACK_MODIFICATIONS: '${SQLALCHEMY_TRACK_MODIFICATIONS}'
+      CONSUL_HOST: '${CONSUL_HOST}'
+      CLIENT_NAME: '${CLIENT_NAME}'
+      CLIENT_ID: '${CLIENT_ID}'
+      CLIENT_IP: '${CLIENT_IP}'
+    networks:
+      4taldea_lb7_network:
+        ipv4_address: '${CLIENT_IP}'
+    restart: unless-stopped
+    depends_on:
+      - delivery
+      - payment
+      - order
+      - machine
+      - logger
+      - log
 networks:
   4taldea_lb7_network:
     external: true

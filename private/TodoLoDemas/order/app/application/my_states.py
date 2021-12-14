@@ -11,8 +11,8 @@ class deliveryChecking(State):
         self.order = orderObject
         from . import Session
         session = Session()
+        order.logger.info('Processing current state: Delivery checking')
         order.cambiar_estado(session, orderObject.id, orderObject.STATUS_PENDING_DELIVERY)
-        print('Processing current state:', str(self))
         message = {"orderId": orderObject.id, "zipCode": orderObject.zip_code, "topic": "checkAddress"}
         publish_event("checkAddress", message)
 
@@ -34,7 +34,7 @@ class paymentChecking(State):
         from . import Session
         session = Session()
         order.cambiar_estado(session, orderObject.id, orderObject.STATUS_PENDING_ON_PAYMENT)
-        print('Processing current state:', str(self))
+        order.logger.info('Processing current state: Payment checking')
         precio = orderObject.price_total
         message = {"price": precio, "client_id": orderObject.client_id, "order_id": orderObject.id, "topic": "checkPayment"}
         publish_event("checkPayment", message)
@@ -53,6 +53,7 @@ class returnResources(State):
     """
     def __init__(self, orderObject):
         self.order = orderObject
+        order.logger.info('Processing current state: return Resources')
         return orderDeclined(self.order)
 
 
@@ -64,6 +65,7 @@ class orderDeclined(State):
         self.order = orderObject
         from . import Session
         session = Session()
+        order.logger.info('Processing current state: orderDeclined')
         order.cambiar_estado(session, orderObject.id, orderObject.STATUS_DECLINED)
 
 
@@ -76,6 +78,7 @@ class orderAccepted(State):
         self.order = orderObject
         from . import Session
         session = Session()
+        order.logger.info('Processing current state: orderAccepted')
         order.cambiar_estado(session, orderObject.id, orderObject.STATUS_ACEPTED)
         message1 = {"order_id": orderObject.id}
         publish_event("created", message1)

@@ -43,13 +43,13 @@ def view_all_logs():
 # Health Check ################
 @app.route('/logger/health', methods=['HEAD', 'GET'])
 def health_check():
-    fichero = os.path.exists("./public_key.pem")
-    cpuTest = psutil.cpu_percent(1)
-    ramTest = psutil.virtual_memory().percent
-    if(fichero == True and cpuTest <= 50 and ramTest <= 50):
-        return "Ok"
-    else:
-        abort(BadRequest.code)
+    #fichero = os.path.exists("./public_key.pem")
+    #cpuTest = psutil.cpu_percent(1)
+    #ramTest = psutil.virtual_memory().percent
+    #if(fichero == True and cpuTest <= 50 and ramTest <= 50):
+    return "Ok"
+    #else:
+    #    abort(BadRequest.code)
 
 # Error Handling #######################################################################################################
 @app.errorhandler(UnsupportedMediaType)

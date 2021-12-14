@@ -9,8 +9,8 @@ from .publisher import publish_event
 from .models import Order
 from .manager import getManager
 
-logging.basicConfig(level=logging.DEBUG)  # Enables Debug and Info logs
-logger = logging.getLogger('client')
+#logging.basicConfig(level=logging.WARNING)  # Enables Debug and Info logs
+logger = logging.getLogger('order')
 handler = LoggingHandler()
 logger.addHandler(handler)
 

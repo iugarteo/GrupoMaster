@@ -1,9 +1,9 @@
 import logging
 
-from private.TodoLoDemas.client.app.application.LoggingHandler import LoggingHandler
+from .LoggingHandler import LoggingHandler
 from .models import Payment, Account
 
-logging.basicConfig(level=logging.DEBUG)  # Enables Debug and Info logs
+#logging.basicConfig(level=logging.DEBUG)  # Enables Debug and Info logs
 logger = logging.getLogger('client')
 handler = LoggingHandler()
 logger.addHandler(handler)
