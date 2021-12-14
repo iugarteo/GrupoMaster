@@ -40,6 +40,11 @@ class Log(BaseModel):
     __tablename__ = "log"
     id = Column(Integer, primary_key=True, autoincrement=True)
     timestamp = Column(TEXT, nullable=False)
+    url = Column(TEXT, nullable=False)
+    request_body = Column(TEXT, nullable=False)
     service = Column(TEXT, nullable=False)
-    level = Column(TEXT, nullable=False)
+    service_id = Column(Integer, nullable=False)
+    severity = Column(TEXT, nullable=False)
+    filename = Column(TEXT, nullable=True)
+    function = Column(TEXT, nullable=True)
     message = Column(TEXT, nullable=False)

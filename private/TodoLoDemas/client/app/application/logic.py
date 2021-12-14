@@ -41,7 +41,7 @@ def registClient(content, session):
     return response
 
 def getAllClients(session):
-    print("GET All Clients.")
+    logger.info("GET All Clients")
     clients = session.query(Client).all()
     response = jsonify(Client.list_as_dict(clients))
     session.close()
@@ -50,7 +50,7 @@ def getAllClients(session):
 def getClient(client_id, session):
     client = session.query(Client).get(client_id)
     if not client:
-     print("GET Client {}: {}".format(client_id, client))
+        logger.info("GET Client {}: {}".format(client_id, client))
     response = jsonify(client.as_dict())
     session.close()
     return response
@@ -60,7 +60,7 @@ def deleteClient(client_id, session):
     if not client:
         session.close()
         abort(NotFound.code, "Client not found")
-    print("DELETE Client {}.".format(client_id))
+    logger.info("DELETE Client {}.".format(client_id))
     session.delete(client)
     session.commit()
     response = jsonify(client.as_dict())
@@ -101,7 +101,7 @@ def updateRole(id,content, session):
     return response
 
 def getAllRoles(session):
-    print("GET All Roles.")
+    logger.info("GET All Roles.")
     roles = session.query(Role).all()
     response = jsonify(Role.list_as_dict(roles))
     session.close()
@@ -111,7 +111,7 @@ def getRole(role_id, session):
     role = session.query(Role).get(role_id)
     if not role:
         abort(NotFound.code)
-    print("GET Role {}: {}".format(role_id, role))
+    logger.info("GET Role {}: {}".format(role_id, role))
     response = jsonify(role.as_dict())
     session.close()
     return response
@@ -121,7 +121,7 @@ def deleteRole(role_id, session):
     if not role:
         session.close()
         abort(NotFound.code)
-    print("DELETE Role {}.".format(role_id))
+    logger.info("DELETE Role {}.".format(role_id))
     session.delete(role)
     session.commit()
     response = jsonify(role.as_dict())
@@ -131,7 +131,7 @@ def deleteRole(role_id, session):
 
 def authentication(nickname, password, session):
     client = session.query(Client).filter(Client.nickname==nickname).all()
-    role = None #session.query(Role).filter(Role.id==client[0].role_id).all()
+    role = session.query(Role).filter(Role.id==client[0].role_id).all()
     if not client:
         session.close()
         abort(NotFound.code, f"Client {nickname} not found")
@@ -149,7 +149,7 @@ def authentication(nickname, password, session):
     else:
         session.commit()
         session.close()
-        print("Authentication incorrect! ERROR!!!!!!")
+        logger.warning("Authentication incorrect! ERROR!!!!!!")
         abort(BadRequest.code)
     message = {"jwt":jwt, "refresh_token":refresh_token}
     return json.dumps(message)

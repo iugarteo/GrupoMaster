@@ -52,5 +52,5 @@ def callback_key(ch, method, properties, body):
 
 def callback_event(ch, method, properties, body):
     print(" [x] {} {}".format(method.routing_key, body))
-    message = json.loads(body)
-    create_log(message["timestamp"], message["service"], message["level"], message["message"])
+    json_message = json.loads(body)
+    create_log(json_message)
