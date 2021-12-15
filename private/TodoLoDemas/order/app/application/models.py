@@ -32,7 +32,7 @@ class Order(BaseModel):
     STATUS_CREATED = "Created"
     STATUS_PENDING_DELIVERY = "Pending on delivery"
     STATUS_PENDING_ON_PAYMENT = "Pending on payment"
-    STATUS_ACEPTED = "Acepted"
+    STATUS_ACEPTED = "Accepted"
     STATUS_FINISHED = "Finished"
     STATUS_DECLINED = "Declined"
 

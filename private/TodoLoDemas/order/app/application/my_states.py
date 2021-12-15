@@ -1,6 +1,7 @@
 from .state import State
 from .publisher import publish_event
 from . import order
+import time
 
 # Start of our states
 class deliveryChecking(State):
@@ -19,8 +20,10 @@ class deliveryChecking(State):
 
     def on_event(self, event):
         if event == 'Accepted':
+            time.sleep(5)
             return paymentChecking(self.order)
         elif event == 'Declined':
+            time.sleep(5)
             return orderDeclined(self.order)
 
         return self
@@ -41,8 +44,10 @@ class paymentChecking(State):
 
     def on_event(self, event):
         if event == 'Accepted':
+            time.sleep(5)
             return orderAccepted(self.order)
         elif event == 'Declined':
+            time.sleep(5)
             return returnResources(self.order)
 
         return self
@@ -67,6 +72,7 @@ class orderDeclined(State):
         session = Session()
         order.logger.info('Processing current state: orderDeclined')
         order.cambiar_estado(session, orderObject.id, orderObject.STATUS_DECLINED)
+
 
 
 
