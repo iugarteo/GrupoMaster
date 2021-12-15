@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 
 from .delivery import update_delivery_by_order, create_delivery
 from .models import Delivery
-from .publisher import publish_event
+from .publisher import publish_response
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 Session = scoped_session(
@@ -42,17 +42,17 @@ def init_rabbitmq_key():
     channel.start_consuming()
 
 
-def init_rabbitmq_event(queue, routing_key, callback):
+def init_rabbitmq_event(queue, routing_key, callback, exchange):
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
-    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
+    channel.exchange_declare(exchange=exchange, exchange_type='topic', durable=True)
 
     result = channel.queue_declare(queue, durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='events', queue=queue, routing_key=routing_key)
+        exchange=exchange, queue=queue, routing_key=routing_key)
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback, auto_ack=True)
@@ -94,7 +94,7 @@ def callback_check_event(ch, method, properties, body):
     topic = message["topic"]
     if (message["zipCode"] == "01") or (message["zipCode"] == "20") or (message["zipCode"] == "48"):
         message = {"orderId":message["orderId"],"check":"Accepted"}
-        publish_event(topic, message)
+        publish_response(topic, message)
     else:
         message = {"orderId": message["orderId"], "check": "Declined"}
-        publish_event(topic, message)
+        publish_response(topic, message)

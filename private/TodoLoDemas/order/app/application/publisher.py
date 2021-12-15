@@ -18,6 +18,18 @@ def publish_event(topic, message):
         properties=pika.BasicProperties(delivery_mode=2))
     connection.close()
 
+def publish_command(topic, message):
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host=Config.RABBIT_IP))
+    channel = connection.channel()
+
+    print(json.dumps(message))
+    channel.exchange_declare(exchange='commands', exchange_type='topic', durable=True)
+    channel.basic_publish(
+        exchange='commands', routing_key="order."+topic, body=json.dumps(message),
+        properties=pika.BasicProperties(delivery_mode=2))
+    connection.close()
+
 
 def publish_log(timestamp, severity, message, filename=None, function=None):
     connection = pika.BlockingConnection(

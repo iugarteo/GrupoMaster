@@ -35,15 +35,15 @@ def create_app():
         key_consumer.start()
 
         event_consumer1 = threading.Thread(target=init_rabbitmq_event,
-                                           args=('delivery_order', 'order.created', callback_order_event))
+                                           args=('delivery_order', 'order.created', callback_order_event, 'events'))
         event_consumer1.start()
 
         event_consumer2 = threading.Thread(target=init_rabbitmq_event,
-                                           args=('delivery_finish', 'order.finished', callback_finish_event))
+                                           args=('delivery_finish', 'order.finished', callback_finish_event, 'events'))
         event_consumer2.start()
 
         event_consumer3 = threading.Thread(target=init_rabbitmq_event,
-                                           args=('delivery_check', 'order.checkAddress', callback_check_event))
+                                           args=('delivery_check', 'order.checkAddress', callback_check_event, 'commands'))
         event_consumer3.start()
 
         models.Base.metadata.create_all(engine)

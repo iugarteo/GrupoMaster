@@ -45,15 +45,15 @@ def init_rabbitmq_event():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
-    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
+    channel.exchange_declare(exchange='responses', exchange_type='topic', durable=True)
 
     result = channel.queue_declare('order', durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='events', queue="order", routing_key="payment.accepted")
+        exchange='responses', queue="order", routing_key="payment.accepted")
     channel.queue_bind(
-        exchange='events', queue="order", routing_key="payment.declined")
+        exchange='responses', queue="order", routing_key="payment.declined")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_event, auto_ack=True)
@@ -83,13 +83,13 @@ def init_rabbitmq_event_check():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
-    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
+    channel.exchange_declare(exchange='responses', exchange_type='topic', durable=True)
 
     result = channel.queue_declare('order_check', durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='events', queue="order_check", routing_key="delivery.checkAddress")
+        exchange='responses', queue="order_check", routing_key="delivery.checkAddress")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_event_check, auto_ack=True)

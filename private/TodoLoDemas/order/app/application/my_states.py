@@ -1,5 +1,5 @@
 from .state import State
-from .publisher import publish_event
+from .publisher import publish_event, publish_command
 from . import order
 import time
 
@@ -13,9 +13,10 @@ class deliveryChecking(State):
         from . import Session
         session = Session()
         order.logger.info('Processing current state: Delivery checking')
+        time.sleep(5)
         order.cambiar_estado(session, orderObject.id, orderObject.STATUS_PENDING_DELIVERY)
         message = {"orderId": orderObject.id, "zipCode": orderObject.zip_code, "topic": "checkAddress"}
-        publish_event("checkAddress", message)
+        publish_command("checkAddress", message)
 
 
     def on_event(self, event):
@@ -36,18 +37,17 @@ class paymentChecking(State):
         self.order = orderObject
         from . import Session
         session = Session()
+        time.sleep(5)
         order.cambiar_estado(session, orderObject.id, orderObject.STATUS_PENDING_ON_PAYMENT)
         order.logger.info('Processing current state: Payment checking')
         precio = orderObject.price_total
         message = {"price": precio, "client_id": orderObject.client_id, "order_id": orderObject.id, "topic": "checkPayment"}
-        publish_event("checkPayment", message)
+        publish_command("checkPayment", message)
 
     def on_event(self, event):
         if event == 'Accepted':
-            time.sleep(5)
             return orderAccepted(self.order)
         elif event == 'Declined':
-            time.sleep(5)
             return returnResources(self.order)
 
         return self
@@ -85,7 +85,7 @@ class orderAccepted(State):
         from . import Session
         session = Session()
         order.logger.info('Processing current state: orderAccepted')
-        order.cambiar_estado(session, orderObject.id, orderObject.STATUS_ACEPTED)
+        order.cambiar_estado(session, orderObject.id, orderObject.STATUS_ACCEPTED)
         message1 = {"order_id": orderObject.id}
         publish_event("created", message1)
         for x in range(orderObject.number_of_pieces):

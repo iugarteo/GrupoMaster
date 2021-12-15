@@ -42,13 +42,13 @@ def init_rabbitmq_event():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=Config.RABBIT_IP))
     channel = connection.channel()
-    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
+    channel.exchange_declare(exchange='commands', exchange_type='topic', durable=True)
 
     result = channel.queue_declare('payment', durable=True)
     queue_name = result.method.queue
 
     channel.queue_bind(
-        exchange='events', queue="payment", routing_key="order.checkPayment")
+        exchange='commands', queue="payment", routing_key="order.checkPayment")
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback_event, auto_ack=True)
@@ -79,4 +79,4 @@ def callback_event(ch, method, properties, body):
               'payment_id': message["price"],
               'order_id': message["order_id"],
               'status': status}
-    publisher.publish_event(status, result)
+    publisher.publish_response(status, result)

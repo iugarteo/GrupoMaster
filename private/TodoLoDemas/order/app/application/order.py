@@ -21,7 +21,7 @@ def pedir_pago(order): #Cambios en este metodo
     publisher.publish_event("create", message_pieces) #No se cual seria la cola
 
 def cambiar_estado(session, order_id, status):
-    if(status == "Finished" or status == "Declined" or status == "Pending on payment" or status == "Acepted"): #Comprobar que se esta introduciendo un estado existente, a created no deberia poder cambiarse de vuelta
+    if(status == "Finished" or status == "Declined" or status == "Pending on payment" or status == "Pending on delivery" or status == "Accepted"): #Comprobar que se esta introduciendo un estado existente, a created no deberia poder cambiarse de vuelta
         order = session.query(Order).get(order_id)
         #LLamar a delivery para crear uno.
         order.status = status
