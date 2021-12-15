@@ -13,7 +13,6 @@ class deliveryChecking(State):
         from . import Session
         session = Session()
         order.logger.info('Processing current state: Delivery checking')
-        time.sleep(5)
         order.cambiar_estado(session, orderObject.id, orderObject.STATUS_PENDING_DELIVERY)
         message = {"orderId": orderObject.id, "zipCode": orderObject.zip_code, "topic": "checkAddress"}
         publish_command("checkAddress", message)
@@ -37,7 +36,6 @@ class paymentChecking(State):
         self.order = orderObject
         from . import Session
         session = Session()
-        time.sleep(5)
         order.cambiar_estado(session, orderObject.id, orderObject.STATUS_PENDING_ON_PAYMENT)
         order.logger.info('Processing current state: Payment checking')
         precio = orderObject.price_total
@@ -46,8 +44,10 @@ class paymentChecking(State):
 
     def on_event(self, event):
         if event == 'Accepted':
+            time.sleep(5)
             return orderAccepted(self.order)
         elif event == 'Declined':
+            time.sleep(5)
             return returnResources(self.order)
 
         return self
