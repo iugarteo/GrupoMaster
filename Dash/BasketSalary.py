@@ -22,38 +22,26 @@ html.H3('Algorithm Type'),
     dcc.Dropdown(
         id='AlgType',
         options=[
-            {'label': 'Tarta', 'value': 'pie'},
-            {'label': 'Barchart', 'value': 'bar'},
-            {'label': 'Puntitos', 'value': 'mark'}
+            {'label': 'Random Forest', 'value': 'RF'},
+            {'label': 'Decision Forest', 'value': 'DF'},
+            {'label': 'SVR', 'value': 'SVR'}
         ],
-        value='pie'
-    ),
-html.H3('Algorithm param'),
-    dcc.Dropdown(
-        id='AlgType',
-        options=[
-            {'label': 'Tarta', 'value': 'pie'},
-            {'label': 'Barchart', 'value': 'bar'},
-            {'label': 'Puntitos', 'value': 'mark'}
-        ],
-        value='pie'
+        value='RF'
     ),
 html.H3("% Shots:"),
     dcc.Slider(
        id='shots',
-       min=anyos[0],
-       max=anyos[-1],
-       value=anyos[0],
-       marks={str(year): str(year) for year in anyos},
+       min=0,
+       max=1,
+       value=0,
        step=None
     ),
-html.H3("Year:"),
+html.H3("Age:"),
     dcc.Slider(
-       id='year',
-       min=anyos[0],
-       max=anyos[-1],
-       value=anyos[0],
-       marks={str(year): str(year) for year in anyos},
+       id='Age',
+       min=19,
+       max=41,
+       value=25,
        step=None
     ),
 html.H3("Minutos jugados:"),
