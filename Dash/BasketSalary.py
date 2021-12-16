@@ -47,10 +47,9 @@ html.H3("Age:"),
 html.H3("Minutos jugados:"),
     dcc.Slider(
        id='mins',
-       min=anyos[0],
-       max=anyos[-1],
-       value=anyos[0],
-       marks={str(year): str(year) for year in anyos},
+       min=df["MP"].min(),
+       max=df["MP"].max(),
+       value=df["MP"].min(),
        step=None
     ),
 html.H3('Salario minimo'),
