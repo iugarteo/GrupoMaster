@@ -7,11 +7,10 @@ import plotly.graph_objs as go
 import plotly.express as px
 import pandas as pd
 
-df = pd.read_csv('players_stats.csv')
-df_EL = df.loc[df['League'] == "Euroleague"]
-df_EL[['Anyo','Anyo2']] = df_EL["Season"].str.split("-",expand=True,)
-del df_EL["Season"]
-del df_El["Anyo2"]
+df = pd.read_csv('2017-18_NBA_salary.csv')
+
+df2 = pd.read_csv('players_stats.csv')
+df_EL = df2.loc[df2['League'] == "NBA"]
 anyos = [2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
