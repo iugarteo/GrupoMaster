@@ -17,6 +17,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
+app.layout = html.Div([
 html.H3('Algorithm Type'),
     dcc.Dropdown(
         id='AlgType',
@@ -76,7 +77,65 @@ html.H3('Salario minimo'),
     ),
 
     dcc.Graph(id='graph'),
-   ]) 
+   ]),
+app.layout = html.Div([
+html.H3('Graph Type'),
+    dcc.Dropdown(
+        id='graphType',
+        options=[
+            {'label': 'Tarta', 'value': 'pie'},
+            {'label': 'Barchart', 'value': 'bar'},
+            {'label': 'Puntitos', 'value': 'mark'}
+        ],
+        value='pie'
+    ),
+html.Div([
+html.Div([
+html.H3('Equipo'),
+    dcc.RadioItems(
+        options=[
+            {'label': 'Baskonia', 'value': 'CAJ'},
+            {'label': 'Barça', 'value': 'FCB'},
+            {'label': 'Anadolu EFES', 'value': 'EFE'},
+            {'label': 'Olympiacos', 'value': 'OLY'},
+            {'label': 'CSKA Moskow', 'value': 'CSKA'},
+            {'label': 'Zalgiris', 'value': 'ZAL'},
+            {'label': 'Real Madrid', 'value': 'RMB'}
+        ],
+        id="teams",
+        value='CAJ',
+    ),],style={'width': '48%', 'display': 'inline-block'}),
+    
+html.Div([
+html.H3('Columna'),
+    dcc.RadioItems(
+        options=[
+            {'label': 'Triples intentados', 'value': '3PA'},
+            {'label': 'Triples metidos', 'value': '3PM'},
+            {'label': 'Robos', 'value': 'STL'},
+            {'label': 'Minutos jugados', 'value': 'MIN'},
+            {'label': 'Tiros metidos??', 'value': 'GP'},
+            {'label': 'Puntos logrados', 'value': 'PTS'}
+        ],
+        id="columnas",
+        value='3PM',
+    ),
+    ],
+    style={'width': '48%', 'display': 'inline-block'}
+    ),
+    ]),
+    dcc.Graph(id='graph'),
+    html.H3("Year:"),
+    dcc.Slider(
+       id='year',
+       min=anyos[0],
+       max=anyos[-1],
+       value=anyos[0],
+       marks={str(year): str(year) for year in anyos},
+       step=None
+    )
+]),
+])
 
 @app.callback(
     Output('graph', 'figure'),
