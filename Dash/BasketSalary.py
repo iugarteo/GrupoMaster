@@ -31,6 +31,35 @@ app.layout = html.Div([
         ],
         value='RF'
     ),
+html.Div([
+            
+            # R^2
+            html.Div([                
+                html.H3("R^2"),
+                html.H6(id="R2_text")
+            ],
+            id="R2-score",
+            className="mini_container indicator",
+            ),
+	    # MAE
+            html.Div([                
+                html.H3("MAE"),
+                html.H6(id="MAE_text")
+            ],
+            id="MAE-score",
+            className="mini_container indicator",
+            ),
+
+            #RMSE
+            html.Div([                
+                html.H3("RMSE"),
+                html.H6(id="RMSE_text")
+            ],
+            id="RMSE-score",
+            className="mini_container indicator",
+            ),],
+        id="indicators",    
+        ),
     html.Div([
         html.H3("% Shots:"),
         dcc.Slider(
@@ -167,9 +196,19 @@ def update_figure(team, columna, year, tipo):
     if(tipo == "bar"):
         fig = px.bar(df_team, x="Player", y=columna, barmode="group", title=titulo)
         return fig
-
 @app.callback(
-    Output('graphAlg', 'figure'),
+    [Output("R2_text", "children"),
+     Output("MAE_text", "children"),
+     Output("RMSE_text", "children")],
+     Input('submit-val', 'n_clicks'),
+     State('input-on-submit', 'value'))
+def update_values(n_clicks, minimo):
+     r2 = minimo
+     mae = minimo
+     rmse = minimo
+     return r2, mae, rmse
+@app.callback(
+     Output('graphAlg', 'figure'),
     [Input('AlgType', 'value'),
      Input('shots', 'value'),
      Input('mins', 'value'),
