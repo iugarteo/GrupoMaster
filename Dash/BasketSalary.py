@@ -7,14 +7,18 @@ from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 import plotly.express as px
 import pandas as pd
+import warnings
+warnings.filterwarnings("ignore")
 
 df = pd.read_csv('2017-18_NBA_salary.csv')
 df2 = pd.read_csv('players_stats.csv')
-df_EL = df2.loc[df2['League'] == "Euroleague"]
+df_EL = df2.loc[df2['League'] == "NBA"]
+df_EL[['Season', 'Last']] = df_EL.Season.str.split(" - ",expand=True)
+del df_EL['Last']
+df_EL['Season'] = df_EL['Season'].astype(int)
 minutosL = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45]
 edadL = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41]
 shotsL = [0,0.05,0.10,0.15,0.20,0.25,0.30,0.35,0.40,0.45,0.50,0.55,0.60,0.65,0.70,0.75,0.80,0.85,0.90,0.95,1]
-anyos = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -102,8 +106,7 @@ dcc.Graph(id='graphAlg'),
             id='graphType',
             options=[
                 {'label': 'Tarta', 'value': 'pie'},
-                {'label': 'Barchart', 'value': 'bar'},
-                {'label': 'Puntitos', 'value': 'mark'}
+                {'label': 'Barchart', 'value': 'bar'}
             ],
             value='pie'
         ),
@@ -112,16 +115,16 @@ dcc.Graph(id='graphAlg'),
                 html.H3('Equipo'),
                 dcc.RadioItems(
                     options=[
-                        {'label': 'Baskonia', 'value': 'CAJ'},
-                        {'label': 'Barça', 'value': 'FCB'},
-                        {'label': 'Anadolu EFES', 'value': 'EFE'},
-                        {'label': 'Olympiacos', 'value': 'OLY'},
-                        {'label': 'CSKA Moskow', 'value': 'CSKA'},
-                        {'label': 'Zalgiris', 'value': 'ZAL'},
-                        {'label': 'Real Madrid', 'value': 'RMB'}
+                        {'label': 'Los Angeles Lakers', 'value': 'LAL'},
+                        {'label': 'Toronto Raptors', 'value': 'TOR'},
+                        {'label': 'Utah Jazz', 'value': 'UTA'},
+                        {'label': 'Philadelphia 76ers', 'value': 'PHI'},
+                        {'label': 'Boston Celtics', 'value': 'BOS'},
+                        {'label': 'Chicago Bulls', 'value': 'CHI'},
+                        {'label': 'Detroit Pistons', 'value': 'DET'}
                     ],
                     id="teams",
-                    value='CAJ',
+                    value='LAL',
                 ), ], style={'width': '48%', 'display': 'inline-block'}),
 
             html.Div([
@@ -146,10 +149,10 @@ dcc.Graph(id='graphAlg'),
         html.H3("Year:"),
         dcc.Slider(
             id='year',
-            min=anyos[0],
-            max=anyos[-1],
-            value=anyos[0],
-            marks={str(year): str(year) for year in anyos},
+            min=df_EL['Season'].min(),
+            max=df_EL['Season'].max(),
+            value=df_EL['Season'].min(),
+            marks={str(year): str(year) for year in df_EL['Season']},
             step=None
         )
     ]), ])
@@ -162,9 +165,9 @@ dcc.Graph(id='graphAlg'),
      Input('year', 'value'),
      Input('graphType', 'value')])
 def update_figure(team, columna, year, tipo):
-    df2016 = df_EL.loc[df_EL['Season'] == "2016 - 2017"]
+    df2016 = df_EL.loc[df_EL['Season'] == year]
     df_team = df2016.loc[df_EL['Team'] == team]
-    titulo = "{} from {} players of team {}".format(columna, year, team)
+    titulo = "Overall stats from {} NBA players".format(year)
     pie1_list = df_team[columna]
     labels = df_team.Player
     if(tipo == "pie"):
