@@ -139,6 +139,7 @@ dcc.Graph(id='graphAlg'),
                         {'label': 'Orlando Magic', 'value': 'ORL'},
                         {'label': 'Minnesota Timberwolves', 'value': 'MIN'},
                         {'label': 'Indiana Pacers', 'value': 'IND'},
+                        {'label': 'Denver Nuggets', 'value': 'DEN'},
                         {'label': 'Detroit Pistons', 'value': 'DET'}
                     ],
                     id="teams",
