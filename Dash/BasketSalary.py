@@ -31,7 +31,7 @@ app.layout = html.Div([
         options=[
             {'label': 'Random Forest', 'value': 'RF'},
             {'label': 'Decision Forest', 'value': 'DF'},
-            {'label': 'SVR', 'value': 'SVR'}
+            {'label': 'Linear Regression', 'value': 'LR'}
         ],
         value='RF'
     ),
