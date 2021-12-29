@@ -22,6 +22,8 @@ minutosL = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
 edadL = [19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41]
 shotsL = [0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90,
           0.95, 1]
+preL = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+            29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.SKETCHY]
 
 
@@ -119,6 +121,16 @@ app.layout = html.Div([
                                                         html.Br(),
                                                         html.H3("Salario minimo requerido:"),
                                                         html.Div([dcc.Input(id='input-on-submit', type='number'), html.Button('Mostrar minimo', id='submit-val', n_clicks=0)]),
+                                                        html.H3("Pre:"),
+                                                        dcc.Slider(
+                                                            id='pre',
+                                                            min=0,
+                                                            max=40,
+                                                            value=0,
+                                                            step=1,
+                                                            marks={str(pre): str(pre) for pre in preL},
+                                                            tooltip={"placement": "bottom", "always_visible": True}
+                                                        ),
                                                         ])), style={'height':'70vh'}), width=5),
                 dbc.Col(dbc.Card(dbc.CardBody([html.H3("Salario a cobrar por equipo:"),html.Div(dcc.Graph(id='graphAlg'))]), style={'height':'70vh'}), width=7),
             ]
@@ -197,11 +209,8 @@ app.layout = html.Div([
                                                                     value='3PM',
                                                                     style={'font-size':'16px'},
                                                                     labelStyle={'display': 'block'}
-                                                                )
-                                                            ]),
-                                                        ]),])), style={'height':'70vh'}), width=4),
-                dbc.Col(dbc.Card(dbc.CardBody(html.Div([dcc.Graph(id='graph'),
-                                                        html.H3("Temporada:"),
+                                                                ),
+                                                            html.H3("Temporada:"),
                                                         dcc.Slider(
                                                             id='year',
                                                             min=df_EL['Season'].min(),
@@ -209,7 +218,11 @@ app.layout = html.Div([
                                                             value=df_EL['Season'].min(),
                                                             marks={str(year): str(year) for year in df_EL['Season']},
                                                             step=None
-                                                        )])), style={'height':'70vh'}), width=8)
+                                                        )
+                                                            ]),
+                                                        ]),])), style={'height':'70vh'}), width=4),
+                dbc.Col(dbc.Card(dbc.CardBody(html.Div([dcc.Graph(id='graph'),
+                                                        ])), style={'height':'70vh'}), width=8)
             ]
         )
     ]), ])
