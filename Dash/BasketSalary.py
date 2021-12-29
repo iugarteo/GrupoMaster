@@ -111,21 +111,39 @@ dcc.Graph(id='graphAlg'),
             value='pie'
         ),
         html.Div([
-            html.Div([
                 html.H3('Equipo'),
-                dcc.RadioItems(
+                dcc.Dropdown(
                     options=[
                         {'label': 'Los Angeles Lakers', 'value': 'LAL'},
                         {'label': 'Toronto Raptors', 'value': 'TOR'},
                         {'label': 'Utah Jazz', 'value': 'UTA'},
                         {'label': 'Philadelphia 76ers', 'value': 'PHI'},
                         {'label': 'Boston Celtics', 'value': 'BOS'},
-                        {'label': 'Chicago Bulls', 'value': 'CHI'},
+                        {'label': 'Golden State Warriors', 'value': 'GSW'},
+                        {'label': 'Los Angeles Clippers', 'value': 'LAC'},
+                        {'label': 'New Orleans Pelicans', 'value': 'NOP'},
+                        {'label': 'Charlotte Bobcats', 'value': 'CHA'},
+                        {'label': 'Phoenix Suns', 'value': 'PHX'},
+                        {'label': 'Washington Wizards', 'value': 'WAS'},
+                        {'label': 'Memphis Grizzlies', 'value': 'MEM'},
+                        {'label': 'New York Knicks', 'value': 'NYK'},
+                        {'label': 'Dallas Mavericks', 'value': 'DAL'},
+                        {'label': 'Milwakee Bucks', 'value': 'MIL'},
+                        {'label': 'Cleveland Cavaliers', 'value': 'CLE'},
+                        {'label': 'San Antonio Spurs', 'value': 'SAS'},
+                        {'label': 'Oklahoma City Thunder', 'value': 'OKC'},
+                        {'label': 'Miami Heat', 'value': 'MIA'},
+                        {'label': 'Atlanta Hawks', 'value': 'ATL'},
+                        {'label': 'Sacramento Kings', 'value': 'SAC'},
+                        {'label': 'Portland Trail Blazers', 'value': 'POR'},
+                        {'label': 'Orlando Magic', 'value': 'ORL'},
+                        {'label': 'Minnesota Timberwolves', 'value': 'MIN'},
+                        {'label': 'Indiana Pacers', 'value': 'IND'},
                         {'label': 'Detroit Pistons', 'value': 'DET'}
                     ],
                     id="teams",
                     value='LAL',
-                ), ], style={'width': '48%', 'display': 'inline-block'}),
+                ),
 
             html.Div([
                 html.H3('Columna'),
@@ -142,7 +160,6 @@ dcc.Graph(id='graphAlg'),
                     value='3PM',
                 ),
             ],
-                style={'width': '48%', 'display': 'inline-block'}
             ),
         ]),
         dcc.Graph(id='graph'),
@@ -199,19 +216,12 @@ def update_figure(team, columna, year, tipo):
     if(tipo == "bar"):
         fig = px.bar(df_team, x="Player", y=columna, barmode="group", title=titulo)
         return fig
+
 @app.callback(
-    [Output("R2_text", "children"),
+     [Output('graphAlg', 'figure'),
+     Output("R2_text", "children"),
      Output("MAE_text", "children"),
      Output("RMSE_text", "children")],
-     Input('submit-val', 'n_clicks'),
-     State('input-on-submit', 'value'))
-def update_values(n_clicks, minimo):
-     r2 = minimo
-     mae = minimo
-     rmse = minimo
-     return r2, mae, rmse
-@app.callback(
-     Output('graphAlg', 'figure'),
     [Input('AlgType', 'value'),
      Input('shots', 'value'),
      Input('mins', 'value'),
@@ -247,7 +257,10 @@ def update_figure2(tipoAlg, tiros, minutos, n_clicks, edad, minimo):
                         },
     ]
 )
-    return fig
+    r2 = minimo
+    mae = minimo
+    rmse = minimo
+    return fig,r2, mae, rmse
 
 if __name__ == '__main__':
     app.run_server(debug=True)
