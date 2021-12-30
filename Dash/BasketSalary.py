@@ -4,6 +4,7 @@ from dash import html
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 import plotly.express as px
 import pandas as pd
 import warnings
@@ -27,7 +28,6 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes
 
 modelo1, scores1 = get_model("RF")
 modelo2, scores2 = get_model("DF")
-modelo3, scores3 = get_model("LR")
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
@@ -47,8 +47,7 @@ app.layout = html.Div([
                                       id='AlgType',
                                       options=[
                                           {'label': 'Random Forest', 'value': 'RF'},
-                                          {'label': 'Decision Tree', 'value': 'DF'},
-                                          {'label': 'Linear Regresion', 'value': 'LR'}
+                                          {'label': 'Decision Tree', 'value': 'DF'}
                                       ],
                                       value='RF',
                                       style={'font-size':'20px'}
@@ -135,8 +134,9 @@ app.layout = html.Div([
                                                         ),
                                                         html.Br(),
                                                         html.Br(),
-                                                        html.H1("Salario minimo requerido:"),
-                                                        html.Div([dcc.Input(id='input-on-submit', type='number',  style={'font-size':'20px'}), html.Button('Mostrar minimo', id='submit-val', n_clicks=0,  style={'font-size':'20px'})]),
+                                                        html.H1("Salario minimo requerido (M):"),
+                                                        html.Div([dcc.Input(id='input-on-submit', type='number',placeholder="1 - 99", style={'font-size':'20px'}),
+                                                        html.Button('Mostrar minimo', id='submit-val', n_clicks=0,  style={'font-size':'20px'})]),
                                                         ])), style={'height':'70vh'}), width=5),
                 dbc.Col(dbc.Card(dbc.CardBody([html.H1("Salario a cobrar por equipo:"),html.Div(dcc.Graph(id='graphAlg'))]), style={'height':'70vh'
 }), width=7),
@@ -162,6 +162,18 @@ app.layout = html.Div([
                                                                 {'label': 'Barras', 'value': 'bar'}
                                                             ],
                                                             value='pie',
+                                                            style={'font-size':'20px'}
+                                                        ),
+                                                        html.Br(),
+                                                        html.Br(),
+                                                        html.H1('Tipo de partidos'),
+                                                        dcc.Dropdown(
+                                                            id='stageType',
+                                                            options=[
+                                                                {'label': 'Regular', 'value': 'Regular_Season'},
+                                                                {'label': 'Playoffs', 'value': 'Playoffs'}
+                                                            ],
+                                                            value='Regular_Season',
                                                             style={'font-size':'20px'}
                                                         ),
                                                         html.Br(),
@@ -248,11 +260,13 @@ app.layout = html.Div([
     [Input('teams', 'value'),
      Input('columnas', 'value'),
      Input('year', 'value'),
-     Input('graphType', 'value')])
-def update_figure(team, columna, year, tipo):
+     Input('graphType', 'value'),
+     Input('stageType', 'value')])
+def update_figure(team, columna, year, tipo, stage):
     df2016 = df_EL.loc[df_EL['Season'] == year]
     df_team = df2016.loc[df_EL['Team'] == team]
-    titulo = "Estadísticas totales del equipo {} en el año {} en la NBA".format(team, year)
+    df_team = df_team.loc[df_EL['Stage'] == stage]
+    titulo = "Estadísticas totales del equipo {} en el año {} en {}".format(team, year, stage)
     if tipo == "pie":
         pie1_list = df_team[columna]
         labels = df_team.Player
@@ -263,7 +277,7 @@ def update_figure(team, columna, year, tipo):
                     "labels": labels,
                     "domain": {"x": [0, .5]},
                     "name": columna,
-                    "hoverinfo": "label+percent+name",
+                    "hoverinfo": "label+value+name",
                     "hole": .3,
                     "type": tipo
                 }, ],
@@ -280,7 +294,7 @@ def update_figure(team, columna, year, tipo):
             }
         }
     if tipo == "bar":
-        fig = px.bar(df_team, x="Player", y=columna, barmode="group", title=titulo)
+        fig = px.bar(df_team, x="Player", y=columna, color="Player", title=titulo)
         return fig
 
 
@@ -303,30 +317,35 @@ def update_figure2(tipoAlg, tiros, minutos, per, n_clicks, edad, minimo):
     elif tipoAlg == "DF":
         modelo = modelo2
         scores = scores2
-    elif tipoAlg == "LR":
-        modelo = modelo3
-        scores = scores3
     table = create_table(edad, minutos*82, per, tiros)
     salarios = get_prediction(modelo, table)
+    equipos2 = ['Houston Rockets', 'Golden State Warriors', 'Sacramento Kings', 'Chicago Bulls', 'Portland Trail Blazers', 'Dallas Mavericks', 'Boston Celtics', 'Memphis Grizzlies', 'Denver Nuggets', 'New Orleans Hornets', 'Los Angeles Clippers', 'Orlando Magic',
+               'Miami Heat', 'Indiana Pacers', 'Los Angeles Lakers', 'Minessota Timberwolves ', 'Phoenix Suns', 'Atlanta hawks', 'Cleveland Cavaliers', 'New York Knicks', 'Charlotte Hornets', 'Milwakee Bucks', 'San Antonio Spurs', 'Utah Jazz',
+               'New Orleans Pelicans', 'Washington Wizards', 'Philadelphia 76ers', 'Brooklyn Nets', 'Oklahoma City Thunder', 'Detroit Pistons', 'Toronto Raptors']
     equipos = ['HOU', 'GSW', 'SAC', 'CHI', 'POR', 'DAL', 'BOS', 'MEM', 'DEN', 'TOT', 'LAC', 'ORL',
                'MIA', 'IND', 'LAL', 'MIN', 'PHO', 'ATL', 'CLE', 'NYK', 'CHO', 'MIL', 'SAS', 'UTA',
                'NOP', 'WAS', 'PHI', 'BRK', 'OKC', 'DET', 'TOR']
+    
     trace1 = go.Bar(
-        x=equipos,
+        x=equipos2,
         y=salarios,
-        name="citations",
-        marker=dict(color='rgb(128,212,255)', line=dict(color='rgb(0,0,0)', width=0.05)), text=equipos)
+        marker=dict(color='rgb(128,212,255)', line=dict(color='rgb(0,0,0)', width=0.05)), text=equipos),
     data = trace1
+    if not minimo:
+        minimo = 0
     fig = go.Figure(data=data)
     fig.update_layout(
+        hovermode='x unified',
+        width=1000,
+        height=600,
         shapes=[
             {
                 'type': 'line',
                 'xref': 'paper',
                 'x0': 0,
-                'y0': minimo,
+                'y0': minimo*1000000,
                 'x1': 1,
-                'y1': minimo,
+                'y1': minimo*1000000,
                 'line': {
                     'color': 'rgb(255, 0, 0)',
                     'width': 1,
