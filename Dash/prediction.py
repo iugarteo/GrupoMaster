@@ -1,4 +1,5 @@
 import pandas as pd
+import math
 import numpy as np
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
@@ -46,23 +47,26 @@ def get_model(alg):
         model.fit(x_train, np.ravel(y_train))
         dt_predict = model.predict(x_test)
         scores = model_metrics(y_test, dt_predict)
-    else:
-        model = LinearRegression()
-        model.fit(x_train, np.ravel(y_train))
-        lr_predict = model.predict(x_test)
-        scores = model_metrics(y_test, lr_predict)
+
     return model, scores
 
 
 def model_metrics(y_test, y_pred):
     mse = mean_squared_error(y_test, y_pred, squared=False)
+    rmse = math.sqrt(mse)
     r2 = r2_score(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
-    return [mse, r2, mae]
+    return [rmse, r2, mae]
 
 
 def get_prediction(model, table):
-    predict = model.predict(table)
+    predict = setMinimo(model.predict(table))
+    return predict
+
+def setMinimo(predict):
+    for i in range(0, len(predict)):
+        if predict[i] < 150000:
+            predict[i] = 150000
     return predict
 
 
