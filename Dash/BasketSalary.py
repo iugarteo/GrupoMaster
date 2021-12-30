@@ -207,6 +207,8 @@ app.layout = html.Div([
                                                                     {'label': 'Orlando Magic', 'value': 'ORL'},
                                                                     {'label': 'Minnesota Timberwolves', 'value': 'MIN'},
                                                                     {'label': 'Indiana Pacers', 'value': 'IND'},
+                                                                    {'label': 'Chicago Bulls', 'value': 'CHI'},
+                                                                    {'label': 'Brooklyn Nets', 'value': 'BRK'},
                                                                     {'label': 'Denver Nuggets', 'value': 'DEN'},
                                                                     {'label': 'Detroit Pistons', 'value': 'DET'}
                                                                 ],
