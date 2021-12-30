@@ -1,8 +1,1 @@
-# GrupoMaster
-Order => Iñigo & Josu 
-
-Delivery => Javi
-
-Client => Eñaut
-
-Payment => Jon
+Archivo python que hay que ejecutar es BasketSalary.py
