@@ -19,7 +19,7 @@ df_EL[['Season', 'Last']] = df_EL.Season.str.split(" - ", expand=True)
 del df_EL['Last']
 df_EL['Season'] = df_EL['Season'].astype(int)
 minutosL = [0, 4, 8, 12, 16, 20, 24, 28,
-             32, 36, 40, 44, 48]
+            32, 36, 40, 44, 48]
 edadL = [19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41]
 shotsL = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 perL = [0, 5, 10, 15, 20, 25, 30, 35, 40]
@@ -42,7 +42,7 @@ app.layout = html.Div([
     html.Div([dbc.Card(dbc.CardBody(
         dbc.Row(
             [
-                dbc.Col(html.Div([html.H1('Seleccionar algoritmo'),
+                dbc.Col(html.Div([html.H2('Seleccionar algoritmo'),
                                   dcc.Dropdown(
                                       id='AlgType',
                                       options=[
@@ -50,28 +50,28 @@ app.layout = html.Div([
                                           {'label': 'Decision Tree', 'value': 'DF'}
                                       ],
                                       value='RF',
-                                      style={'font-size':'20px'}
+                                      style={'font-size':'18px'}
                                   ),])),
                 dbc.Col(# R^2
                     html.Div([
-                        html.H1("R^2"),
-                        html.H1(id="R2_text")
+                        html.H2("R^2"),
+                        html.H2(id="R2_text")
                     ],
                         id="R2-score",
                         className="mini_container indicator",
                     ),),
                 dbc.Col(# MAE
                     html.Div([
-                        html.H1("MAE"),
-                        html.H1(id="MAE_text")
+                        html.H2("MAE"),
+                        html.H2(id="MAE_text")
                     ],
                         id="MAE-score",
                         className="mini_container indicator",
                     ),),
                 dbc.Col(# RMSE
                     html.Div([
-                        html.H1("RMSE"),
-                        html.H1(id="RMSE_text")
+                        html.H2("RMSE"),
+                        html.H2(id="RMSE_text")
                     ],
                         id="RMSE-score",
                         className="mini_container indicator",
@@ -82,11 +82,11 @@ app.layout = html.Div([
         id="indicators",
     ),
     html.Br(),
-                                                        html.Br(),
+    html.Br(),
     html.Div([
         dbc.Row(
             [
-                dbc.Col(dbc.Card(dbc.CardBody(html.Div([html.H1("% Tiros acertado:"),
+                dbc.Col(dbc.Card(dbc.CardBody(html.Div([html.H2("% Tiros acertado:"),
                                                         dcc.Slider(
                                                             id='shots',
                                                             min=0,
@@ -98,7 +98,7 @@ app.layout = html.Div([
                                                         ),
                                                         html.Br(),
                                                         html.Br(),
-                                                        html.H1("Edad:"),
+                                                        html.H2("Edad:"),
                                                         dcc.Slider(
                                                             id='Age',
                                                             min=19,
@@ -110,7 +110,7 @@ app.layout = html.Div([
                                                         ),
                                                         html.Br(),
                                                         html.Br(),
-                                                        html.H1("Minutos jugados:"),
+                                                        html.H2("Minutos jugados:"),
                                                         dcc.Slider(
                                                             id='mins',
                                                             min=0,
@@ -122,7 +122,7 @@ app.layout = html.Div([
                                                         ),
                                                         html.Br(),
                                                         html.Br(),
-                                                        html.H1("PER:"),
+                                                        html.H2("PER:"),
                                                         dcc.Slider(
                                                             id='per',
                                                             min=0,
@@ -134,12 +134,12 @@ app.layout = html.Div([
                                                         ),
                                                         html.Br(),
                                                         html.Br(),
-                                                        html.H1("Salario minimo requerido (M):"),
-                                                        html.Div([dcc.Input(id='input-on-submit', type='number',placeholder="1 - 99", style={'font-size':'20px'}),
-                                                        html.Button('Mostrar minimo', id='submit-val', n_clicks=0,  style={'font-size':'20px'})]),
-                                                        ])), style={'height':'70vh'}), width=5),
-                dbc.Col(dbc.Card(dbc.CardBody([html.H1("Salario a cobrar por equipo:"),html.Div(dcc.Graph(id='graphAlg'))]), style={'height':'70vh'
-}), width=7),
+                                                        html.H2("Salario minimo requerido (M$):"),
+                                                        html.Div([dcc.Input(id='input-on-submit', type='number',placeholder="1 - 99", style={'font-size':'18px'}),
+                                                                  html.Button('Mostrar minimo', id='submit-val', n_clicks=0,  style={'font-size':'18px'})]),
+                                                        ])), style={'height':'80vh'}), width=5),
+                dbc.Col(dbc.Card(dbc.CardBody([html.H2("Salario a cobrar por equipo:"),html.Div(dcc.Graph(id='graphAlg'), )]), style={'height':'80vh'
+                                                                                                                                    }), width=7),
             ]
         ),
     ]),
@@ -154,7 +154,7 @@ app.layout = html.Div([
         ),
         dbc.Row(
             [
-                dbc.Col(dbc.Card(dbc.CardBody(html.Div([html.H1('Tipo de grafico'),
+                dbc.Col(dbc.Card(dbc.CardBody(html.Div([html.H2('Tipo de grafico'),
                                                         dcc.Dropdown(
                                                             id='graphType',
                                                             options=[
@@ -162,11 +162,11 @@ app.layout = html.Div([
                                                                 {'label': 'Barras', 'value': 'bar'}
                                                             ],
                                                             value='pie',
-                                                            style={'font-size':'20px'}
+                                                            style={'font-size':'18px'}
                                                         ),
                                                         html.Br(),
                                                         html.Br(),
-                                                        html.H1('Tipo de partidos'),
+                                                        html.H2('Tipo de partidos'),
                                                         dcc.Dropdown(
                                                             id='stageType',
                                                             options=[
@@ -174,12 +174,12 @@ app.layout = html.Div([
                                                                 {'label': 'Playoffs', 'value': 'Playoffs'}
                                                             ],
                                                             value='Regular_Season',
-                                                            style={'font-size':'20px'}
+                                                            style={'font-size':'18px'}
                                                         ),
                                                         html.Br(),
                                                         html.Br(),
                                                         html.Div([
-                                                            html.H1('Equipo'),
+                                                            html.H2('Equipo'),
                                                             dcc.Dropdown(
                                                                 options=[
                                                                     {'label': 'Los Angeles Lakers', 'value': 'LAL'},
@@ -214,12 +214,12 @@ app.layout = html.Div([
                                                                 ],
                                                                 id="teams",
                                                                 value='LAL',
-                                                                style={'font-size':'20px'}
+                                                                style={'font-size':'18px'}
                                                             ),
                                                             html.Br(),
                                                             html.Br(),
                                                             html.Div([
-                                                                html.H1('Tipo estadistica'),
+                                                                html.H2('Tipo estadistica'),
                                                                 dcc.RadioItems(
                                                                     options=[
                                                                         {'label': '__Minutos jugados', 'value': 'MIN'},
@@ -238,11 +238,11 @@ app.layout = html.Div([
                                                                     style={'font-size':'16px'},
                                                                     labelStyle={'display': 'block'}
                                                                 ),
-                                                           
+
                                                             ]),
-                                                        ]),])), style={'height':'70vh'}), width=4),
+                                                        ]),])), style={'height':'80vh'}), width=4),
                 dbc.Col(dbc.Card(dbc.CardBody(html.Div([dcc.Graph(id='graph'),
-                 html.H1("Temporada:"),
+                                                        html.H2("Temporada:"),
                                                         dcc.Slider(
                                                             id='year',
                                                             min=df_EL['Season'].min(),
@@ -251,10 +251,10 @@ app.layout = html.Div([
                                                             marks={str(year): str(year) for year in df_EL['Season']},
                                                             step=None,
                                                         )
-                                                        ])), style={'height':'70vh'}), width=8)
+                                                        ])), style={'height':'80vh'}), width=8)
             ]
         )
-    ]), ], style={'background-image': 'url("assets/suelo.jpg")', 'background-position': 'center top', 'background-size': '1920px 1080px'} )
+    ]), ], style={'background-image': 'url("assets/suelo.jpg")', 'background-position': 'center top', 'background-size': '1920px 1280px'} )
 
 
 @app.callback(
@@ -322,12 +322,12 @@ def update_figure2(tipoAlg, tiros, minutos, per, n_clicks, edad, minimo):
     table = create_table(edad, minutos*82, per, tiros)
     salarios = get_prediction(modelo, table)
     equipos2 = ['Houston Rockets', 'Golden State Warriors', 'Sacramento Kings', 'Chicago Bulls', 'Portland Trail Blazers', 'Dallas Mavericks', 'Boston Celtics', 'Memphis Grizzlies', 'Denver Nuggets', 'New Orleans Hornets', 'Los Angeles Clippers', 'Orlando Magic',
-               'Miami Heat', 'Indiana Pacers', 'Los Angeles Lakers', 'Minessota Timberwolves ', 'Phoenix Suns', 'Atlanta hawks', 'Cleveland Cavaliers', 'New York Knicks', 'Charlotte Hornets', 'Milwakee Bucks', 'San Antonio Spurs', 'Utah Jazz',
-               'New Orleans Pelicans', 'Washington Wizards', 'Philadelphia 76ers', 'Brooklyn Nets', 'Oklahoma City Thunder', 'Detroit Pistons', 'Toronto Raptors']
+                'Miami Heat', 'Indiana Pacers', 'Los Angeles Lakers', 'Minessota Timberwolves ', 'Phoenix Suns', 'Atlanta hawks', 'Cleveland Cavaliers', 'New York Knicks', 'Charlotte Hornets', 'Milwakee Bucks', 'San Antonio Spurs', 'Utah Jazz',
+                'New Orleans Pelicans', 'Washington Wizards', 'Philadelphia 76ers', 'Brooklyn Nets', 'Oklahoma City Thunder', 'Detroit Pistons', 'Toronto Raptors']
     equipos = ['HOU', 'GSW', 'SAC', 'CHI', 'POR', 'DAL', 'BOS', 'MEM', 'DEN', 'TOT', 'LAC', 'ORL',
                'MIA', 'IND', 'LAL', 'MIN', 'PHO', 'ATL', 'CLE', 'NYK', 'CHO', 'MIL', 'SAS', 'UTA',
                'NOP', 'WAS', 'PHI', 'BRK', 'OKC', 'DET', 'TOR']
-    
+
     trace1 = go.Bar(
         x=equipos2,
         y=salarios,
@@ -336,10 +336,12 @@ def update_figure2(tipoAlg, tiros, minutos, per, n_clicks, edad, minimo):
     if not minimo:
         minimo = 0
     fig = go.Figure(data=data)
+    fig.update_xaxes(
+        tickangle=45)
     fig.update_layout(
         hovermode='x unified',
-        width=1000,
-        height=600,
+        width=800,
+        height=500,
         shapes=[
             {
                 'type': 'line',
