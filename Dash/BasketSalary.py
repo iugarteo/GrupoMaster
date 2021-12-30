@@ -17,13 +17,11 @@ df_EL = df2.loc[df2['League'] == "NBA"]
 df_EL[['Season', 'Last']] = df_EL.Season.str.split(" - ", expand=True)
 del df_EL['Last']
 df_EL['Season'] = df_EL['Season'].astype(int)
-minutosL = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-            29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45]
+minutosL = [0, 4, 8, 12, 16, 20, 24, 28,
+             32, 36, 40, 44, 48]
 edadL = [19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41]
-shotsL = [0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90,
-          0.95, 1]
-preL = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-            29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+shotsL = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+perL = [0, 5, 10, 15, 20, 25, 30, 35, 40]
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.SKETCHY]
 
 
@@ -35,14 +33,16 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.layout = html.Div([
     dbc.Row(
         dbc.Col(
-            html.H1('Predice tu salario'),
+            html.Label('Predice tu salario'),
+            width={"size": 6, "offset": 3},
+            style={'font-size':'35px'},
         )
     ),
     html.Br(),
     html.Div([dbc.Card(dbc.CardBody(
         dbc.Row(
             [
-                dbc.Col(html.Div([html.H3('Seleccionar algoritmo'),
+                dbc.Col(html.Div([html.H1('Seleccionar algoritmo'),
                                   dcc.Dropdown(
                                       id='AlgType',
                                       options=[
@@ -51,28 +51,28 @@ app.layout = html.Div([
                                           {'label': 'Linear Regresion', 'value': 'LR'}
                                       ],
                                       value='RF',
-                                      style={'font-size':'16px'}
+                                      style={'font-size':'20px'}
                                   ),])),
                 dbc.Col(# R^2
                     html.Div([
-                        html.H3("R^2"),
-                        html.H3(id="R2_text")
+                        html.H1("R^2"),
+                        html.H1(id="R2_text")
                     ],
                         id="R2-score",
                         className="mini_container indicator",
                     ),),
                 dbc.Col(# MAE
                     html.Div([
-                        html.H3("MAE"),
-                        html.H3(id="MAE_text")
+                        html.H1("MAE"),
+                        html.H1(id="MAE_text")
                     ],
                         id="MAE-score",
                         className="mini_container indicator",
                     ),),
                 dbc.Col(# RMSE
                     html.Div([
-                        html.H3("RMSE"),
-                        html.H3(id="RMSE_text")
+                        html.H1("RMSE"),
+                        html.H1(id="RMSE_text")
                     ],
                         id="RMSE-score",
                         className="mini_container indicator",
@@ -83,21 +83,23 @@ app.layout = html.Div([
         id="indicators",
     ),
     html.Br(),
+                                                        html.Br(),
     html.Div([
         dbc.Row(
             [
-                dbc.Col(dbc.Card(dbc.CardBody(html.Div([html.H3("% Tiros acertado:"),
+                dbc.Col(dbc.Card(dbc.CardBody(html.Div([html.H1("% Tiros acertado:"),
                                                         dcc.Slider(
                                                             id='shots',
                                                             min=0,
-                                                            max=1,
+                                                            max=100,
                                                             value=0,
-                                                            step=0.05,
+                                                            step=1,
                                                             marks={str(shot): str(shot) for shot in shotsL},
                                                             tooltip={"placement": "bottom", "always_visible": True}
                                                         ),
                                                         html.Br(),
-                                                        html.H3("Edad:"),
+                                                        html.Br(),
+                                                        html.H1("Edad:"),
                                                         dcc.Slider(
                                                             id='Age',
                                                             min=19,
@@ -108,31 +110,36 @@ app.layout = html.Div([
                                                             tooltip={"placement": "bottom", "always_visible": True},
                                                         ),
                                                         html.Br(),
-                                                        html.H3("Minutos jugados:"),
+                                                        html.Br(),
+                                                        html.H1("Minutos jugados:"),
                                                         dcc.Slider(
                                                             id='mins',
                                                             min=0,
-                                                            max=45,
+                                                            max=48,
                                                             value=0,
                                                             step=1,
                                                             marks={str(minutos): str(minutos) for minutos in minutosL},
                                                             tooltip={"placement": "bottom", "always_visible": True},
                                                         ),
                                                         html.Br(),
-                                                        html.H3("Salario minimo requerido:"),
-                                                        html.Div([dcc.Input(id='input-on-submit', type='number'), html.Button('Mostrar minimo', id='submit-val', n_clicks=0)]),
-                                                        html.H3("Pre:"),
+                                                        html.Br(),
+                                                        html.H1("PER:"),
                                                         dcc.Slider(
-                                                            id='pre',
+                                                            id='per',
                                                             min=0,
                                                             max=40,
                                                             value=0,
-                                                            step=1,
-                                                            marks={str(pre): str(pre) for pre in preL},
+                                                            step=0.1,
+                                                            marks={str(per): str(per) for per in perL},
                                                             tooltip={"placement": "bottom", "always_visible": True}
                                                         ),
+                                                        html.Br(),
+                                                        html.Br(),
+                                                        html.H1("Salario minimo requerido:"),
+                                                        html.Div([dcc.Input(id='input-on-submit', type='number',  style={'font-size':'20px'}), html.Button('Mostrar minimo', id='submit-val', n_clicks=0,  style={'font-size':'20px'})]),
                                                         ])), style={'height':'70vh'}), width=5),
-                dbc.Col(dbc.Card(dbc.CardBody([html.H3("Salario a cobrar por equipo:"),html.Div(dcc.Graph(id='graphAlg'))]), style={'height':'70vh'}), width=7),
+                dbc.Col(dbc.Card(dbc.CardBody([html.H1("Salario a cobrar por equipo:"),html.Div(dcc.Graph(id='graphAlg'))]), style={'height':'70vh'
+}), width=7),
             ]
         ),
     ]),
@@ -140,13 +147,14 @@ app.layout = html.Div([
     html.Div([
         dbc.Row(
             dbc.Col(
-                html.H1('Estadisticas generales NBA'),
+                html.Label('Estadisticas generales NBA'),
                 width={"size": 6, "offset": 3},
+                style={'font-size':'35px'},
             )
         ),
         dbc.Row(
             [
-                dbc.Col(dbc.Card(dbc.CardBody(html.Div([html.H3('Tipo de grafico'),
+                dbc.Col(dbc.Card(dbc.CardBody(html.Div([html.H1('Tipo de grafico'),
                                                         dcc.Dropdown(
                                                             id='graphType',
                                                             options=[
@@ -154,11 +162,12 @@ app.layout = html.Div([
                                                                 {'label': 'Barras', 'value': 'bar'}
                                                             ],
                                                             value='pie',
-                                                            style={'font-size':'16px'}
+                                                            style={'font-size':'20px'}
                                                         ),
                                                         html.Br(),
+                                                        html.Br(),
                                                         html.Div([
-                                                            html.H3('Equipo'),
+                                                            html.H1('Equipo'),
                                                             dcc.Dropdown(
                                                                 options=[
                                                                     {'label': 'Los Angeles Lakers', 'value': 'LAL'},
@@ -191,41 +200,47 @@ app.layout = html.Div([
                                                                 ],
                                                                 id="teams",
                                                                 value='LAL',
-                                                                style={'font-size':'16px'}
+                                                                style={'font-size':'20px'}
                                                             ),
                                                             html.Br(),
+                                                            html.Br(),
                                                             html.Div([
-                                                                html.H3('Tipo estadistica'),
+                                                                html.H1('Tipo estadistica'),
                                                                 dcc.RadioItems(
                                                                     options=[
+                                                                        {'label': '__Minutos jugados', 'value': 'MIN'},
+                                                                        {'label': '__Partidos jugados', 'value': 'GP'},
+                                                                        {'label': '__Puntos logrados', 'value': 'PTS'},
                                                                         {'label': '__Triples intentados', 'value': '3PA'},
                                                                         {'label': '__Triples metidos', 'value': '3PM'},
                                                                         {'label': '__Robos', 'value': 'STL'},
-                                                                        {'label': '__Minutos jugados', 'value': 'MIN'},
-                                                                        {'label': '__Partidos jugados', 'value': 'GP'},
-                                                                        {'label': '__Puntos logrados', 'value': 'PTS'}
+                                                                        {'label': '__Perdidas', 'value': 'TOV'},
+                                                                        {'label': '__Rebotes', 'value': 'REB'},
+                                                                        {'label': '__Asistencias', 'value': 'AST'},
+                                                                        {'label': '__Tapones', 'value': 'BLK'}
                                                                     ],
                                                                     id="columnas",
                                                                     value='3PM',
                                                                     style={'font-size':'16px'},
                                                                     labelStyle={'display': 'block'}
                                                                 ),
-                                                            html.H3("Temporada:"),
+                                                           
+                                                            ]),
+                                                        ]),])), style={'height':'70vh'}), width=4),
+                dbc.Col(dbc.Card(dbc.CardBody(html.Div([dcc.Graph(id='graph'),
+                 html.H1("Temporada:"),
                                                         dcc.Slider(
                                                             id='year',
                                                             min=df_EL['Season'].min(),
                                                             max=df_EL['Season'].max(),
                                                             value=df_EL['Season'].min(),
                                                             marks={str(year): str(year) for year in df_EL['Season']},
-                                                            step=None
+                                                            step=None,
                                                         )
-                                                            ]),
-                                                        ]),])), style={'height':'70vh'}), width=4),
-                dbc.Col(dbc.Card(dbc.CardBody(html.Div([dcc.Graph(id='graph'),
                                                         ])), style={'height':'70vh'}), width=8)
             ]
         )
-    ]), ])
+    ]), ], style={'background-image': 'url("assets/suelo.jpg")', 'background-position': 'center top', 'background-size': '1920px 1080px'} )
 
 
 @app.callback(
@@ -277,10 +292,11 @@ def update_figure(team, columna, year, tipo):
     [Input('AlgType', 'value'),
      Input('shots', 'value'),
      Input('mins', 'value'),
+     Input('per', 'value'),
      Input('submit-val', 'n_clicks'),
      Input('Age', 'value')],
     State('input-on-submit', 'value'))
-def update_figure2(tipoAlg, tiros, minutos, n_clicks, edad, minimo):
+def update_figure2(tipoAlg, tiros, minutos, per, n_clicks, edad, minimo):
     if tipoAlg == "RF":
         modelo = modelo1
         scores = scores1
@@ -290,7 +306,7 @@ def update_figure2(tipoAlg, tiros, minutos, n_clicks, edad, minimo):
     elif tipoAlg == "LR":
         modelo = modelo3
         scores = scores3
-    table = create_table(edad, minutos*82, tiros)
+    table = create_table(edad, minutos*82, per, tiros)
     salarios = get_prediction(modelo, table)
     equipos = ['HOU', 'GSW', 'SAC', 'CHI', 'POR', 'DAL', 'BOS', 'MEM', 'DEN', 'TOT', 'LAC', 'ORL',
                'MIA', 'IND', 'LAL', 'MIN', 'PHO', 'ATL', 'CLE', 'NYK', 'CHO', 'MIL', 'SAS', 'UTA',
