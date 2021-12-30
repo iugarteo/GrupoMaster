@@ -19,7 +19,7 @@ def get_model(alg):
     df['Tm'] = le.transform(df[['Tm']])
     df = shuffle(df)
     # df_X=df[['NBA_DraftNumber','Age', 'Tm', 'G',  'MP', 'PER', 'TS%','3PAr', 'FTr','ORB%', 'DRB%', 'TRB%', 'AST%', 'STL%', 'BLK%', 'TOV%', 'USG%', 'OWS','DWS','WS', 'WS/48','OBPM', 'DBPM', 'BPM','VORP']]
-    df_X = df[['Age', 'Tm', 'MP', 'TS%']]
+    df_X = df[['Age', 'Tm', 'MP', 'PER', 'TS%']]
     df_Y = df[['Salary']]
     x_train, x_test, y_train, y_test = train_test_split(df_X, df_Y, test_size=0.2, random_state=42)
     if alg == "RF":
@@ -66,7 +66,7 @@ def get_prediction(model, table):
     return predict
 
 
-def create_table(age, minutes, shoot):
+def create_table(age, minutes, per, shoot):
     teams = ['HOU', 'GSW', 'SAC', 'CHI', 'POR', 'DAL', 'BOS', 'MEM', 'DEN', 'TOT', 'LAC', 'ORL',
      'MIA', 'IND', 'LAL', 'MIN', 'PHO', 'ATL', 'CLE', 'NYK', 'CHO', 'MIL', 'SAS', 'UTA',
      'NOP', 'WAS', 'PHI', 'BRK', 'OKC', 'DET', 'TOR']
@@ -74,9 +74,10 @@ def create_table(age, minutes, shoot):
     table['Age'] = None
     table['Tm'] = None
     table['MP'] = None
+    table['PER'] = None
     table['TS%'] = None
     for x in teams:
-        nueva_fila = {'Age': age, 'Tm': x, 'MP': minutes, 'TS%': shoot}
+        nueva_fila = {'Age': age, 'Tm': x, 'MP': minutes, 'PER': per, 'TS%': shoot}
         table = table.append(nueva_fila, ignore_index=True)
     team_val = teams
     le = preprocessing.LabelEncoder()
